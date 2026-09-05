@@ -505,6 +505,24 @@ describe("double-sided hero cards", () => {
     expect(legalHeroes(after, other).map((h) => h.id)).toContain(back);
   });
 
+  it("does not shrink a seat's own pool to the number of cards", () => {
+    // Six-hero factions hold only three cards. Treating the card as unique
+    // *within* a seat's pool as well as between seats silently capped every
+    // hero pool at three, whatever the lobby had been told.
+    const config = repair({ ...defaultConfig(), players: 4, heroPoolSize: 5, sharedHeroCards: true });
+    expect(config.heroPoolSize).toBe(5);
+
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, "notcapped", log);
+    for (const seat of state.seats) {
+      log.push({ t: "pickF", seat: seat.index, factionId: state.pools[seat.index][0] });
+    }
+    state = reduce(config, "notcapped", log);
+    for (const seat of state.seats) {
+      expect(state.pools[seat.index], `seat ${seat.index} was short-changed`).toHaveLength(5);
+    }
+  });
+
   it("never offers both faces of one card at the same time", () => {
     const rng = mulberry32(57);
     for (let run = 0; run < 60; run++) {

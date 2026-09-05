@@ -1,7 +1,13 @@
 "use client";
 
-import { FACTIONS, HEROES, SETS, setLabel } from "@/lib/catalogue";
-import { feasibility, repair, shrinkPools } from "@/lib/draftConfig";
+import { FACTIONS, HEROES, SETS, faction, setLabel } from "@/lib/catalogue";
+import {
+  FACTION_ISSUES,
+  HERO_ISSUES,
+  feasibility,
+  repair,
+  shrinkPools,
+} from "@/lib/draftConfig";
 import {
   HERO_POOL_ALL,
   MAX_BANS,
@@ -135,7 +141,10 @@ export default function DraftSetup({
    * about after repair, because those are facts about the table that the pools
    * should give way to, not preferences to be refused.
    */
-  const poolFits = (patch: Partial<DraftConfig>) => feasibility({ ...config, ...patch }).ok;
+  const clearOf = (patch: Partial<DraftConfig>, codes: readonly string[]) =>
+    !feasibility({ ...config, ...patch }).issues.some((i) => codes.includes(i.code));
+  const factionPoolFits = (patch: Partial<DraftConfig>) => clearOf(patch, FACTION_ISSUES);
+  const heroPoolFits = (patch: Partial<DraftConfig>) => clearOf(patch, HERO_ISSUES);
   const tableFits = (patch: Partial<DraftConfig>) => feasibility(repair({ ...config, ...patch })).ok;
   /** Bans sit between the two: the pools may give way to make room for them,
    * but the ban count itself may not, or every count would look possible. */
@@ -148,16 +157,29 @@ export default function DraftSetup({
       HEROES.some((h) => h.set === s && config.heroIds.includes(h.id)),
   );
 
+  /**
+   * Which heroes a collection actually contains: one whose faction is in play
+   * and whose own box is on the shelf.
+   *
+   * Both toggles below derive the hero list rather than nudging it, because
+   * the two questions cross — a Castle hero can come in the stretch goals, and
+   * a stretch-goal hero can belong to a faction nobody owns. Deriving it makes
+   * every toggle idempotent and puts the heroes back when a faction returns.
+   */
+  const heroesFor = (factionIds: string[], sets: string[]) => {
+    const enabled = new Set(factionIds);
+    const owned = new Set(sets);
+    return HEROES.filter((h) => enabled.has(h.factionId) && owned.has(h.set)).map((h) => h.id);
+  };
+
   function toggleSet(setId: string) {
     const on = ownedSets.includes(setId);
+    const sets = on ? ownedSets.filter((s) => s !== setId) : [...ownedSets, setId];
     const factionIds = FACTIONS.filter(
       (f) => (f.set === setId ? !on : config.factionIds.includes(f.id)),
     ).map((f) => f.id);
-    const heroIds = HEROES.filter((h) => (h.set === setId ? !on : config.heroIds.includes(h.id))).map(
-      (h) => h.id,
-    );
     if (!factionIds.length) return;
-    set({ factionIds, heroIds });
+    set({ factionIds, heroIds: heroesFor(factionIds, sets) });
   }
 
   /**
@@ -176,7 +198,11 @@ export default function DraftSetup({
       ? config.factionIds.filter((f) => f !== id)
       : FACTIONS.filter((f) => f.id === id || config.factionIds.includes(f.id)).map((f) => f.id);
     if (!factionIds.length) return;
-    set({ factionIds });
+    // Switching a faction back on brings its own box with it — otherwise its
+    // heroes would have nowhere to come from and the faction would return
+    // empty.
+    const sets = on ? ownedSets : [...new Set([...ownedSets, faction(id)!.set])];
+    set({ factionIds, heroIds: heroesFor(factionIds, sets) });
   }
 
   return (
@@ -277,7 +303,7 @@ export default function DraftSetup({
           value={config.factionPoolSize}
           from={1}
           to={MAX_POOL}
-          isDisabled={(factionPoolSize) => !poolFits({ factionPoolSize })}
+          isDisabled={(factionPoolSize) => !factionPoolFits({ factionPoolSize })}
           titleFor={(n) =>
             t("lobby.poolTooBig", {
               need: config.players * n,
@@ -304,7 +330,7 @@ export default function DraftSetup({
               key={n}
               type="button"
               className={n === config.heroPoolSize ? "active" : ""}
-              disabled={n !== config.heroPoolSize && !poolFits({ heroPoolSize: n })}
+              disabled={n !== config.heroPoolSize && !heroPoolFits({ heroPoolSize: n })}
               onClick={() => set({ heroPoolSize: n })}
             >
               {n}

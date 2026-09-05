@@ -692,6 +692,30 @@ where they belong rather than in the lobby:
   and deal a draft that could not be finished, which is exactly what the
   property tests caught.
 
+### Three things the defaults broke
+
+Switching "one card, two heroes" on by default, and Factory off, each turned a
+harmless assumption into a bug:
+
+- **A pool capped at the number of cards.** The disjoint deal treated a card as
+  unique everywhere, including inside a single seat's own pool, so a faction of
+  six heroes and three cards could never offer more than three. The keys only
+  ever existed to stop *two seats* colliding; inside one seat they mean
+  nothing, because a player offered both faces is choosing a side of a card
+  they are taking either way. Keys are claimed when a seat's pool is settled
+  rather than while it is being filled.
+- **Every control greying for somebody else's problem.** `feasibility` returns
+  one verdict for the whole config, so at six players a faction pool that would
+  not fit dimmed the hero options as well. Each row now asks only about its own
+  issue codes.
+- **Heroes surviving their faction.** Switching a faction off left its heroes in
+  play, which is invisible under the own-faction rule and wrong under the other
+  two. `dropOrphanHeroes` runs in both `sanitizeConfig` and `repair`, because a
+  faction can leave by its own chip, by its box, or by a pasted code, and all
+  three have to leave the same thing behind. The lobby's two toggles now derive
+  the hero list from "faction in play and box on the shelf" rather than nudging
+  it, which is also what puts the heroes back when a faction returns.
+
 ### Cost
 
 Trystero and the QR generator are both dynamically imported, so a page that is

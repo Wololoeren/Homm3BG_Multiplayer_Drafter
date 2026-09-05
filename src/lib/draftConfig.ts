@@ -1,4 +1,4 @@
-import { DEFAULT_FACTIONS, DEFAULT_HEROES, FACTIONS, HEROES, heroesOf } from "./catalogue";
+import { DEFAULT_FACTIONS, DEFAULT_HEROES, FACTIONS, HEROES, hero, heroesOf } from "./catalogue";
 import {
   DRAFT_VERSION,
   HERO_POOL_ALL,
@@ -79,7 +79,7 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
       ? input.heroFactionPolicy
       : "own";
 
-  return {
+  return dropOrphanHeroes({
     version: DRAFT_VERSION,
     players: clamp(input.players, MIN_PLAYERS, MAX_PLAYERS, base.players),
     format,
@@ -110,7 +110,25 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
     // than shipping a config that can only deadlock.
     factionIds: factionIds.length ? factionIds : base.factionIds,
     heroIds: heroIds.length ? heroIds : base.heroIds,
-  };
+  });
+}
+
+/**
+ * A faction you do not have is a faction whose heroes you do not have either.
+ *
+ * Enforced here rather than in the lobby's toggles because there are several
+ * ways to switch a faction off — its own chip, the box it came in, a pasted
+ * code — and every one of them has to leave the same thing behind. Under the
+ * own-faction rule an orphaned hero is merely unreachable; under the others it
+ * would be a hero from a town nobody at the table owns.
+ */
+export function dropOrphanHeroes(config: DraftConfig): DraftConfig {
+  const factions = new Set(config.factionIds);
+  const heroIds = config.heroIds.filter((id) => {
+    const card = hero(id);
+    return card ? factions.has(card.factionId) : false;
+  });
+  return heroIds.length === config.heroIds.length ? config : { ...config, heroIds };
 }
 
 export type FeasibilityCode =
@@ -119,6 +137,12 @@ export type FeasibilityCode =
   | "faction-pool-too-large-snake"
   | "not-enough-heroes"
   | "hero-pool-too-large";
+
+/** Which part of the setup an issue is about, so a control can grey itself
+ * for its own reasons rather than for something else being wrong. A hero pool
+ * has no business dimming because the faction pool will not fit. */
+export const FACTION_ISSUES: FeasibilityCode[] = ["not-enough-factions", "faction-pool-too-large"];
+export const HERO_ISSUES: FeasibilityCode[] = ["not-enough-heroes", "hero-pool-too-large"];
 
 export interface FeasibilityIssue {
   code: FeasibilityCode;
@@ -281,7 +305,7 @@ export function shrinkPools(config: DraftConfig): DraftConfig {
 }
 
 export function repair(config: DraftConfig): DraftConfig {
-  let next = config;
+  let next = dropOrphanHeroes(config);
   for (let guard = 0; guard <= MAX_BANS; guard++) {
     const check = feasibility(next);
     if (check.ok) return next;
