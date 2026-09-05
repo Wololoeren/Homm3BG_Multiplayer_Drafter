@@ -2,7 +2,14 @@
 
 import { FACTIONS, HEROES, SETS, setLabel } from "@/lib/catalogue";
 import { feasibility, repair } from "@/lib/draftConfig";
-import { MAX_BANS, MAX_PLAYERS, MAX_POOL, MIN_PLAYERS, type DraftConfig } from "@/lib/draftTypes";
+import {
+  HERO_POOL_ALL,
+  MAX_BANS,
+  MAX_PLAYERS,
+  MAX_POOL,
+  MIN_PLAYERS,
+  type DraftConfig,
+} from "@/lib/draftTypes";
 import { useT, type Translate } from "@/lib/i18n";
 import type { TransportKind } from "@/lib/transport";
 import type { MessageKey } from "@/lib/i18n/messages/en";
@@ -23,6 +30,10 @@ interface Props {
 }
 
 const MODES: TransportKind[] = ["local", "manual", "p2p"];
+
+/** Whether anybody has recorded which heroes share a card yet. Until they
+ * have, the setting has nothing to act on and says so rather than pretending. */
+const HAVE_CARD_PAIRINGS = HEROES.some((h) => h.pairedWith);
 
 const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
@@ -225,14 +236,37 @@ export default function DraftSetup({
 
       <Row
         label={t("lobby.heroPool")}
-        hint={config.heroPoolSize === 1 ? t("lobby.pool.forced") : undefined}
+        hint={
+          config.heroPoolSize === HERO_POOL_ALL
+            ? t("lobby.pool.all.help")
+            : config.heroPoolSize === 1
+              ? t("lobby.pool.forced")
+              : undefined
+        }
       >
-        <NumberRow
-          value={config.heroPoolSize}
-          from={1}
-          to={MAX_POOL}
-          onPick={(heroPoolSize) => set({ heroPoolSize })}
-        />
+        <div className="segmented">
+          {range(1, MAX_POOL).map((n) => (
+            <button
+              key={n}
+              type="button"
+              className={n === config.heroPoolSize ? "active" : ""}
+              onClick={() => set({ heroPoolSize: n })}
+            >
+              {n}
+            </button>
+          ))}
+          {/* "All" only makes sense when a seat draws from its own faction:
+              anywhere else it would mean the whole sixty-four. */}
+          {config.heroFactionPolicy === "own" && (
+            <button
+              type="button"
+              className={config.heroPoolSize === HERO_POOL_ALL ? "active" : ""}
+              onClick={() => set({ heroPoolSize: HERO_POOL_ALL })}
+            >
+              {t("lobby.pool.all")}
+            </button>
+          )}
+        </div>
       </Row>
 
       <Row
@@ -278,7 +312,17 @@ export default function DraftSetup({
               key={policy}
               type="button"
               className={config.heroFactionPolicy === policy ? "active" : ""}
-              onClick={() => set({ heroFactionPolicy: policy })}
+                onClick={() =>
+                set({
+                  heroFactionPolicy: policy,
+                  // "All" is an own-faction idea; leaving that rule has to
+                  // leave it behind rather than quietly mean something else.
+                  heroPoolSize:
+                    policy !== "own" && config.heroPoolSize === HERO_POOL_ALL
+                      ? 3
+                      : config.heroPoolSize,
+                })
+              }
             >
               {t(`lobby.heroRule.${policy}` as MessageKey)}
             </button>
@@ -298,14 +342,30 @@ export default function DraftSetup({
           </span>
         </label>
         {config.heroFactionPolicy === "unique-faction" && (
-          <label className="toggle" style={{ marginTop: 8 }}>
-            <input
-              type="checkbox"
-              checked={config.heroMayComeFromAnotherPlayersTown}
-              onChange={(e) => set({ heroMayComeFromAnotherPlayersTown: e.target.checked })}
-            />
-            <span>{t("lobby.otherTowns")}</span>
-          </label>
+          <>
+            <label className="toggle" style={{ marginTop: 8 }}>
+              <input
+                type="checkbox"
+                checked={config.heroMayComeFromAnotherPlayersTown}
+                onChange={(e) => set({ heroMayComeFromAnotherPlayersTown: e.target.checked })}
+              />
+              <span>{t("lobby.otherTowns")}</span>
+            </label>
+            <label className="toggle" style={{ marginTop: 8 }}>
+              <input
+                type="checkbox"
+                checked={config.sharedHeroCards}
+                disabled={!HAVE_CARD_PAIRINGS}
+                onChange={(e) => set({ sharedHeroCards: e.target.checked })}
+              />
+              <span>
+                {t("lobby.sharedCards")}
+                <span className="hint" style={{ display: "block" }}>
+                  {HAVE_CARD_PAIRINGS ? t("lobby.sharedCards.help") : t("lobby.sharedCards.nodata")}
+                </span>
+              </span>
+            </label>
+          </>
         )}
       </Row>
 

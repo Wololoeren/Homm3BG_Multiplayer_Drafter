@@ -122,7 +122,8 @@ export function encodeDraft(config: DraftConfig, seed: string, events: readonly 
     (config.format === "snake" ? 1 : 0) |
       (config.banVisibility === "blind" ? 2 : 0) |
       (config.uniqueHeroIdentity ? 4 : 0) |
-      (config.heroMayComeFromAnotherPlayersTown ? 8 : 0),
+      (config.heroMayComeFromAnotherPlayersTown ? 8 : 0) |
+      (config.sharedHeroCards ? 16 : 0),
   );
   out.push((config.factionPoolSize & 0x0f) | ((config.heroPoolSize & 0x0f) << 4));
   out.push((config.bansPerPlayer & 0x0f) | (POLICIES.indexOf(config.heroFactionPolicy) << 4));
@@ -214,6 +215,7 @@ export function decodeDraft(input: string): Draft {
     banVisibility: flags & 2 ? "blind" : "open",
     uniqueHeroIdentity: (flags & 4) !== 0,
     heroMayComeFromAnotherPlayersTown: (flags & 8) !== 0,
+    sharedHeroCards: (flags & 16) !== 0,
     factionPoolSize: pools & 0x0f,
     heroPoolSize: (pools >> 4) & 0x0f,
     bansPerPlayer: bansAndPolicy & 0x0f,

@@ -599,6 +599,32 @@ settled by faction id because they are interchangeable.
   has no such loophole. Worth knowing because the QR exists precisely so
   somebody can take their seat on a phone.
 
+### Asked for after the first play-throughs
+
+- **Abandoning a draft.** There was no way out of one but to finish it, which
+  is wrong two picks in as often as at the end. Available in every mode and
+  phase now, and it asks first — the log *is* the draft, and dropping it should
+  not follow a mis-click. It keeps the setup and clears only the draft.
+- **A hero pool of "All".** `heroPoolSize: 0` means "every hero my faction still
+  has", offered only under the own-faction rule where that is a handful rather
+  than the whole sixty-four. It cannot be dealt disjointly — Tarnum has a card
+  in six factions, so two seats can be looking at the same person — so where
+  the pools would collide the hero step becomes **sequential**. That is
+  computed rather than assumed: a table with no shared identities and no
+  uniqueness rule keeps picking simultaneously.
+- **Double-sided hero cards.** A hero card is one physical object with a hero
+  on each face, so drafting one takes the other out of the game with it. The
+  mechanism is built — a `pairedWith` field, a `sharedHeroCards` setting, and
+  the pair folded into the disjoint-deal keys — but the pairings are not in the
+  community database and have to be read off the cards. Until somebody fills in
+  `CARD_PAIRS` in the build script the setting is shown disabled, saying
+  exactly that, rather than pretending to do something.
+- **Wiki links on other players' picks**, not just your own options.
+
+This bumped `DRAFT_VERSION` to 2: a pool size of 0 would have been clamped to 1
+by an older build, which would have silently dealt a different draft rather
+than refusing the code.
+
 ### Cost
 
 Trystero and the QR generator are both dynamically imported, so a page that is

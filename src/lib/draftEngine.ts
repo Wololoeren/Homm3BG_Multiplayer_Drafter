@@ -1,5 +1,6 @@
 import { HEROES, hero as heroById } from "./catalogue";
 import { dealCeiling, dealDisjoint, hash32, rngFor, sample, shuffle } from "./rng";
+import { HERO_POOL_ALL } from "./draftTypes";
 import type {
   DraftConfig,
   DraftEvent,
@@ -101,10 +102,18 @@ export function legalHeroes(
   const otherTowns = new Set(
     state.seats.filter((s) => s.index !== seatIndex).map((s) => s.factionId).filter(Boolean) as string[],
   );
+  // A double-sided card leaves the game whole: drafting one face takes the
+  // other with it.
+  const takenBacks = new Set(
+    config.sharedHeroCards
+      ? (others.map((s) => (s.heroId ? heroById(s.heroId)?.pairedWith : null)).filter(Boolean) as string[])
+      : [],
+  );
 
   return HEROES.filter((h) => {
     if (!enabled.has(h.id)) return false;
     if (takenIds.has(h.id)) return false;
+    if (takenBacks.has(h.id)) return false;
     if (config.uniqueHeroIdentity && takenIdentities.has(h.identity)) return false;
 
     switch (config.heroFactionPolicy) {
@@ -126,7 +135,40 @@ function heroKeys(config: DraftConfig, h: Hero): string[] {
   const keys = [`id:${h.id}`];
   if (config.uniqueHeroIdentity) keys.push(`who:${h.identity}`);
   if (config.heroFactionPolicy === "unique-faction") keys.push(`from:${h.factionId}`);
+  // Both faces name the same card, so the pair sorts into one key.
+  if (config.sharedHeroCards && h.pairedWith) {
+    keys.push(`card:${[h.id, h.pairedWith].sort().join("+")}`);
+  }
   return keys;
+}
+
+/**
+ * Whether the hero step has to go round the table one at a time.
+ *
+ * A sized pool is dealt disjointly, so everyone can pick at once. "All" is not
+ * dealt at all — it is whatever a seat still has — and two seats can then be
+ * looking at the same card: Tarnum has a card in six factions, so two players
+ * on different factions can both be offered him. Where that is possible the
+ * step becomes sequential, which is the only way the second player finds out.
+ *
+ * Checked rather than assumed: under the "own" rule with no uniqueness
+ * constraints there is nothing to collide over, and those tables keep picking
+ * simultaneously.
+ */
+function heroPoolsCollide(state: DraftState): boolean {
+  if (state.config.heroPoolSize !== HERO_POOL_ALL) return false;
+  const seen = new Set<string>();
+  for (const seatIndex of state.order) {
+    const mine = new Set<string>();
+    for (const h of legalHeroes(state, seatIndex, { ignoreTaken: true })) {
+      for (const key of heroKeys(state.config, h)) mine.add(key);
+    }
+    for (const key of mine) {
+      if (seen.has(key)) return true;
+      seen.add(key);
+    }
+  }
+  return false;
 }
 
 // -------------------------------------------------------------------- phases
@@ -165,7 +207,7 @@ function turnFor(state: DraftState): number | null {
       if (state.config.format === "dealt") return null;
       return state.order[factionsPicked(state)] ?? null;
     case "hero":
-      if (state.config.format === "dealt") return null;
+      if (state.config.format === "dealt" && !heroPoolsCollide(state)) return null;
       return heroOrder(state)[heroesPicked(state)] ?? null;
     default:
       return null;
@@ -249,7 +291,17 @@ function poolsFor(state: DraftState): Record<number, string[]> {
   }
 
   if (state.phase === "hero") {
-    if (config.format === "dealt") {
+    if (config.heroPoolSize === HERO_POOL_ALL) {
+      // Nothing to deal: a seat is offered everything still open to it. When
+      // the step is sequential that list shrinks as others pick, which is the
+      // point; when it is not, no two seats overlap and it cannot move.
+      const seats = state.turn !== null ? [state.turn] : heroOrder(state);
+      for (const seatIndex of seats) {
+        pools[seatIndex] = legalHeroes(state, seatIndex, {
+          ignoreTaken: state.turn === null,
+        }).map((h) => h.id);
+      }
+    } else if (config.format === "dealt") {
       const seats = heroOrder(state);
       const deal = dealShrinking(
         () => rngFor(seed, "deal", "hero"),

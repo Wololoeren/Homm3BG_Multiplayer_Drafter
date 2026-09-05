@@ -34,6 +34,22 @@ const FACTION_COLORS = {
   cove: "#4d7fae",
 };
 
+/**
+ * Which heroes are printed on the two sides of one physical card.
+ *
+ * Not in the community database — it has to be read off the cards themselves —
+ * so this is empty until somebody does that. Write each pair once, by hero id
+ * (the wiki page name with dashes, e.g. "lord_haart_castle" -> "lord-haart-castle");
+ * the reverse direction is filled in automatically, and an id that does not
+ * exist stops the build rather than silently doing nothing.
+ *
+ * Until it is populated the "one card, two heroes" setting has nothing to act
+ * on, which is exactly what the lobby says about it.
+ */
+const CARD_PAIRS = {
+  // "valeska": "adelaide",
+};
+
 const slug = (s) =>
   s
     .toLowerCase()
@@ -132,6 +148,19 @@ const heroes = tableRows(heroesMd, "# List of Heroes").map((row) => {
   };
 });
 
+// ------------------------------------------------------------- card pairings
+
+const heroById = new Map(heroes.map((h) => [h.id, h]));
+for (const [front, back] of Object.entries(CARD_PAIRS)) {
+  const a = heroById.get(front);
+  const b = heroById.get(back);
+  if (!a) throw new Error(`CARD_PAIRS names a hero that does not exist: ${front}`);
+  if (!b) throw new Error(`CARD_PAIRS names a hero that does not exist: ${back}`);
+  if (a.pairedWith || b.pairedWith) throw new Error(`${front}/${back}: a card has only two sides`);
+  a.pairedWith = back;
+  b.pairedWith = front;
+}
+
 const duplicates = heroes.map((h) => h.id).filter((id, i, all) => all.indexOf(id) !== i);
 if (duplicates.length) throw new Error(`duplicate hero ids: ${duplicates.join(", ")}`);
 
@@ -152,7 +181,8 @@ writeFileSync(OUT("factions.json"), JSON.stringify({ ...stamp, factions }, null,
 writeFileSync(OUT("heroes.json"), JSON.stringify({ ...stamp, heroes }, null, 2) + "\n");
 
 const bySet = [...new Set(heroes.map((h) => h.set))].sort();
-console.log(`${factions.length} factions, ${heroes.length} heroes`);
+const paired = heroes.filter((h) => h.pairedWith).length;
+console.log(`${factions.length} factions, ${heroes.length} heroes, ${paired / 2} card pairings`);
 console.log(`sets: ${bySet.join(", ")}`);
 for (const faction of factions) {
   const own = heroes.filter((h) => h.factionId === faction.id);

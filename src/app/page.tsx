@@ -45,6 +45,8 @@ export default function Page() {
   // Hotseat only: the next player has to pick the screen up before they see
   // what they were dealt, or the person still holding it sees it first.
   const [revealed, setRevealed] = useState(false);
+  // Abandoning throws away a draft, so it asks first.
+  const [confirmAbandon, setConfirmAbandon] = useState(false);
   // What we last put in the address bar, so our own writes do not read back
   // as somebody handing us a new link.
   const ourHash = useRef("");
@@ -240,6 +242,7 @@ export default function Page() {
     currentSeed.current = fresh;
     setSeed(fresh);
     setRevealed(false);
+    setConfirmAbandon(false);
     if (typeof window !== "undefined") {
       ourHash.current = "";
       window.history.replaceState(null, "", window.location.pathname);
@@ -278,21 +281,7 @@ export default function Page() {
     }
 
     if (activeSeat === null) return null;
-    if (revealed) {
-      return (
-        <>
-          <PickBoard state={state} seatIndex={activeSeat} onMove={move} />
-          <div className="shareBar">
-            <button type="button" className="btn" disabled={!undoable} onClick={undo}>
-              {t("draft.undo")}
-            </button>
-            <button type="button" className="btn" onClick={backToSetup}>
-              {t("result.newSetup")}
-            </button>
-          </div>
-        </>
-      );
-    }
+    if (revealed) return <PickBoard state={state} seatIndex={activeSeat} onMove={move} />;
     return (
       <div className="hotseat">
         <h2>
@@ -303,6 +292,49 @@ export default function Page() {
         <p className="hint">{state.turn === null ? t("draft.simultaneous") : t("draft.yourTurn")}</p>
         <button type="button" className="btn primary" onClick={() => setRevealed(true)}>
           {t("draft.ready")}
+        </button>
+      </div>
+    );
+  }
+
+  /**
+   * Leaving a draft before it is finished.
+   *
+   * Available in every mode and at every phase, because "we set this up wrong"
+   * happens two picks in as often as it happens at the end — and until now the
+   * only way out was to play the draft to its finish. It asks first: the log is
+   * the draft, and dropping it is not something to do on a mis-click.
+   */
+  function draftActions() {
+    if (confirmAbandon) {
+      return (
+        <div className="note bad">
+          <p style={{ margin: 0 }}>{t("draft.abandon.confirm")}</p>
+          {mode !== "local" && (
+            <p className="hint" style={{ marginBottom: 10 }}>
+              {t("draft.abandon.shared")}
+            </p>
+          )}
+          <div className="shareBar" style={{ borderTop: "none", padding: 0 }}>
+            <button type="button" className="btn" onClick={backToSetup}>
+              {t("draft.abandon.yes")}
+            </button>
+            <button type="button" className="btn primary" onClick={() => setConfirmAbandon(false)}>
+              {t("draft.abandon.no")}
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="shareBar">
+        {hotseat && (
+          <button type="button" className="btn" disabled={!undoable} onClick={undo}>
+            {t("draft.undo")}
+          </button>
+        )}
+        <button type="button" className="btn" onClick={() => setConfirmAbandon(true)}>
+          {t("draft.abandon")}
         </button>
       </div>
     );
@@ -365,6 +397,7 @@ export default function Page() {
             />
           )}
           {board()}
+          {draftActions()}
           {mode !== "local" && mySeat !== null && (
             <ShareBar
               state={state}

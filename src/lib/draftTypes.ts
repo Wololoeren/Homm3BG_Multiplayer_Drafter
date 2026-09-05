@@ -1,12 +1,23 @@
 /** Bumped when the stored/encoded draft format changes, so an old code or an
  * old localStorage entry can be recognised and refused rather than
  * half-loaded into a draft that then deals the wrong thing. */
-export const DRAFT_VERSION = 1;
+export const DRAFT_VERSION = 2;
 
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 8;
 export const MAX_POOL = 5;
 export const MAX_BANS = 2;
+
+/**
+ * A hero pool of "everything my faction still has left", rather than a fixed
+ * number of cards. Stored as 0 because that is not a pool size anybody could
+ * have meant, and it costs no room in the draft code.
+ *
+ * Only offered under the "own" hero rule: every seat then draws from its own
+ * faction, so "all of them" is a handful of cards rather than the whole
+ * sixty-four.
+ */
+export const HERO_POOL_ALL = 0;
 
 export interface Faction {
   id: string;
@@ -36,6 +47,15 @@ export interface Hero {
    * players both draft Tarnum from two different towns.
    */
   identity: string;
+  /**
+   * The hero printed on the other side of the same physical card, if the
+   * pairings are known. Taking either one puts the card in play, so the other
+   * leaves the game with it — which is what `sharedHeroCards` enforces.
+   *
+   * Unpopulated for now: the pairings are not in the community database and
+   * have to be read off the cards. See scripts/build-catalogue.mjs.
+   */
+  pairedWith?: string;
   ability: string;
   specialty: string;
   set: string;
@@ -64,6 +84,12 @@ export interface DraftConfig {
   banVisibility: "open" | "blind";
   heroFactionPolicy: HeroFactionPolicy;
   uniqueHeroIdentity: boolean;
+  /**
+   * Treat a hero card as the physical, double-sided object it is: drafting one
+   * face takes the whole card, so the hero on its back goes with it. Has no
+   * effect until the catalogue carries the pairings.
+   */
+  sharedHeroCards: boolean;
   /** Only meaningful under "unique-faction": may your hero hail from a faction
    * another player drafted as their town? */
   heroMayComeFromAnotherPlayersTown: boolean;

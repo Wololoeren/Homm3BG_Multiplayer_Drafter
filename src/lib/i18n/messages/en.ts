@@ -21,6 +21,9 @@ const en = {
   "lobby.factionPool": "Faction options each",
   "lobby.heroPool": "Hero options each",
   "lobby.pool.forced": "no choice — the faction is dealt",
+  "lobby.pool.all": "All",
+  "lobby.pool.all.help":
+    "Every hero your faction still has. Where two players could be offered the same person — Tarnum has a card in six factions — the hero step goes round the table one at a time instead of everyone at once.",
   "lobby.bans": "Bans each",
   "lobby.bans.none": "None",
   "lobby.banVisibility": "Bans are",
@@ -41,6 +44,11 @@ const en = {
   "lobby.uniqueIdentity.help":
     "Tarnum has a card in six factions and Lord Haart in two. With this on, only one player can be Tarnum.",
   "lobby.otherTowns": "Heroes may come from another player's town",
+  "lobby.sharedCards": "One card, two heroes",
+  "lobby.sharedCards.help":
+    "Hero cards are double-sided, so drafting one face takes the whole card and the hero on its back leaves with it.",
+  "lobby.sharedCards.nodata":
+    "Needs the list of which heroes share a card, which is not in the community database yet. Add the pairs to CARD_PAIRS in scripts/build-catalogue.mjs and this switches on.",
   "lobby.collection": "Your collection",
   "lobby.collection.summary": "{factions} factions, {heroes} heroes",
   "lobby.collection.all": "All boxes",
@@ -93,6 +101,12 @@ const en = {
   "draft.banned": "Banned",
   "draft.taken": "Taken",
   "draft.undo": "Undo last move",
+  "draft.abandon": "Abandon draft",
+  "draft.abandon.confirm": "Abandon it? Everything drafted so far is lost.",
+  "draft.abandon.yes": "Yes, abandon",
+  "draft.abandon.no": "Keep playing",
+  "draft.abandon.shared":
+    "This only ends the draft here. Anyone else still has their copy, and the link on this page still opens it.",
   "draft.hotseat": "Pass the screen to {name}.",
   "draft.ready": "I have the screen",
   "draft.reveal": "Reveal the bans",

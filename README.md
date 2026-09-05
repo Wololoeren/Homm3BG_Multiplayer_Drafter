@@ -26,6 +26,10 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   *Open* bans go one at a time with everyone watching. *Blind* bans are all
   submitted at once and revealed together; two players can spend a ban on the
   same faction, and it is only removed once.
+- **Hero options each** — a number, or **All**: every hero your faction still
+  has. Where two players could be offered the same person — Tarnum has a card
+  in six factions — the hero step goes round the table one at a time instead of
+  everyone at once, which is the only way the second player finds out.
 - **Heroes come from** — your own faction by default. Or from any faction
   with no two players' heroes sharing a home faction, or from anywhere at all.
   **One of each hero** is on by default and matters more than it looks:
@@ -37,9 +41,10 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   strip you are drafting — attack, defense, spell power, knowledge, and the
   helmet or hat for might or magic — plus their ability and specialty. The ↗
   in the corner of any faction or hero opens its page on the
-  [community card database](https://en.homm3bg.wiki/), and it is on the
-  printed sheet too, so a PDF of the draft stays clickable. Clicking it never
-  drafts the card underneath.
+  [community card database](https://en.homm3bg.wiki/) — on your own options,
+  on what everyone else has drafted in the seat strip, and on the printed
+  sheet, so a PDF of the draft stays clickable. Clicking it never drafts the
+  card underneath.
 - **Play on** — three ways to get the players and the draft into the same
   place:
   - **One screen** passes a browser round the table. The app names whoever is
@@ -61,6 +66,10 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   in Crockford's base32, which has no I, L, O or U in it, so it survives being
   read out over voice chat. Two players who took different routes to the same
   finished draft get the same code, character for character.
+- **Abandon draft** leaves a draft at any point, in any mode, without playing
+  it out. It asks first, and it keeps your setup — only the draft goes. In a
+  shared or live draft it only ends things on your own screen; the others keep
+  theirs.
 - **Save as PDF** prints the result sheet on A4, laid out like a page of the
   [Fan-Made Mission Book][mission-book]. **Copy as text** is for pasting into
   Discord.

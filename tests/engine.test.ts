@@ -3,7 +3,7 @@ import { FACTIONS, HEROES, hero } from "@/lib/catalogue";
 import { defaultConfig, feasibility, repair } from "@/lib/draftConfig";
 import { apply, canMove, legalHeroes, reduce } from "@/lib/draftEngine";
 import { mulberry32 } from "@/lib/rng";
-import type { DraftConfig, DraftEvent, DraftState } from "@/lib/draftTypes";
+import { HERO_POOL_ALL, type DraftConfig, type DraftEvent, type DraftState } from "@/lib/draftTypes";
 
 /**
  * These are the tests the product exists for. "No two players end up on the
@@ -19,15 +19,19 @@ const pick = <T,>(rng: Rng, items: readonly T[]): T => items[Math.floor(rng() * 
  * whole configuration space rather than one comfortable corner of it. */
 function randomConfig(rng: Rng): DraftConfig {
   const base = defaultConfig();
+  const heroFactionPolicy = pick(rng, ["own", "unique-faction", "any"] as const);
   const config: DraftConfig = {
     ...base,
     players: 2 + Math.floor(rng() * 7),
     format: pick(rng, ["dealt", "snake"] as const),
     factionPoolSize: 1 + Math.floor(rng() * 5),
-    heroPoolSize: 1 + Math.floor(rng() * 5),
+    // "All" is an own-faction pool, and the engine has to hold every invariant
+    // with it just as it does with a dealt one.
+    heroPoolSize:
+      heroFactionPolicy === "own" && rng() < 0.25 ? HERO_POOL_ALL : 1 + Math.floor(rng() * 5),
     bansPerPlayer: Math.floor(rng() * 3),
     banVisibility: pick(rng, ["open", "blind"] as const),
-    heroFactionPolicy: pick(rng, ["own", "unique-faction", "any"] as const),
+    heroFactionPolicy,
     uniqueHeroIdentity: rng() < 0.8,
     heroMayComeFromAnotherPlayersTown: rng() < 0.5,
   };
@@ -300,5 +304,98 @@ describe("catalogue", () => {
     };
     const others = legalHeroes(withTarnum, 1).map((h) => h.identity);
     expect(others).not.toContain("tarnum");
+  });
+});
+
+describe("a hero pool of 'all'", () => {
+  const allConfig = (over: Partial<DraftConfig> = {}) =>
+    repair({ ...defaultConfig(), players: 4, heroPoolSize: HERO_POOL_ALL, ...over });
+
+  it("survives repair rather than being clamped to a number", () => {
+    expect(allConfig().heroPoolSize).toBe(HERO_POOL_ALL);
+    expect(feasibility(allConfig()).ok).toBe(true);
+  });
+
+  it("offers a seat its whole faction", () => {
+    const config = allConfig();
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, "all", log);
+    for (const seat of state.seats) {
+      log.push({ t: "pickF", seat: seat.index, factionId: state.pools[seat.index][0] });
+    }
+    state = reduce(config, "all", log);
+
+    const movable = state.turn ?? state.order.find((i) => canMove(state, i))!;
+    const own = HEROES.filter((h) => h.factionId === state.seats[movable].factionId);
+    // Everything from that faction bar anything a uniqueness rule has removed.
+    expect(state.pools[movable].length).toBeGreaterThan(1);
+    expect(state.pools[movable].every((id) => hero(id)!.factionId === state.seats[movable].factionId)).toBe(
+      true,
+    );
+    expect(state.pools[movable].length).toBeLessThanOrEqual(own.length);
+  });
+
+  it("still lets only one player be Tarnum", () => {
+    const rng = mulberry32(31);
+    for (let run = 0; run < 80; run++) {
+      const config = allConfig({ players: 2 + Math.floor(rng() * 5), uniqueHeroIdentity: true });
+      const { state } = playOut(config, `alltarnum${run}`, rng);
+      expect(state.phase, `run ${run} stalled in ${state.phase}`).toBe("done");
+      const identities = state.seats.map((s) => hero(s.heroId!)!.identity);
+      expect(new Set(identities).size, `run ${run}: ${identities.join()}`).toBe(config.players);
+    }
+  });
+
+  it("goes round the table when two seats could be offered the same person", () => {
+    // Castle and Conflux both have a Tarnum, so those two pools overlap.
+    const config = repair({
+      ...defaultConfig(),
+      players: 2,
+      heroPoolSize: HERO_POOL_ALL,
+      uniqueHeroIdentity: true,
+      factionIds: ["castle", "conflux"],
+    });
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, "collide", log);
+    for (const seat of state.seats) {
+      log.push({ t: "pickF", seat: seat.index, factionId: state.pools[seat.index][0] });
+    }
+    state = reduce(config, "collide", log);
+    expect(state.phase).toBe("hero");
+    expect(state.turn, "a colliding all-pool has to be sequential").not.toBeNull();
+  });
+
+  it("keeps picking at once when nothing can collide", () => {
+    // No shared identities between these two, and identity uniqueness off.
+    const config = repair({
+      ...defaultConfig(),
+      players: 2,
+      heroPoolSize: HERO_POOL_ALL,
+      uniqueHeroIdentity: false,
+      factionIds: ["tower", "cove"],
+    });
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, "apart", log);
+    for (const seat of state.seats) {
+      log.push({ t: "pickF", seat: seat.index, factionId: state.pools[seat.index][0] });
+    }
+    state = reduce(config, "apart", log);
+    expect(state.phase).toBe("hero");
+    expect(state.turn).toBeNull();
+  });
+});
+
+describe("double-sided hero cards", () => {
+  it("is inert while the catalogue has no pairings, which is what ships today", () => {
+    expect(HEROES.some((h) => h.pairedWith)).toBe(false);
+    const rng = mulberry32(41);
+    for (let run = 0; run < 40; run++) {
+      const seed = `pairs${run}`;
+      const off = repair({ ...defaultConfig(), players: 3, sharedHeroCards: false });
+      const on = { ...off, sharedHeroCards: true };
+      // Same seed, same moves: with nothing paired the switch cannot bite.
+      const played = playOut(off, seed, rng);
+      expect(reduce(on, seed, played.log).hash).toBe(played.state.hash);
+    }
   });
 });

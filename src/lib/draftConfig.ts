@@ -1,6 +1,7 @@
 import { FACTIONS, HEROES, heroesOf } from "./catalogue";
 import {
   DRAFT_VERSION,
+  HERO_POOL_ALL,
   MAX_BANS,
   MAX_PLAYERS,
   MAX_POOL,
@@ -21,6 +22,7 @@ export function defaultConfig(): DraftConfig {
     banVisibility: "open",
     heroFactionPolicy: "own",
     uniqueHeroIdentity: true,
+    sharedHeroCards: false,
     heroMayComeFromAnotherPlayersTown: false,
     factionIds: FACTIONS.map((f) => f.id),
     heroIds: HEROES.map((h) => h.id),
@@ -72,11 +74,16 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
     players: clamp(input.players, MIN_PLAYERS, MAX_PLAYERS, base.players),
     format,
     factionPoolSize: clamp(input.factionPoolSize, 1, MAX_POOL, base.factionPoolSize),
-    heroPoolSize: clamp(input.heroPoolSize, 1, MAX_POOL, base.heroPoolSize),
+    // 0 is HERO_POOL_ALL, and only means anything under the "own" rule — a
+    // pool of "every hero there is" would be a different feature.
+    heroPoolSize:
+      policy === "own" ? clamp(input.heroPoolSize, HERO_POOL_ALL, MAX_POOL, base.heroPoolSize)
+      : Math.max(1, clamp(input.heroPoolSize, 1, MAX_POOL, base.heroPoolSize)),
     bansPerPlayer: clamp(input.bansPerPlayer, 0, MAX_BANS, base.bansPerPlayer),
     banVisibility: input.banVisibility === "blind" ? "blind" : "open",
     heroFactionPolicy: policy,
     uniqueHeroIdentity: input.uniqueHeroIdentity !== false,
+    sharedHeroCards: input.sharedHeroCards === true,
     heroMayComeFromAnotherPlayersTown: input.heroMayComeFromAnotherPlayersTown === true,
     // An empty list would be a draft with nothing to draft; fall back rather
     // than shipping a config that can only deadlock.
@@ -154,6 +161,9 @@ export function feasibility(config: DraftConfig): Feasibility {
 
   const enabledHeroes = new Set(heroIds);
   let maxHeroPoolSize = MAX_POOL;
+  // "All" is not a size to check against: it is whatever that seat still has,
+  // and a faction with no heroes left is caught below on its own.
+  const sizedHeroPool = config.heroPoolSize !== HERO_POOL_ALL;
 
   if (config.heroFactionPolicy === "own") {
     // Each seat draws only from its own faction, so the binding constraint is
@@ -177,7 +187,7 @@ export function feasibility(config: DraftConfig): Feasibility {
       maxHeroPoolSize = Math.min(maxHeroPoolSize, Math.max(1, usable));
       if (own.length === 0) {
         issues.push({ code: "not-enough-heroes", vars: { faction: factionId, have: 0, need: 1 } });
-      } else if (config.heroPoolSize > usable) {
+      } else if (sizedHeroPool && config.heroPoolSize > usable) {
         issues.push({
           code: "hero-pool-too-large",
           vars: { faction: factionId, have: own.length, pool: config.heroPoolSize, max: Math.max(1, usable) },
@@ -201,7 +211,7 @@ export function feasibility(config: DraftConfig): Feasibility {
       config.format === "dealt"
         ? Math.max(1, Math.min(MAX_POOL, Math.floor(supply / players)))
         : Math.max(1, Math.min(MAX_POOL, supply - players + 1));
-    const need = config.format === "dealt" ? players * config.heroPoolSize : players;
+    const need = config.format === "dealt" && sizedHeroPool ? players * config.heroPoolSize : players;
     if (need > supply) {
       issues.push({ code: "not-enough-heroes", vars: { faction: "", have: supply, need } });
     }
@@ -235,7 +245,10 @@ export function repair(config: DraftConfig): DraftConfig {
     const shrunk = {
       ...next,
       factionPoolSize: Math.min(next.factionPoolSize, check.maxFactionPoolSize),
-      heroPoolSize: Math.min(next.heroPoolSize, check.maxHeroPoolSize),
+      heroPoolSize:
+        next.heroPoolSize === HERO_POOL_ALL
+          ? HERO_POOL_ALL
+          : Math.min(next.heroPoolSize, check.maxHeroPoolSize),
     };
     if (feasibility(shrunk).ok) return shrunk;
     if (shrunk.bansPerPlayer === 0) return shrunk;

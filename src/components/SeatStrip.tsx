@@ -1,7 +1,9 @@
 "use client";
 
 import Crest from "./Crest";
+import WikiLink from "./WikiLink";
 import { faction, factionName, hero } from "@/lib/catalogue";
+import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
 import type { DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
 
@@ -47,12 +49,22 @@ export default function SeatStrip({
                 <>
                   <Crest factionId={town.id} />
                   {factionName(town.id)}
+                  <WikiLink href={factionWikiUrl(town)} label={t("wiki.faction", { name: town.name })} />
                 </>
               ) : (
                 "—"
               )}
             </div>
-            <div className={`seatLine${drafted ? " filled" : ""}`}>{drafted ? drafted.name : "—"}</div>
+            <div className={`seatLine${drafted ? " filled" : ""}`}>
+              {drafted ? (
+                <>
+                  {drafted.name}
+                  <WikiLink href={heroWikiUrl(drafted)} label={t("wiki.hero", { name: drafted.name })} />
+                </>
+              ) : (
+                "—"
+              )}
+            </div>
             {state.config.bansPerPlayer > 0 && (
               <div className="seatLine">
                 {hideChoices && state.phase === "ban"
