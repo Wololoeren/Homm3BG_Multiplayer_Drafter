@@ -48,7 +48,7 @@ const en = {
   "lobby.banVisibility.blind": "Blind",
   "lobby.banVisibility.open.help": "One at a time, everyone watching.",
   "lobby.banVisibility.blind.help":
-    "Everyone bans at once and they are revealed together. Two players can spend a ban on the same faction.",
+    "Everyone bans at once and they are revealed together. Two players can spend a ban on the same hero or faction, and it is only removed once. Applies to both ban rounds.",
   "lobby.heroRule": "Heroes come from",
   "lobby.heroRule.own": "Your own faction",
   "lobby.heroRule.unique-faction": "Any faction, one each",
