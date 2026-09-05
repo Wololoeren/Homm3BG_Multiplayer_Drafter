@@ -33,12 +33,19 @@ export default function PickBoard({
     const blind = state.config.banVisibility === "blind";
     const options = legalBans(state);
     const left = state.config.bansPerPlayer - seat.bans.length;
+    const spent = state.seats.reduce((n, s) => n + s.bans.length, 0);
 
     return (
       <>
         <div className="phaseBar">
           <h2>{t("draft.banPrompt")}</h2>
-          <span className="label">{t("draft.bansLeft", { n: left })}</span>
+          <span className="label">
+            {t("draft.bansLeft", { n: left })} ·{" "}
+            {t("draft.bansProgress", {
+              done: spent,
+              total: state.config.players * state.config.bansPerPlayer,
+            })}
+          </span>
         </div>
         <div className="cards">
           {state.config.factionIds.map((id) => {
@@ -71,12 +78,19 @@ export default function PickBoard({
     const allowed = new Set(legalHeroBans(state, seatIndex));
     const left = state.config.heroBansPerPlayer - seat.heroBans.length;
     const mine = new Set(seat.heroBans);
+    const spent = state.seats.reduce((n, s) => n + s.heroBans.length, 0);
 
     return (
       <>
         <div className="phaseBar">
           <h2>{t("draft.banHeroPrompt")}</h2>
-          <span className="label">{t("draft.bansLeft", { n: left })}</span>
+          <span className="label">
+            {t("draft.bansLeft", { n: left })} ·{" "}
+            {t("draft.bansProgress", {
+              done: spent,
+              total: state.config.players * state.config.heroBansPerPlayer,
+            })}
+          </span>
         </div>
         <div className="cards wide">
           {options.map((id) => {

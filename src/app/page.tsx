@@ -15,7 +15,8 @@ import { decodeDraft, encodeDraft } from "@/lib/draftCode";
 import { defaultConfig } from "@/lib/draftConfig";
 import { canMove, reduce } from "@/lib/draftEngine";
 import { acceptEvents, canonicalise } from "@/lib/draftLog";
-import { parseHash, replaceHash } from "@/lib/draftUrl";
+import { copyText } from "@/lib/clipboard";
+import { draftUrl, parseHash, replaceHash } from "@/lib/draftUrl";
 import type { DraftConfig, DraftEvent, DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
 import { makeSeed } from "@/lib/rng";
@@ -47,6 +48,9 @@ export default function Page() {
   const [revealed, setRevealed] = useState(false);
   // Abandoning throws away a draft, so it asks first.
   const [confirmAbandon, setConfirmAbandon] = useState(false);
+  // In link mode, the hand-off link is put on the clipboard the moment a move
+  // is made. Which seat it was for, and whether the browser allowed it.
+  const [handover, setHandover] = useState<{ seat: number; copied: boolean } | null>(null);
   // What we last put in the address bar, so our own writes do not read back
   // as somebody handing us a new link.
   const ourHash = useRef("");
@@ -66,6 +70,7 @@ export default function Page() {
       }),
     );
     setRevealed(false);
+    setHandover(null);
   }, []);
 
   // A link in the address bar wins over whatever this browser was last doing:
@@ -203,8 +208,33 @@ export default function Page() {
   }
 
   function move(event: DraftEvent) {
-    receive([event]);
+    const next = acceptEvents(config, seed, events, [event]).log;
+    setEvents(next);
     setRevealed(false);
+    if (mode === "manual") handOver(next);
+  }
+
+  /**
+   * Link mode's whole loop is "move, then send the link on", so the sending
+   * half should not be a second thing to remember. The copy happens here
+   * rather than in an effect because it has to stay inside the click that made
+   * the move: a browser will refuse a clipboard write that has drifted out of
+   * the gesture that asked for it.
+   */
+  function handOver(log: DraftEvent[]) {
+    let next: DraftState;
+    try {
+      next = reduce(config, seed, log);
+    } catch {
+      return;
+    }
+    // Nothing to hand on at the end, and nothing to hand on to yourself.
+    if (next.phase === "done") return;
+    const seat = next.turn ?? next.order.find((i) => canMove(next, i)) ?? null;
+    if (seat === null || seat === mySeat) return;
+
+    const url = draftUrl({ code: encodeDraft(config, seed, log), seat, live: false });
+    void copyText(url).then((copied) => setHandover({ seat, copied }));
   }
 
   /**
@@ -243,6 +273,7 @@ export default function Page() {
     setSeed(fresh);
     setRevealed(false);
     setConfirmAbandon(false);
+    setHandover(null);
     if (typeof window !== "undefined") {
       ourHash.current = "";
       window.history.replaceState(null, "", window.location.pathname);
@@ -276,7 +307,12 @@ export default function Page() {
       return iCanMove ? (
         <PickBoard state={state} seatIndex={mySeat!} onMove={move} />
       ) : (
-        <WaitingPanel state={state} mySeat={mySeat!} waitingOn={activeSeat} />
+        <WaitingPanel
+          state={state}
+          mySeat={mySeat!}
+          waitingOn={activeSeat}
+          handover={handover && handover.seat === activeSeat ? handover : null}
+        />
       );
     }
 

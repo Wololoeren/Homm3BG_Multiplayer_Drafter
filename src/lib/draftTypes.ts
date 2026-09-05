@@ -9,6 +9,14 @@ export const MAX_POOL = 5;
 export const MAX_BANS = 2;
 
 /**
+ * Hero bans go further than faction bans because there is far more to spend
+ * them on: ten factions against a couple of dozen heroes anybody could draft.
+ * The round still stops itself when no ban is left that would not starve
+ * somebody, so a generous budget costs nothing.
+ */
+export const MAX_HERO_BANS = 5;
+
+/**
  * A hero pool of "everything my faction still has left", rather than a fixed
  * number of cards. Stored as 0 because that is not a pool size anybody could
  * have meant, and it costs no room in the draft code.

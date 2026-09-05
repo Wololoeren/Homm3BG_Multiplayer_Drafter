@@ -23,9 +23,9 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   enough factions to deal everyone a real choice. Six players and ten factions
   cannot each be offered two, and the setup screen will say so.
 - **Bans** — none, one or two each. **Faction bans** come off the table before
-  the deal. **Hero bans** are a round of their own, after the factions are
-  drafted, because until you know who is playing what, banning a hero is a
-  guess. Only heroes somebody could actually draft are offered, and a ban that
+  the deal. **Hero bans** — up to five each — are a round of their own,
+  after the factions are drafted, because until you know who is playing what,
+  banning a hero is a guess. Only heroes somebody could actually draft are offered, and a ban that
   would leave a player with nothing to draft is refused — checked at the moment
   of the ban rather than guessed at in the lobby.
   *Open* bans go one at a time with everyone watching. *Blind* bans are all

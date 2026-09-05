@@ -5,6 +5,7 @@ import { feasibility, repair } from "@/lib/draftConfig";
 import {
   HERO_POOL_ALL,
   MAX_BANS,
+  MAX_HERO_BANS,
   MAX_PLAYERS,
   MAX_POOL,
   MIN_PLAYERS,
@@ -273,7 +274,7 @@ export default function DraftSetup({
         <NumberRow
           value={config.heroBansPerPlayer}
           from={0}
-          to={MAX_BANS}
+          to={MAX_HERO_BANS}
           onPick={(heroBansPerPlayer) => set({ heroBansPerPlayer })}
           labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}
         />

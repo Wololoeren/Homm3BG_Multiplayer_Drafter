@@ -3,6 +3,7 @@ import {
   DRAFT_VERSION,
   HERO_POOL_ALL,
   MAX_BANS,
+  MAX_HERO_BANS,
   MAX_PLAYERS,
   MAX_POOL,
   MIN_PLAYERS,
@@ -84,7 +85,7 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
     // Hero bans need no feasibility rule of their own: a ban that would leave
     // somebody with nothing to draft is refused at the moment it is made
     // (see legalHeroBans), which no arithmetic up front can do as precisely.
-    heroBansPerPlayer: clamp(input.heroBansPerPlayer, 0, MAX_BANS, base.heroBansPerPlayer),
+    heroBansPerPlayer: clamp(input.heroBansPerPlayer, 0, MAX_HERO_BANS, base.heroBansPerPlayer),
     banVisibility: input.banVisibility === "blind" ? "blind" : "open",
     heroFactionPolicy: policy,
     uniqueHeroIdentity: input.uniqueHeroIdentity !== false,

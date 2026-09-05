@@ -5,6 +5,7 @@ import Crest from "./Crest";
 import WikiLink from "./WikiLink";
 import { faction, factionName, hero, heroName } from "@/lib/catalogue";
 import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
+import { copyText } from "@/lib/clipboard";
 import { encodeDraft, formatCode } from "@/lib/draftCode";
 import type { DraftEvent, DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
@@ -56,13 +57,11 @@ export default function ResultSheet({
       lines.push(t("result.heroBans", { heroes: state.bannedHeroes.map(heroName).join(", ") }));
     }
     lines.push(`${t("result.code")}: ${formatCode(code)}`);
-    navigator.clipboard?.writeText(lines.join("\n")).then(
-      () => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      },
-      () => setCopied(false),
-    );
+    void copyText(lines.join("\n")).then((ok) => {
+      if (!ok) return;
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
   }
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { copyText } from "@/lib/clipboard";
 import { formatCode } from "@/lib/draftCode";
 import { draftUrl } from "@/lib/draftUrl";
 import type { DraftState } from "@/lib/draftTypes";
@@ -60,13 +61,11 @@ export default function ShareBar({
   }, [showQr, handOver]);
 
   function copy(what: string, text: string) {
-    navigator.clipboard?.writeText(text).then(
-      () => {
-        setCopied(what);
-        setTimeout(() => setCopied(null), 1500);
-      },
-      () => setCopied(null),
-    );
+    void copyText(text).then((ok) => {
+      if (!ok) return;
+      setCopied(what);
+      setTimeout(() => setCopied(null), 1500);
+    });
   }
 
   const seatName = (index: number) =>

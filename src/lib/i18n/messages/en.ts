@@ -101,6 +101,7 @@ const en = {
   "draft.banHeroPrompt": "Ban a hero",
   "draft.kept": "Cannot be banned",
   "draft.bansLeft": "{n} left",
+  "draft.bansProgress": "{done} of {total} spent",
   "draft.dealtOne": "You were dealt {faction}.",
   "draft.dealtOneHero": "You were dealt {hero}.",
   "draft.confirm": "Take it",
@@ -114,6 +115,8 @@ const en = {
   "draft.abandon.shared":
     "This only ends the draft here. Anyone else still has their copy, and the link on this page still opens it.",
   "draft.hotseat": "Pass the screen to {name}.",
+  "draft.handover.copied": "Their link is on your clipboard — paste it to {name}.",
+  "draft.handover.manual": "Copy the link below and send it to {name}.",
   "draft.ready": "I have the screen",
   "draft.reveal": "Reveal the bans",
   "draft.notOffered": "Not dealt to anyone",
