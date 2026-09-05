@@ -4,18 +4,25 @@ import { FACTIONS, HEROES, SETS, setLabel } from "@/lib/catalogue";
 import { feasibility, repair } from "@/lib/draftConfig";
 import { MAX_BANS, MAX_PLAYERS, MAX_POOL, MIN_PLAYERS, type DraftConfig } from "@/lib/draftTypes";
 import { useT, type Translate } from "@/lib/i18n";
+import type { TransportKind } from "@/lib/transport";
 import type { MessageKey } from "@/lib/i18n/messages/en";
 
 interface Props {
   config: DraftConfig;
   names: string[];
   seed: string;
+  mode: TransportKind;
+  mySeat: number | null;
   onChange: (config: DraftConfig) => void;
   onNames: (names: string[]) => void;
+  onMode: (mode: TransportKind) => void;
+  onSeat: (seat: number | null) => void;
   onReroll: () => void;
   onReset: () => void;
   onStart: () => void;
 }
+
+const MODES: TransportKind[] = ["local", "manual", "p2p"];
 
 const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
@@ -72,8 +79,12 @@ export default function DraftSetup({
   config,
   names,
   seed,
+  mode,
+  mySeat,
   onChange,
   onNames,
+  onMode,
+  onSeat,
   onReroll,
   onReset,
   onStart,
@@ -143,6 +154,43 @@ export default function DraftSetup({
             />
           ))}
         </div>
+      </Row>
+
+      <Row label={t("lobby.mode")} hint={t(`lobby.mode.${mode}.help` as MessageKey)}>
+        <div className="segmented">
+          {MODES.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className={mode === option ? "active" : ""}
+              onClick={() => {
+                onMode(option);
+                // Every mode but the hotseat needs to know which of these
+                // players is holding this browser.
+                onSeat(option === "local" ? null : (mySeat ?? 0));
+              }}
+            >
+              {t(`lobby.mode.${option}` as MessageKey)}
+            </button>
+          ))}
+        </div>
+        {mode !== "local" && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 10 }}>
+            <span className="label">{t("lobby.youAre")}</span>
+            <div className="segmented">
+              {Array.from({ length: config.players }, (_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={mySeat === i ? "active" : ""}
+                  onClick={() => onSeat(i)}
+                >
+                  {names[i]?.trim() || t("draft.seat", { n: i + 1 })}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </Row>
 
       <Row

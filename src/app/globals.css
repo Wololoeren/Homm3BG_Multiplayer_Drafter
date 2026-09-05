@@ -518,6 +518,126 @@ button {
   border: 1px solid var(--gold-dim);
 }
 
+/* ------------------------------------------------------------ share / live */
+
+.share {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.share .shareBar {
+  border-top: none;
+  padding: 4px 0;
+}
+
+.share .code {
+  flex: 1 1 260px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qr {
+  display: grid;
+  justify-items: center;
+  justify-self: start;
+  gap: 6px;
+  padding: 14px;
+  background: var(--parchment);
+  border: 1px solid var(--gold-dim);
+}
+
+.qr svg {
+  display: block;
+  width: 220px;
+  height: 220px;
+}
+
+.qr .hint {
+  color: var(--ink-soft);
+}
+
+.seatLinks {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.seatLinks li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.seatLinkName {
+  flex: 0 0 110px;
+  font-size: 14px;
+  color: #ded4bb;
+}
+
+.liveBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 0;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+}
+
+.dot.connecting {
+  background: var(--gold);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.dot.online {
+  background: var(--ok);
+}
+
+.dot.failed {
+  background: var(--danger);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.claim {
+  display: grid;
+  gap: 14px;
+  padding: 30px 0;
+}
+
+.claim h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.linkish {
+  padding: 0;
+  color: var(--gold);
+  background: none;
+  border: none;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* ----------------------------------------------------------------- sheet */
 
 .sheetWrap {
@@ -617,6 +737,8 @@ button {
   .topBar,
   .seatStrip,
   .shareBar,
+  .share,
+  .liveBar,
   .phaseBar {
     display: none !important;
   }

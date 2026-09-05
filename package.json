@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "next": "^15.4.5",
+    "qrcode-generator": "^2.0.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "trystero": "^0.25.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -120,7 +120,7 @@ one-file addition if P2P proves flaky with the actual group.
         +--------------+-----------+-----------+--------------+
         |              |                       |              |
    local (hotseat)  manual (link/QR)     p2p (Trystero)   relay (CF DO)
-     ship M3           ship M4              ship M5        optional
+      built            built                built          optional
 ```
 
 ### 3.5 Authority model — no host needed
@@ -504,22 +504,42 @@ Run in CI on the same workflow that deploys, gating the deploy.
 | **M1** ✅ | `factions.json` + `heroes.json` + `scripts/build-catalogue.mjs` | Data problems surface early, not during UI work |
 | **M2** ✅ | `rng.ts`, `draftEngine.ts`, `draftConfig.ts`, `draftCode.ts` + 35 tests covering §11 | The rules are correct and provably so, with no UI in the way |
 | **M3** ✅ | Full UI on **local/hotseat** transport: lobby → ban → faction → hero → printable result sheet, plus resume-from-code and localStorage autosave | **Genuinely useful already** — one laptop passed around the table |
-| **M4** | The rest of the `manual` transport: URLs, QR, seat claiming | Multi-computer drafting without passing a laptop |
-| **M5** | `p2p` transport via Trystero: presence, live turn passing, desync banner, automatic fallback to M4 | The experience you actually want |
+| **M4** ✅ | The rest of the `manual` transport: URLs, QR, seat claiming, per-seat invite links | Multi-computer drafting without passing a laptop |
+| **M5** ✅ | `p2p` transport via Trystero: presence, live turn passing, divergence banner, automatic fallback to M4 | The experience you actually want |
 | **M6** | Polish: 14 locales filled, faction crest art, hero stat blocks, optional commit-reveal blind bans | Matches the sibling apps' finish |
 
 M3 is the point where the app stops being a plan and starts being usable; M4 is
 the point where it answers the original question. M5 is comfort.
 
-**Built so far: M0–M3.** Two computers can already draft together by passing
-the code that the result sheet prints — a whole draft, settings and moves,
-round-trips through about a hundred characters of Crockford base32. What M4
-adds is not making that possible but making it pleasant: a link instead of a
-code, a QR for phones, and each player claiming a seat rather than one browser
-holding the whole table.
+**Built: M0–M5.** All three transports work. Two browsers on a public Nostr
+relay have played a draft through move by move and finished on byte-identical
+result sheets and byte-identical draft codes.
 
-Two things worth recording from building the engine, because both were caught
-by a test rather than by thinking:
+### What building it changed about the design
+
+**§3.5's authority model turned out to be the wrong shape.** Buffering
+simultaneous moves until a phase completes and then sorting by seat would have
+worked, but it means nobody sees a pick land until everyone has picked — which
+throws away the one thing live drafting is for. What replaced it is stronger
+and simpler: the log is a **set**, not a stream (`src/lib/draftLog.ts`). Moves
+merge by identity, and a canonical order is *derived* from the draft's own
+rules rather than from arrival times. A client can therefore show a move the
+instant it arrives and still agree with everyone else about the finished log.
+
+That has a pleasant consequence for the wire: merging is idempotent and
+commutative, so there is no protocol. One message type, carrying the sender's
+whole log, broadcast on every change and to every arriving peer. Nothing
+acknowledges, nothing retries, nothing tracks what a peer has seen — a client
+that missed something is repaired by the next message anybody sends.
+
+The canonical order needs no replay to compute, which matters because a replay
+would need a working order to start from. Seating order comes from the seed;
+each seat picks one faction and one hero, so its place is its place at the
+table (reversed for heroes in a snake draft); a ban's round is how many that
+seat had already spent, and which of a seat's own two bans came first is
+settled by faction id because they are interchangeable.
+
+### Things that were caught by a test or by actually playing it
 
 - **Dealt pools have to be dealt from the table as it stood before anyone
   picked.** Deriving them from the current state re-shuffled everybody else's
@@ -529,6 +549,25 @@ by a test rather than by thinking:
   two clients holding the same ten factions in a different order deal each
   other different games — and the draft code, which stores them as a bitmap,
   would not round-trip. `sanitizeConfig` now sorts them, always.
+- **Backtracking has to be bounded.** Proving that no disjoint deal exists is
+  exponential, and the answer is the same as "I gave up": offer a smaller pool.
+  A counting bound is tried first and a fixed step budget catches the rest —
+  fixed, because a budget that varied with the machine would make one player's
+  client deal differently from another's.
+- **A link to a *different* draft must replace, not merge.** Opening a second
+  draft in a tab that already had one folded the two logs together. The seed
+  now decides: same seed is somebody's move arriving, a different seed is a
+  different game.
+- **Joining a peer-to-peer room has to survive React's double-mount.** In
+  development the effect runs, cleans up and runs again, which produced two
+  joins of one room and a relay complaining about a duplicate subscription.
+  The join is deferred by a tick so the cycle collapses into one.
+
+### Cost
+
+Trystero and the QR generator are both dynamically imported, so a page that is
+usually one laptop on a kitchen table does not pay for either: first load is
+121 kB, and the 61 kB relay client is fetched only when somebody picks Live.
 
 ---
 

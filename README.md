@@ -31,14 +31,27 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   **One of each hero** is on by default and matters more than it looks:
   Tarnum has a card in six factions and Lord Haart in two, so without it two
   players can both end up as Tarnum from two different towns.
-- **Passing the screen.** One browser runs the whole table: the app names
-  whoever is next and waits for them to say they have the screen before it
-  shows what they were dealt.
+- **Play on** — three ways to get the players and the draft into the same
+  place:
+  - **One screen** passes a browser round the table. The app names whoever is
+    next and waits for them to say they have the screen before it shows what
+    they were dealt.
+  - **Shared links** gives everyone their own link. Make your move and the app
+    hands you the next player's link to send them — the address bar carries
+    the whole draft, so no server sees any of it and it works between people
+    who are not on the same network. There is a QR next to it for handing a
+    seat to somebody's phone, and a **Links per player** list if you would
+    rather send them all out at the start.
+  - **Live** puts everyone on one link and the browsers talk to each other
+    directly over WebRTC — no server of ours, no accounts, no cost. Moves
+    appear as they are made. If a network blocks peer-to-peer traffic the app
+    says so and the link is still right there, carrying the same draft.
 - **The draft code** on the result sheet is the whole draft — settings, seed
   and every move — in about a hundred characters. Paste it into **Resume a
   draft** on another computer and you get the same draft back, exactly. It is
   in Crockford's base32, which has no I, L, O or U in it, so it survives being
-  read out over voice chat.
+  read out over voice chat. Two players who took different routes to the same
+  finished draft get the same code, character for character.
 - **Save as PDF** prints the result sheet on A4, laid out like a page of the
   [Fan-Made Mission Book][mission-book]. **Copy as text** is for pasting into
   Discord.
@@ -46,13 +59,23 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
 Your draft is saved to the browser as you go, so a reload picks up where you
 left off.
 
-### What is not built yet
+### How it works without a server
 
-Live turn-by-turn play between computers. The draft engine is already
-transport-agnostic and the draft code already carries a whole draft between
-browsers, so what is missing is the wire, not the rules — see
-[docs/PLAN.md](docs/PLAN.md) §3 for the analysis and the plan (peer-to-peer
-WebRTC, no server, falling back to code passing).
+A draft is a pure function of its settings, one seed, and the set of moves
+made. The pools are never stored or sent — every browser derives them and gets
+the same answer — so what has to travel between players is a few dozen tiny
+moves, which is small enough to fit in a link.
+
+The moves are treated as a **set** rather than a stream, with an order derived
+from the draft's own rules. Merging is therefore idempotent and does not care
+what order things arrive in, which is what lets two people pick at the same
+time, on different machines, and still agree about what happened. It is also
+why the live mode needs no protocol worth the name: one message, carrying the
+sender's whole log, and anyone who missed something is repaired by the next
+message anybody sends.
+
+[docs/PLAN.md](docs/PLAN.md) has the full analysis, including why the free
+tiers of Supabase, Ably and Firebase were not the answer.
 
 ## Development
 
@@ -70,6 +93,11 @@ few hundred randomly generated configurations rather than by playing a game.
 builds with `NEXT_BASE_PATH` set to the repository name so assets resolve
 under `https://<user>.github.io/<repo>/`.
 
+The WebRTC library and the QR generator are both dynamically imported, so a
+page that is usually one laptop on a kitchen table does not pay for either:
+first load is 121 kB, and the 61 kB relay client is fetched only when somebody
+picks Live.
+
 ### Updating the data
 
 `src/data/factions.json` and `src/data/heroes.json` are generated from the
@@ -85,6 +113,7 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 
 ## Credits
 
+- Peer-to-peer matchmaking: [Trystero](https://github.com/dmotz/trystero)
 - Faction and hero data: [Heroes of Might & Magic III: The Board Game Cards
   Database](https://github.com/Mirzipan/Homm3_BG_Database), rendered at
   [en.homm3bg.wiki](https://en.homm3bg.wiki/)

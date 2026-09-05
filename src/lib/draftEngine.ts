@@ -330,16 +330,21 @@ export function apply(state: DraftState, event: DraftEvent): ApplyResult {
       const seat = state.seats[seatIndex];
       if (seat.bans.length >= state.config.bansPerPlayer) return reject("out-of-bans");
       if (state.turn !== null && state.turn !== seatIndex) return reject("not-your-turn");
+      // Spending both your bans on one faction is always a mistake, and in a
+      // blind ban nobody could tell you. It is also what makes every event in
+      // a log distinguishable, which the merge in draftLog relies on.
+      if (seat.bans.includes(event.factionId)) return reject("already-banned");
       if (!legalBans(state).includes(event.factionId)) return reject("already-banned");
 
       const seats = state.seats.map((s) =>
         s.index === seatIndex ? { ...s, bans: [...s.bans, event.factionId] } : s,
       );
       // A blind duplicate collapses: two seats can spend a ban on the same
-      // faction, and it is removed once.
-      const bannedFactions = state.bannedFactions.includes(event.factionId)
-        ? state.bannedFactions
-        : [...state.bannedFactions, event.factionId];
+      // faction, and it is removed once. The list is kept in catalogue order
+      // rather than arrival order, so two clients that received the same blind
+      // bans in different orders still agree — including on their state hash.
+      const banned = new Set([...state.bannedFactions, event.factionId]);
+      const bannedFactions = state.config.factionIds.filter((id) => banned.has(id));
       return { ok: true, state: withDerived({ ...state, seats, bannedFactions }) };
     }
 

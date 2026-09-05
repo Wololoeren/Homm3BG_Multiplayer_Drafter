@@ -1,6 +1,7 @@
 import { hero } from "./catalogue";
 import { sanitizeConfig } from "./draftConfig";
 import { DRAFT_VERSION, type DraftConfig, type DraftEvent } from "./draftTypes";
+import type { TransportKind } from "./transport";
 
 /**
  * What survives a reload: the draft in progress, and the setup the host last
@@ -21,6 +22,10 @@ export interface Session {
   /** Which seat this browser is playing. Null while passing one screen round
    * the table, where every seat is this browser's turn in turn. */
   mySeat: number | null;
+  /** How this browser is talking to the others, if at all. Local to the
+   * browser rather than part of the draft: one player can be following a live
+   * room while another passes a link, and neither has to care. */
+  mode: TransportKind;
 }
 
 function isEvent(raw: unknown, players: number): raw is DraftEvent {
@@ -65,7 +70,10 @@ export function sanitizeSession(raw: unknown): Session | null {
       ? input.mySeat
       : null;
 
-  return { config, seed: input.seed, events, mySeat };
+  const mode: TransportKind =
+    input.mode === "manual" || input.mode === "p2p" ? input.mode : "local";
+
+  return { config, seed: input.seed, events, mySeat, mode };
 }
 
 export function loadSession(): Session | null {

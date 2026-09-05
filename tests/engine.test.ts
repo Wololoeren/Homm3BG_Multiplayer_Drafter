@@ -55,7 +55,8 @@ function playOut(config: DraftConfig, seed: string, rng: Rng): { state: DraftSta
     const seat = pick(rng, movable);
     let event: DraftEvent;
     if (state.phase === "ban") {
-      const options = state.config.banVisibility === "blind" ? config.factionIds : untouched(state);
+      const offered = state.config.banVisibility === "blind" ? config.factionIds : untouched(state);
+      const options = offered.filter((id) => !seat.bans.includes(id));
       event = { t: "ban", seat: seat.index, factionId: pick(rng, options) };
     } else if (state.phase === "faction") {
       event = { t: "pickF", seat: seat.index, factionId: pick(rng, state.pools[seat.index]) };

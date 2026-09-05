@@ -16,10 +16,13 @@ import { useT } from "@/lib/i18n";
 export default function SeatStrip({
   state,
   activeSeat,
+  mySeat = null,
   hideChoices = false,
 }: {
   state: DraftState;
   activeSeat: number | null;
+  /** Which of these is the person holding this browser, if any. */
+  mySeat?: number | null;
   hideChoices?: boolean;
 }) {
   const t = useT();
@@ -34,7 +37,7 @@ export default function SeatStrip({
         return (
           <div
             key={index}
-            className={`seat${index === activeSeat ? " active" : ""}`}
+            className={`seat${index === activeSeat ? " active" : ""}${index === mySeat ? " you" : ""}`}
             style={town ? { borderLeftColor: town.color } : undefined}
           >
             <div className="seatName">{seat.name || t("draft.seat", { n: index + 1 })}</div>

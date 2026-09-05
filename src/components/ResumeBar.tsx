@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DraftCodeError, decodeDraft } from "@/lib/draftCode";
+import { parseHash } from "@/lib/draftUrl";
 import type { DraftConfig, DraftEvent } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
 
@@ -22,7 +23,10 @@ export default function ResumeBar({
 
   function open() {
     try {
-      onResume(decodeDraft(text));
+      // People paste whichever of the two they were given, and a link is just
+      // a code with an address in front of it.
+      const link = parseHash(text.slice(text.indexOf("#")));
+      onResume(decodeDraft(link ? link.code : text));
       setText("");
       setError(null);
     } catch (thrown) {

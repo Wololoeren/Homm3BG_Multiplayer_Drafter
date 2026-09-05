@@ -45,6 +45,17 @@ const en = {
   "lobby.collection.summary": "{factions} factions, {heroes} heroes",
   "lobby.collection.all": "All boxes",
   "lobby.collection.none": "No boxes",
+  "lobby.mode": "Play on",
+  "lobby.mode.local": "One screen",
+  "lobby.mode.manual": "Shared links",
+  "lobby.mode.p2p": "Live",
+  "lobby.mode.local.help":
+    "One browser runs the whole table. It names whoever is next and waits for them to pick the screen up.",
+  "lobby.mode.manual.help":
+    "Everyone gets their own link. Make your move, hand the new link to the next player. No server, no accounts, and it works even if you are not on the same network.",
+  "lobby.mode.p2p.help":
+    "Everyone opens the same link and the browsers talk to each other directly. Falls back to passing links if the network blocks it.",
+  "lobby.youAre": "You are",
   "lobby.start": "Start the draft",
   "lobby.seed": "Seed",
   "lobby.reroll": "New seed",
@@ -62,6 +73,7 @@ const en = {
   "feas.fix": "Fix it",
 
   // ------------------------------------------------------------------ draft
+  "phase.lobby": "Not started",
   "phase.ban": "Bans",
   "phase.faction": "Faction",
   "phase.hero": "Hero",
@@ -107,13 +119,42 @@ const en = {
 
   // ------------------------------------------------------------------ share
   "share.code": "Draft code",
+  "share.link": "Link",
+  "share.room": "Room link",
   "share.copy": "Copy",
   "share.copied": "Copied",
+  "share.qr": "QR",
+  "share.qrLoading": "Drawing it…",
+  "share.qrHelp": "Point a phone at this to open the draft there.",
+  "share.seatLinks": "Links per player",
+  "share.handOver": "Your move is in. Send this link to {name}.",
   "share.resume": "Resume a draft",
-  "share.paste": "Paste a draft code",
+  "share.paste": "Paste a draft code or link",
   "share.open": "Open",
   "share.bad": "That code is not one this build can read.",
   "share.badCatalogue": "That code was made with a different faction list.",
+
+  // ------------------------------------------------------------------ seats
+  "claim.heading": "Which seat are you?",
+  "claim.free": "Nothing drafted yet",
+  "claim.taken": "Someone is here",
+  "claim.orHotseat": "Everyone round one screen instead?",
+  "claim.hotseat": "Use this browser for the whole table",
+
+  // ------------------------------------------------------------------- live
+  "live.off": "Not connected",
+  "live.connecting": "Looking for the others…",
+  "live.online": "Live",
+  "live.failed": "Could not connect",
+  "live.with": "with {names}",
+  "live.alone": "nobody else here yet",
+  "live.dismiss": "Dismiss",
+  "live.divergence.setup":
+    "Someone in this room opened a different draft. Check you are all on the same link.",
+  "live.divergence.state":
+    "This browser and another one disagree about the draft. Reopen the link to pick up their version.",
+  "live.divergence.seat": "Two people are sitting in your seat. One of you should move.",
+  "live.fallback": "Not connecting? Pass the link instead — it carries the whole draft.",
 } as const;
 
 export type MessageKey = keyof typeof en;
