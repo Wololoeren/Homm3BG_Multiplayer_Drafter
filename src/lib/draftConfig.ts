@@ -19,6 +19,7 @@ export function defaultConfig(): DraftConfig {
     factionPoolSize: 2,
     heroPoolSize: 3,
     bansPerPlayer: 0,
+    heroBansPerPlayer: 0,
     banVisibility: "open",
     heroFactionPolicy: "own",
     uniqueHeroIdentity: true,
@@ -80,6 +81,10 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
       policy === "own" ? clamp(input.heroPoolSize, HERO_POOL_ALL, MAX_POOL, base.heroPoolSize)
       : Math.max(1, clamp(input.heroPoolSize, 1, MAX_POOL, base.heroPoolSize)),
     bansPerPlayer: clamp(input.bansPerPlayer, 0, MAX_BANS, base.bansPerPlayer),
+    // Hero bans need no feasibility rule of their own: a ban that would leave
+    // somebody with nothing to draft is refused at the moment it is made
+    // (see legalHeroBans), which no arithmetic up front can do as precisely.
+    heroBansPerPlayer: clamp(input.heroBansPerPlayer, 0, MAX_BANS, base.heroBansPerPlayer),
     banVisibility: input.banVisibility === "blind" ? "blind" : "open",
     heroFactionPolicy: policy,
     uniqueHeroIdentity: input.uniqueHeroIdentity !== false,

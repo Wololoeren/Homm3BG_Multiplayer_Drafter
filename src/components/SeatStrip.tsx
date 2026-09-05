@@ -65,11 +65,14 @@ export default function SeatStrip({
                 "—"
               )}
             </div>
-            {state.config.bansPerPlayer > 0 && (
+            {(state.config.bansPerPlayer > 0 || state.config.heroBansPerPlayer > 0) && (
               <div className="seatLine">
-                {hideChoices && state.phase === "ban"
-                  ? "•".repeat(seat.bans.length) || "—"
-                  : seat.bans.map((id) => factionName(id)).join(", ") || "—"}
+                {hideChoices && (state.phase === "ban" || state.phase === "banHero")
+                  ? "•".repeat(seat.bans.length + seat.heroBans.length) || "—"
+                  : [
+                      ...seat.bans.map((id) => factionName(id)),
+                      ...seat.heroBans.map((id) => hero(id)?.name ?? id),
+                    ].join(", ") || "—"}
               </div>
             )}
           </div>

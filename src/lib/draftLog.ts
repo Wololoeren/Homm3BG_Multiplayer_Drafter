@@ -34,6 +34,8 @@ export function eventKey(event: DraftEvent): string {
       return "start";
     case "ban":
       return `ban:${event.seat}:${event.factionId}`;
+    case "banH":
+      return `banH:${event.seat}:${event.heroId}`;
     case "pickF":
       return `pickF:${event.seat}`;
     case "pickH":
@@ -61,8 +63,9 @@ const PHASE_RANK: Record<DraftEvent["t"], number> = {
   start: 1,
   ban: 2,
   pickF: 3,
-  pickH: 4,
-  undo: 5,
+  banH: 4,
+  pickH: 5,
+  undo: 6,
 };
 
 /**
@@ -94,12 +97,14 @@ export function canonicalise(
   const seatRankOf = (seat: number) => Math.max(order.indexOf(seat), 0);
 
   // Each seat's bans, in the order this function will claim they happened.
-  const bansBySeat = new Map<number, string[]>();
+  // Faction and hero bans are separate rounds, so they are counted separately.
+  const bansBySeat = new Map<string, string[]>();
   for (const event of events) {
-    if (event.t !== "ban") continue;
-    const own = bansBySeat.get(event.seat) ?? [];
-    own.push(event.factionId);
-    bansBySeat.set(event.seat, own);
+    if (event.t !== "ban" && event.t !== "banH") continue;
+    const key = `${event.t}:${event.seat}`;
+    const own = bansBySeat.get(key) ?? [];
+    own.push(event.t === "ban" ? event.factionId : event.heroId);
+    bansBySeat.set(key, own);
   }
   for (const own of bansBySeat.values()) own.sort();
 
@@ -111,7 +116,11 @@ export function canonicalise(
         ? config.players - 1 - seatRankOf(event.seat)
         : seatRankOf(event.seat);
     const round =
-      event.t === "ban" ? (bansBySeat.get(event.seat)?.indexOf(event.factionId) ?? 0) : 0;
+      event.t === "ban"
+        ? (bansBySeat.get(`ban:${event.seat}`)?.indexOf(event.factionId) ?? 0)
+        : event.t === "banH"
+          ? (bansBySeat.get(`banH:${event.seat}`)?.indexOf(event.heroId) ?? 0)
+          : 0;
     return [phase, round, rank];
   }
 

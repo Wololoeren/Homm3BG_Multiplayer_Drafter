@@ -4,7 +4,7 @@ import Crest from "./Crest";
 import WikiLink from "./WikiLink";
 import { faction, factionName, hero } from "@/lib/catalogue";
 import { factionWikiUrl, heroStatsImage, heroWikiUrl } from "@/lib/wiki";
-import { legalBans } from "@/lib/draftEngine";
+import { heroBanOptions, legalBans, legalHeroBans } from "@/lib/draftEngine";
 import type { DraftEvent, DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
 import type { MessageKey } from "@/lib/i18n/messages/en";
@@ -59,6 +59,52 @@ export default function PickBoard({
                 </span>
                 {gone && <span className="cardTag">{t("draft.banned")}</span>}
               </button>
+            );
+          })}
+        </div>
+      </>
+    );
+  }
+
+  if (state.phase === "banHero") {
+    const options = heroBanOptions(state);
+    const allowed = new Set(legalHeroBans(state, seatIndex));
+    const left = state.config.heroBansPerPlayer - seat.heroBans.length;
+    const mine = new Set(seat.heroBans);
+
+    return (
+      <>
+        <div className="phaseBar">
+          <h2>{t("draft.banHeroPrompt")}</h2>
+          <span className="label">{t("draft.bansLeft", { n: left })}</span>
+        </div>
+        <div className="cards wide">
+          {options.map((id) => {
+            const card = hero(id)!;
+            const town = faction(card.factionId)!;
+            const gone = !allowed.has(id);
+            return (
+              <div className="cardSlot" key={id}>
+                <button
+                  type="button"
+                  className={`card${gone ? " struck" : ""}`}
+                  style={{ "--tint": town.color } as React.CSSProperties}
+                  disabled={gone}
+                  onClick={() => onMove({ t: "banH", seat: seatIndex, heroId: id })}
+                >
+                  <span className="cardName">{card.name}</span>
+                  <span className="cardMeta">
+                    {town.name} · {card.className} · {t(`result.${card.klass}` as MessageKey)}
+                  </span>
+                  <span className="cardMeta">
+                    {t("result.specialty")}: {card.specialty}
+                  </span>
+                  {gone && (
+                    <span className="cardTag">{mine.has(id) ? t("draft.banned") : t("draft.kept")}</span>
+                  )}
+                </button>
+                <WikiLink href={heroWikiUrl(card)} label={t("wiki.hero", { name: card.name })} />
+              </div>
             );
           })}
         </div>

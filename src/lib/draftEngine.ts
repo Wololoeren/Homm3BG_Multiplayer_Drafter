@@ -33,7 +33,7 @@ export class DraftReplayError extends Error {
 }
 
 function emptySeat(index: number): Seat {
-  return { index, name: "", joined: false, factionId: null, heroId: null, bans: [] };
+  return { index, name: "", joined: false, factionId: null, heroId: null, bans: [], heroBans: [] };
 }
 
 export function initialState(config: DraftConfig, seed: string): DraftState {
@@ -51,6 +51,7 @@ export function initialState(config: DraftConfig, seed: string): DraftState {
     order,
     turn: null,
     bannedFactions: [],
+    bannedHeroes: [],
     pools: {},
     hash: "",
   });
@@ -110,8 +111,16 @@ export function legalHeroes(
       : [],
   );
 
+  const banned = new Set(state.bannedHeroes);
+  const bannedBacks = new Set(
+    config.sharedHeroCards
+      ? (state.bannedHeroes.map((id) => heroById(id)?.pairedWith).filter(Boolean) as string[])
+      : [],
+  );
+
   return HEROES.filter((h) => {
     if (!enabled.has(h.id)) return false;
+    if (banned.has(h.id) || bannedBacks.has(h.id)) return false;
     if (takenIds.has(h.id)) return false;
     if (takenBacks.has(h.id)) return false;
     if (config.uniqueHeroIdentity && takenIdentities.has(h.identity)) return false;
@@ -126,6 +135,96 @@ export function legalHeroes(
       case "any":
         return true;
     }
+  });
+}
+
+/** What each seat could still end up with, as a set per seat in seating order.
+ * Built once because the hero-ban rules need to ask about all of them. */
+function legalHeroSets(state: DraftState): Set<string>[] {
+  return state.order.map(
+    (seatIndex) => new Set(legalHeroes(state, seatIndex, { ignoreTaken: true }).map((h) => h.id)),
+  );
+}
+
+/**
+ * Everything the hero-ban rules need to ask about, worked out once.
+ *
+ * Both questions — what may be banned, and what a ban would leave behind —
+ * come down to "which heroes is each seat still able to draft", and building
+ * that per seat per question made replaying a draft quadratic in a way the
+ * test suite noticed immediately. It is computed once and passed around.
+ */
+export interface HeroBanContext {
+  /** Per seat in seating order, ignoring bans: the board stays put. */
+  offered: Set<string>[];
+  /** Per seat in seating order, bans applied: what is actually left. */
+  remaining: Set<string>[];
+  options: string[];
+}
+
+/**
+ * Keyed on the state object rather than its contents. States are immutable —
+ * every move builds a new one — so identity is a sound key, and it turns the
+ * "can this seat move?" question, asked once per seat by both the UI and the
+ * engine, into one computation per state instead of one per asker.
+ */
+const CONTEXTS = new WeakMap<DraftState, HeroBanContext>();
+
+export function heroBanContext(state: DraftState): HeroBanContext {
+  const cached = CONTEXTS.get(state);
+  if (cached) return cached;
+
+  const offered = legalHeroSets({ ...state, bannedHeroes: [] });
+  const open = new Set<string>();
+  for (const set of offered) for (const id of set) open.add(id);
+  const built: HeroBanContext = {
+    offered,
+    remaining: legalHeroSets(state),
+    options: HEROES.filter((h) => open.has(h.id)).map((h) => h.id),
+  };
+  CONTEXTS.set(state, built);
+  return built;
+}
+
+/**
+ * Every hero at least one seat could draft, bans aside — the board a hero-ban
+ * round is played on.
+ *
+ * Bans are deliberately *not* filtered out: a card that vanished from the grid
+ * would tell a blind banner exactly what somebody else had just spent a ban
+ * on, which is the one thing a blind ban is for.
+ */
+export function heroBanOptions(state: DraftState): string[] {
+  return heroBanContext(state).options;
+}
+
+/**
+ * The heroes this seat may ban.
+ *
+ * A ban is refused when it would leave somebody with nothing to draft. That is
+ * checked here, at the moment of the ban, rather than by an arithmetic rule in
+ * the lobby: "four players with two bans each could empty a six-hero faction"
+ * is true and almost never happens, so a config check would forbid tables that
+ * play perfectly well. Refusing the one ban that actually starves someone is
+ * both precise and impossible to argue with.
+ */
+export function legalHeroBans(
+  state: DraftState,
+  seatIndex: number,
+  context: HeroBanContext = heroBanContext(state),
+): string[] {
+  const { config } = state;
+  const needed = config.heroPoolSize === HERO_POOL_ALL ? 1 : Math.max(1, config.heroPoolSize);
+  const blind = config.banVisibility === "blind";
+  const banned = new Set(state.bannedHeroes);
+  const own = state.seats[seatIndex].heroBans;
+
+  return context.options.filter((id) => {
+    if (own.includes(id)) return false;
+    // Already gone: hidden in an open round, and still offered in a blind one,
+    // where a second ban on it simply collapses and costs nothing.
+    if (banned.has(id)) return blind;
+    return context.remaining.every((set) => !set.has(id) || set.size - 1 >= needed);
   });
 }
 
@@ -177,6 +276,10 @@ function bansDone(state: DraftState): number {
   return state.seats.reduce((n, seat) => n + seat.bans.length, 0);
 }
 
+function heroBansDone(state: DraftState): number {
+  return state.seats.reduce((n, seat) => n + seat.heroBans.length, 0);
+}
+
 function factionsPicked(state: DraftState): number {
   return state.seats.filter((s) => s.factionId).length;
 }
@@ -203,6 +306,9 @@ function turnFor(state: DraftState): number | null {
     case "ban":
       if (state.config.banVisibility === "blind") return null;
       return state.order[bansDone(state) % state.config.players];
+    case "banHero":
+      if (state.config.banVisibility === "blind") return null;
+      return state.order[heroBansDone(state) % state.config.players];
     case "faction":
       if (state.config.format === "dealt") return null;
       return state.order[factionsPicked(state)] ?? null;
@@ -219,7 +325,16 @@ function phaseAfter(state: DraftState): Phase {
   if (state.phase === "ban" && bansDone(state) >= config.players * config.bansPerPlayer) {
     return "faction";
   }
-  if (state.phase === "faction" && factionsPicked(state) === config.players) return "hero";
+  if (state.phase === "faction" && factionsPicked(state) === config.players) {
+    return config.heroBansPerPlayer > 0 ? "banHero" : "hero";
+  }
+  if (state.phase === "banHero") {
+    if (heroBansDone(state) >= config.players * config.heroBansPerPlayer) return "hero";
+    // Also over when nobody has a ban left that would not starve somebody:
+    // there is no move to wait for, so waiting would hang the draft.
+    const context = heroBanContext(state);
+    if (state.order.every((i) => legalHeroBans(state, i, context).length === 0)) return "hero";
+  }
   if (state.phase === "hero" && heroesPicked(state) === config.players) return "done";
   return state.phase;
 }
@@ -336,13 +451,26 @@ function fingerprint(state: Omit<DraftState, "hash" | "pools">): string {
     state.phase,
     state.order.join(""),
     state.bannedFactions.join(","),
-    state.seats.map((s) => `${s.index}:${s.factionId ?? ""}:${s.heroId ?? ""}:${s.bans.join("+")}`).join("|"),
+    state.bannedHeroes.join(","),
+    state.seats
+      .map(
+        (s) =>
+          `${s.index}:${s.factionId ?? ""}:${s.heroId ?? ""}:${s.bans.join("+")}:${s.heroBans.join("+")}`,
+      )
+      .join("|"),
   ];
   return hash32(parts.join("/")).toString(16).padStart(8, "0");
 }
 
 function withDerived(state: DraftState): DraftState {
-  const phase = phaseAfter(state);
+  // A phase can be over the moment it opens — a hero-ban round where every ban
+  // would starve somebody, say — so this settles rather than steps once.
+  let phase = state.phase;
+  for (let guard = 0; guard < 4; guard++) {
+    const next = phaseAfter({ ...state, phase });
+    if (next === phase) break;
+    phase = next;
+  }
   const advanced = phase === state.phase ? state : { ...state, phase };
   const turn = turnFor(advanced);
   const settled = { ...advanced, turn };
@@ -398,6 +526,22 @@ export function apply(state: DraftState, event: DraftEvent): ApplyResult {
       const banned = new Set([...state.bannedFactions, event.factionId]);
       const bannedFactions = state.config.factionIds.filter((id) => banned.has(id));
       return { ok: true, state: withDerived({ ...state, seats, bannedFactions }) };
+    }
+
+    case "banH": {
+      if (state.phase !== "banHero") return reject("wrong-phase");
+      const seat = state.seats[seatIndex];
+      if (seat.heroBans.length >= state.config.heroBansPerPlayer) return reject("out-of-bans");
+      if (state.turn !== null && state.turn !== seatIndex) return reject("not-your-turn");
+      if (!legalHeroBans(state, seatIndex).includes(event.heroId)) return reject("already-banned");
+
+      const seats = state.seats.map((s) =>
+        s.index === seatIndex ? { ...s, heroBans: [...s.heroBans, event.heroId] } : s,
+      );
+      // As with factions, two blind bans on one hero collapse to one.
+      const banned = new Set([...state.bannedHeroes, event.heroId]);
+      const bannedHeroes = HEROES.filter((h) => banned.has(h.id)).map((h) => h.id);
+      return { ok: true, state: withDerived({ ...state, seats, bannedHeroes }) };
     }
 
     case "pickF": {
@@ -480,6 +624,12 @@ export function reduce(
 export function isSeatWaiting(state: DraftState, seatIndex: number): boolean {
   if (state.phase === "ban") {
     return state.seats[seatIndex].bans.length >= state.config.bansPerPlayer;
+  }
+  if (state.phase === "banHero") {
+    // Budget first: it is a subtraction, and the legality question behind it
+    // has to look at every hero every seat could still draft.
+    if (state.seats[seatIndex].heroBans.length >= state.config.heroBansPerPlayer) return true;
+    return legalHeroBans(state, seatIndex).length === 0;
   }
   if (state.phase === "faction") return state.seats[seatIndex].factionId !== null;
   if (state.phase === "hero") return state.seats[seatIndex].heroId !== null;

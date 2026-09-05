@@ -41,6 +41,7 @@ function isEvent(raw: unknown, players: number): raw is DraftEvent {
     case "ban":
     case "pickF":
       return seatOk && typeof (event as { factionId?: unknown }).factionId === "string";
+    case "banH":
     case "pickH": {
       const id = (event as { heroId?: unknown }).heroId;
       return seatOk && typeof id === "string" && hero(id) !== undefined;

@@ -1,7 +1,7 @@
 /** Bumped when the stored/encoded draft format changes, so an old code or an
  * old localStorage entry can be recognised and refused rather than
  * half-loaded into a draft that then deals the wrong thing. */
-export const DRAFT_VERSION = 2;
+export const DRAFT_VERSION = 3;
 
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 8;
@@ -81,6 +81,12 @@ export interface DraftConfig {
   factionPoolSize: number;
   heroPoolSize: number;
   bansPerPlayer: number;
+  /**
+   * Bans spent on heroes rather than factions, in a round of their own after
+   * the factions are drafted. They come second on purpose: until you know who
+   * is playing what, banning a hero is a guess.
+   */
+  heroBansPerPlayer: number;
   banVisibility: "open" | "blind";
   heroFactionPolicy: HeroFactionPolicy;
   uniqueHeroIdentity: boolean;
@@ -100,12 +106,13 @@ export interface DraftConfig {
   heroIds: string[];
 }
 
-export type Phase = "lobby" | "ban" | "faction" | "hero" | "done";
+export type Phase = "lobby" | "ban" | "faction" | "banHero" | "hero" | "done";
 
 export type DraftEvent =
   | { t: "join"; seat: number; name: string }
   | { t: "start" }
   | { t: "ban"; seat: number; factionId: string }
+  | { t: "banH"; seat: number; heroId: string }
   | { t: "pickF"; seat: number; factionId: string }
   | { t: "pickH"; seat: number; heroId: string }
   | { t: "undo" };
@@ -118,6 +125,8 @@ export interface Seat {
   heroId: string | null;
   /** Which factions this seat has spent its bans on, in order. */
   bans: string[];
+  /** And which heroes, in the round after the factions were drafted. */
+  heroBans: string[];
 }
 
 export interface DraftState {
@@ -133,6 +142,7 @@ export interface DraftState {
   /** Whose turn it is in a sequential phase; null when everyone moves at once. */
   turn: number | null;
   bannedFactions: string[];
+  bannedHeroes: string[];
   /** Derived from (config, seed, log) on every replay, never stored or sent —
    * see docs/PLAN.md §3.1. Keyed by seat index. */
   pools: Record<number, string[]>;

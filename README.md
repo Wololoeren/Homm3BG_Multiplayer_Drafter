@@ -22,10 +22,15 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   offered a fresh sample of whatever is still free — use it when there are not
   enough factions to deal everyone a real choice. Six players and ten factions
   cannot each be offered two, and the setup screen will say so.
-- **Bans** — none, one or two each, taken off the table before the deal.
+- **Bans** — none, one or two each. **Faction bans** come off the table before
+  the deal. **Hero bans** are a round of their own, after the factions are
+  drafted, because until you know who is playing what, banning a hero is a
+  guess. Only heroes somebody could actually draft are offered, and a ban that
+  would leave a player with nothing to draft is refused — checked at the moment
+  of the ban rather than guessed at in the lobby.
   *Open* bans go one at a time with everyone watching. *Blind* bans are all
   submitted at once and revealed together; two players can spend a ban on the
-  same faction, and it is only removed once.
+  same faction or hero, and it is only removed once.
 - **Hero options each** — a number, or **All**: every hero your faction still
   has. Where two players could be offered the same person — Tarnum has a card
   in six factions — the hero step goes round the table one at a time instead of

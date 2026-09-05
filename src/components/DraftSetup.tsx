@@ -269,10 +269,20 @@ export default function DraftSetup({
         </div>
       </Row>
 
+      <Row label={t("lobby.heroBans")} hint={t("lobby.heroBans.help")}>
+        <NumberRow
+          value={config.heroBansPerPlayer}
+          from={0}
+          to={MAX_BANS}
+          onPick={(heroBansPerPlayer) => set({ heroBansPerPlayer })}
+          labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}
+        />
+      </Row>
+
       <Row
         label={t("lobby.bans")}
         hint={
-          config.bansPerPlayer > 0
+          config.bansPerPlayer > 0 || config.heroBansPerPlayer > 0
             ? t(`lobby.banVisibility.${config.banVisibility}.help` as MessageKey)
             : undefined
         }
@@ -285,7 +295,7 @@ export default function DraftSetup({
             onPick={(bansPerPlayer) => set({ bansPerPlayer })}
             labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}
           />
-          {config.bansPerPlayer > 0 && (
+          {(config.bansPerPlayer > 0 || config.heroBansPerPlayer > 0) && (
             <div className="segmented">
               {(["open", "blind"] as const).map((banVisibility) => (
                 <button

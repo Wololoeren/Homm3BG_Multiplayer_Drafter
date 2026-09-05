@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Crest from "./Crest";
 import WikiLink from "./WikiLink";
-import { faction, factionName, hero } from "@/lib/catalogue";
+import { faction, factionName, hero, heroName } from "@/lib/catalogue";
 import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
 import { encodeDraft, formatCode } from "@/lib/draftCode";
 import type { DraftEvent, DraftState } from "@/lib/draftTypes";
@@ -51,6 +51,9 @@ export default function ResultSheet({
     );
     if (state.bannedFactions.length) {
       lines.push(t("result.bans", { factions: state.bannedFactions.map(factionName).join(", ") }));
+    }
+    if (state.bannedHeroes.length) {
+      lines.push(t("result.heroBans", { heroes: state.bannedHeroes.map(heroName).join(", ") }));
     }
     lines.push(`${t("result.code")}: ${formatCode(code)}`);
     navigator.clipboard?.writeText(lines.join("\n")).then(
@@ -122,11 +125,19 @@ export default function ResultSheet({
           </table>
 
           <div className="sheetFoot">
-            <p style={{ margin: 0 }}>
-              {state.bannedFactions.length
-                ? t("result.bans", { factions: state.bannedFactions.map(factionName).join(", ") })
-                : t("result.nobans")}
-            </p>
+            {state.bannedFactions.length === 0 && state.bannedHeroes.length === 0 && (
+              <p style={{ margin: 0 }}>{t("result.nobans")}</p>
+            )}
+            {state.bannedFactions.length > 0 && (
+              <p style={{ margin: 0 }}>
+                {t("result.bans", { factions: state.bannedFactions.map(factionName).join(", ") })}
+              </p>
+            )}
+            {state.bannedHeroes.length > 0 && (
+              <p style={{ margin: state.bannedFactions.length ? "1mm 0 0" : 0 }}>
+                {t("result.heroBans", { heroes: state.bannedHeroes.map(heroName).join(", ") })}
+              </p>
+            )}
             <p style={{ margin: "2mm 0 0" }}>
               {t("result.code")}: <code>{formatCode(code)}</code>
             </p>

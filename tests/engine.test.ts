@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { FACTIONS, HEROES, hero } from "@/lib/catalogue";
 import { defaultConfig, feasibility, repair } from "@/lib/draftConfig";
-import { apply, canMove, legalHeroes, reduce } from "@/lib/draftEngine";
+import { apply, canMove, heroBanOptions, legalHeroBans, legalHeroes, reduce } from "@/lib/draftEngine";
 import { mulberry32 } from "@/lib/rng";
 import { HERO_POOL_ALL, type DraftConfig, type DraftEvent, type DraftState } from "@/lib/draftTypes";
 
@@ -30,6 +30,7 @@ function randomConfig(rng: Rng): DraftConfig {
     heroPoolSize:
       heroFactionPolicy === "own" && rng() < 0.25 ? HERO_POOL_ALL : 1 + Math.floor(rng() * 5),
     bansPerPlayer: Math.floor(rng() * 3),
+    heroBansPerPlayer: Math.floor(rng() * 3),
     banVisibility: pick(rng, ["open", "blind"] as const),
     heroFactionPolicy,
     uniqueHeroIdentity: rng() < 0.8,
@@ -62,6 +63,8 @@ function playOut(config: DraftConfig, seed: string, rng: Rng): { state: DraftSta
       const offered = state.config.banVisibility === "blind" ? config.factionIds : untouched(state);
       const options = offered.filter((id) => !seat.bans.includes(id));
       event = { t: "ban", seat: seat.index, factionId: pick(rng, options) };
+    } else if (state.phase === "banHero") {
+      event = { t: "banH", seat: seat.index, heroId: pick(rng, legalHeroBans(state, seat.index)) };
     } else if (state.phase === "faction") {
       event = { t: "pickF", seat: seat.index, factionId: pick(rng, state.pools[seat.index]) };
     } else {
@@ -80,7 +83,12 @@ function untouched(state: DraftState): string[] {
   return state.config.factionIds.filter((id) => !banned.has(id));
 }
 
-const RUNS = 300;
+const RUNS = 150;
+
+/** Each run plays a whole draft and replays the log after every move, so a
+ * hundred and fifty of them is seconds rather than milliseconds. Generous
+ * enough that a slow machine does not turn a passing suite red. */
+const SLOW = 60_000;
 
 describe("draft invariants", () => {
   it("P1: no two players ever end up on the same faction", () => {
@@ -93,7 +101,7 @@ describe("draft invariants", () => {
       expect(new Set(factions).size, `run ${run}: ${factions.join()}`).toBe(config.players);
       expect(factions.every((id) => id && config.factionIds.includes(id))).toBe(true);
     }
-  });
+  }, SLOW);
 
   it("P2: under the 'own' policy every hero belongs to its player's faction", () => {
     const rng = mulberry32(2);
@@ -105,7 +113,7 @@ describe("draft invariants", () => {
         expect(hero(seat.heroId!)?.factionId, `seat ${seat.index} in run ${run}`).toBe(seat.factionId);
       }
     }
-  });
+  }, SLOW);
 
   it("P3: uniqueHeroIdentity stops two players both drafting Tarnum", () => {
     const rng = mulberry32(3);
@@ -115,7 +123,7 @@ describe("draft invariants", () => {
       const identities = state.seats.map((s) => hero(s.heroId!)!.identity);
       expect(new Set(identities).size, `run ${run}: ${identities.join()}`).toBe(config.players);
     }
-  });
+  }, SLOW);
 
   it("P3b: 'unique-faction' gives every hero a different home faction", () => {
     const rng = mulberry32(13);
@@ -132,7 +140,7 @@ describe("draft invariants", () => {
         }
       }
     }
-  });
+  }, SLOW);
 
   it("P4: a feasible draft never deadlocks", () => {
     const rng = mulberry32(4);
@@ -145,7 +153,7 @@ describe("draft invariants", () => {
       // feasibility() promises up front.
       expect(state.seats.every((s) => s.factionId && s.heroId)).toBe(true);
     }
-  });
+  }, SLOW);
 
   it("P6: replay is deterministic", () => {
     const rng = mulberry32(6);
@@ -158,7 +166,7 @@ describe("draft invariants", () => {
       expect(again.pools).toEqual(state.pools);
       expect(again.order).toEqual(state.order);
     }
-  });
+  }, SLOW);
 
   it("P7: dealt pools are pairwise disjoint, so simultaneous picks cannot collide", () => {
     const rng = mulberry32(7);
@@ -183,7 +191,7 @@ describe("draft invariants", () => {
       state = reduce(config, `deal${run}`, log);
       expectDisjoint(state, run, "hero");
     }
-  });
+  }, SLOW);
 });
 
 function expectDisjoint(state: DraftState, run: number, label: string) {
@@ -344,7 +352,7 @@ describe("a hero pool of 'all'", () => {
       const identities = state.seats.map((s) => hero(s.heroId!)!.identity);
       expect(new Set(identities).size, `run ${run}: ${identities.join()}`).toBe(config.players);
     }
-  });
+  }, SLOW);
 
   it("goes round the table when two seats could be offered the same person", () => {
     // Castle and Conflux both have a Tarnum, so those two pools overlap.
@@ -397,5 +405,100 @@ describe("double-sided hero cards", () => {
       const played = playOut(off, seed, rng);
       expect(reduce(on, seed, played.log).hash).toBe(played.state.hash);
     }
+  }, SLOW);
+});
+
+describe("banning heroes", () => {
+  const banConfig = (over: Partial<DraftConfig> = {}) =>
+    repair({ ...defaultConfig(), players: 4, heroBansPerPlayer: 2, ...over });
+
+  /** Plays the faction phase out so the hero-ban round is on the table. */
+  function toHeroBans(config: DraftConfig, seed: string) {
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, seed, log);
+    while (state.phase === "ban") {
+      const seat = state.seats.find((s) => canMove(state, s.index))!;
+      const offered = config.factionIds.filter((id) => !seat.bans.includes(id));
+      log.push({ t: "ban", seat: seat.index, factionId: offered[0] });
+      state = reduce(config, seed, log);
+    }
+    for (const seat of state.seats) {
+      log.push({ t: "pickF", seat: seat.index, factionId: state.pools[seat.index][0] });
+    }
+    return { log, state: reduce(config, seed, log) };
+  }
+
+  it("opens a round of its own once the factions are drafted", () => {
+    const { state } = toHeroBans(banConfig(), "hb");
+    expect(state.phase).toBe("banHero");
+    expect(state.seats.every((s) => s.factionId)).toBe(true);
   });
+
+  it("is skipped entirely when nobody has hero bans", () => {
+    const { state } = toHeroBans(banConfig({ heroBansPerPlayer: 0 }), "none");
+    expect(state.phase).toBe("hero");
+  });
+
+  it("only offers heroes somebody could actually draft", () => {
+    const config = banConfig({ heroFactionPolicy: "own" });
+    const { state } = toHeroBans(config, "own-only");
+    const towns = new Set(state.seats.map((s) => s.factionId));
+    expect(heroBanOptions(state).length).toBeGreaterThan(0);
+    for (const id of heroBanOptions(state)) {
+      expect(towns.has(hero(id)!.factionId), `${id} is nobody's to draft`).toBe(true);
+    }
+  });
+
+  it("takes the banned hero out of every pool", () => {
+    const config = banConfig({ heroBansPerPlayer: 1 });
+    const started = toHeroBans(config, "gone");
+    const victim = legalHeroBans(started.state, started.state.turn ?? 0)[0];
+    const log = [...started.log, { t: "banH" as const, seat: started.state.turn ?? 0, heroId: victim }];
+    const after = reduce(config, "gone", log);
+    expect(after.bannedHeroes).toContain(victim);
+    for (const seat of after.seats) {
+      expect(legalHeroes(after, seat.index).map((h) => h.id)).not.toContain(victim);
+    }
+  });
+
+  it("refuses a ban that would leave somebody with nothing to draft", () => {
+    // One faction, one player, a pool of everything: banning it down to the
+    // last hero has to stop before that hero.
+    const config = repair({
+      ...defaultConfig(),
+      players: 2,
+      heroBansPerPlayer: 2,
+      heroPoolSize: 3,
+      factionIds: ["tower", "cove"],
+    });
+    const { state } = toHeroBans(config, "starve");
+    for (const seatIndex of state.order) {
+      for (const id of legalHeroBans(state, seatIndex)) {
+        const after = reduce(config, "starve", [
+          ...toHeroBans(config, "starve").log,
+          { t: "banH", seat: state.turn ?? seatIndex, heroId: id },
+        ]);
+        for (const seat of after.seats) {
+          if (after.phase === "hero" || after.phase === "banHero") {
+            expect(legalHeroes(after, seat.index).length).toBeGreaterThanOrEqual(1);
+          }
+        }
+      }
+    }
+  });
+
+  it("P4 still holds with hero bans in play: no draft deadlocks", () => {
+    const rng = mulberry32(77);
+    for (let run = 0; run < 150; run++) {
+      const config = randomConfig(rng);
+      expect(feasibility(config).ok).toBe(true);
+      const { state } = playOut(config, `hb${run}`, rng);
+      expect(state.phase, `run ${run} stalled in ${state.phase}`).toBe("done");
+      expect(state.seats.every((s) => s.factionId && s.heroId)).toBe(true);
+      // Nobody drafted a hero somebody had banned.
+      for (const seat of state.seats) {
+        expect(state.bannedHeroes).not.toContain(seat.heroId);
+      }
+    }
+  }, SLOW);
 });

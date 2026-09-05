@@ -6,8 +6,8 @@ import { DRAFT_VERSION, type DraftConfig, type DraftEvent, type HeroFactionPolic
  * A whole draft, packed small enough to live in a URL or be read out over
  * voice chat.
  *
- * The setup on its own — config plus seed, no moves yet — comes to 23 bytes,
- * or 37 characters. That is the code a host reads to the table. Appending the
+ * The setup on its own — config plus seed, no moves yet — comes to 24 bytes,
+ * or 39 characters. That is the code a host reads to the table. Appending the
  * move log costs about two bytes a move, so even a finished six-player draft
  * with bans stays inside a link.
  *
@@ -29,6 +29,7 @@ const EVENT_BAN = 2;
 const EVENT_PICK_FACTION = 3;
 const EVENT_PICK_HERO = 4;
 const EVENT_UNDO = 5;
+const EVENT_BAN_HERO = 6;
 
 const POLICIES: HeroFactionPolicy[] = ["own", "unique-faction", "any"];
 
@@ -127,6 +128,7 @@ export function encodeDraft(config: DraftConfig, seed: string, events: readonly 
   );
   out.push((config.factionPoolSize & 0x0f) | ((config.heroPoolSize & 0x0f) << 4));
   out.push((config.bansPerPlayer & 0x0f) | (POLICIES.indexOf(config.heroFactionPolicy) << 4));
+  out.push(config.heroBansPerPlayer & 0x0f);
   out.push(...packBitmap(config.factionIds, FACTION_INDEX));
   out.push(...packBitmap(config.heroIds, HERO_INDEX));
 
@@ -145,6 +147,9 @@ export function encodeDraft(config: DraftConfig, seed: string, events: readonly 
         break;
       case "ban":
         out.push((EVENT_BAN << 5) | event.seat, factionAt.get(event.factionId) ?? 0xff);
+        break;
+      case "banH":
+        out.push((EVENT_BAN_HERO << 5) | event.seat, heroAt.get(event.heroId) ?? 0xff);
         break;
       case "pickF":
         out.push((EVENT_PICK_FACTION << 5) | event.seat, factionAt.get(event.factionId) ?? 0xff);
@@ -182,7 +187,7 @@ export function decodeDraft(input: string): Draft {
     if (at + n > bytes.length) throw new DraftCodeError("malformed");
   };
 
-  need(7);
+  need(8);
   if (bytes[at++] !== DRAFT_VERSION) throw new DraftCodeError("version");
   const fingerprint = (bytes[at] << 8) | bytes[at + 1];
   at += 2;
@@ -194,6 +199,7 @@ export function decodeDraft(input: string): Draft {
   const flags = bytes[at++];
   const pools = bytes[at++];
   const bansAndPolicy = bytes[at++];
+  const heroBans = bytes[at++];
 
   const factionBytes = Math.ceil(FACTION_INDEX.length / 8);
   const heroBytes = Math.ceil(HERO_INDEX.length / 8);
@@ -219,6 +225,7 @@ export function decodeDraft(input: string): Draft {
     factionPoolSize: pools & 0x0f,
     heroPoolSize: (pools >> 4) & 0x0f,
     bansPerPlayer: bansAndPolicy & 0x0f,
+    heroBansPerPlayer: heroBans & 0x0f,
     heroFactionPolicy: POLICIES[(bansAndPolicy >> 4) & 0x0f] ?? "own",
     factionIds,
     heroIds,
@@ -244,6 +251,10 @@ export function decodeDraft(input: string): Draft {
       case EVENT_BAN:
         need(1);
         events.push({ t: "ban", seat, factionId: FACTION_INDEX[bytes[at++]] ?? "" });
+        break;
+      case EVENT_BAN_HERO:
+        need(1);
+        events.push({ t: "banH", seat, heroId: HERO_INDEX[bytes[at++]] ?? "" });
         break;
       case EVENT_PICK_FACTION:
         need(1);

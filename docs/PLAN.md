@@ -620,6 +620,23 @@ settled by faction id because they are interchangeable.
   `CARD_PAIRS` in the build script the setting is shown disabled, saying
   exactly that, rather than pretending to do something.
 - **Wiki links on other players' picks**, not just your own options.
+- **Banning heroes**, in a round of its own after the factions are drafted —
+  the order matters, since before that a hero ban is a guess. Only heroes
+  somebody could still draft are on the board, which is also what keeps it to
+  about two dozen cards rather than sixty-four.
+
+  The interesting rule is what stops a hero-ban round starving somebody. A
+  lobby check would have to assume the worst — four players with two bans each
+  *could* empty a six-hero faction — and would forbid tables that play
+  perfectly well. Instead the ban itself is refused at the moment it would take
+  a seat below what its pool needs, which is precise and impossible to argue
+  with. A round with no legal ban left simply ends.
+
+  This cost some speed: the legality question has to know what every seat could
+  still draft, and asking it once per seat per query made replaying a draft
+  quadratic enough for the suite to time out. The answer is computed once per
+  state and memoised on the state object itself, which is sound because states
+  are immutable.
 
 This bumped `DRAFT_VERSION` to 2: a pool size of 0 would have been clamped to 1
 by an older build, which would have silently dealt a different draft rather
