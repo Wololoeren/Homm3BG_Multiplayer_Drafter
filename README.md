@@ -31,6 +31,13 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   **One of each hero** is on by default and matters more than it looks:
   Tarnum has a card in six factions and Lord Haart in two, so without it two
   players can both end up as Tarnum from two different towns.
+- **What you are actually choosing between.** A hero card carries the stat
+  strip you are drafting — attack, defense, spell power, knowledge, and the
+  helmet or hat for might or magic — plus their ability and specialty. The ↗
+  in the corner of any faction or hero opens its page on the
+  [community card database](https://en.homm3bg.wiki/), and it is on the
+  printed sheet too, so a PDF of the draft stays clickable. Clicking it never
+  drafts the card underneath.
 - **Play on** — three ways to get the players and the draft into the same
   place:
   - **One screen** passes a browser round the table. The app names whoever is
@@ -57,7 +64,7 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   Discord.
 
 Your draft is saved to the browser as you go, so a reload picks up where you
-left off.
+left off. It all works on a phone, which is what the QR is for.
 
 ### How it works without a server
 
@@ -114,6 +121,9 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 ## Credits
 
 - Peer-to-peer matchmaking: [Trystero](https://github.com/dmotz/trystero)
+- Hero stat strips: composited for the [Hero Randomizer][randomizer] from the
+  Cards Database — twenty images cover all sixty-four heroes, because base
+  statistics depend only on faction and might/magic
 - Faction and hero data: [Heroes of Might & Magic III: The Board Game Cards
   Database](https://github.com/Mirzipan/Homm3_BG_Database), rendered at
   [en.homm3bg.wiki](https://en.homm3bg.wiki/)
@@ -125,3 +135,4 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 [mission-book]: https://github.com/qwrtln/Homm3BG-mission-book
 [editor]: https://github.com/Wololoeren/homm3BG_scenario_editor
 [generator]: https://github.com/Wololoeren/Homm3BG-Random-Scenario-Generator
+[randomizer]: https://github.com/Imrauviel/Homm3_BG_Hero_Randomizer

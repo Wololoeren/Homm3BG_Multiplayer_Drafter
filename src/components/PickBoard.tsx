@@ -1,6 +1,8 @@
 "use client";
 
+import WikiLink from "./WikiLink";
 import { faction, factionName, hero } from "@/lib/catalogue";
+import { factionWikiUrl, heroStatsImage, heroWikiUrl } from "@/lib/wiki";
 import { legalBans } from "@/lib/draftEngine";
 import type { DraftEvent, DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
@@ -75,16 +77,18 @@ export default function PickBoard({
           {pool.map((id) => {
             const town = faction(id)!;
             return (
-              <button
-                key={id}
-                type="button"
-                className="card"
-                style={{ "--tint": town.color } as React.CSSProperties}
-                onClick={() => onMove({ t: "pickF", seat: seatIndex, factionId: id })}
-              >
-                <span className="cardName">{town.name}</span>
-                <span className="cardMeta">{forced ? t("draft.confirm") : ""}</span>
-              </button>
+              <div className="cardSlot" key={id}>
+                <button
+                  type="button"
+                  className="card"
+                  style={{ "--tint": town.color } as React.CSSProperties}
+                  onClick={() => onMove({ t: "pickF", seat: seatIndex, factionId: id })}
+                >
+                  <span className="cardName">{town.name}</span>
+                  {forced && <span className="cardMeta">{t("draft.confirm")}</span>}
+                </button>
+                <WikiLink href={factionWikiUrl(town)} label={t("wiki.faction", { name: town.name })} />
+              </div>
             );
           })}
         </div>
@@ -105,25 +109,34 @@ export default function PickBoard({
             const card = hero(id)!;
             const town = faction(card.factionId)!;
             return (
-              <button
-                key={id}
-                type="button"
-                className="card"
-                style={{ "--tint": town.color } as React.CSSProperties}
-                onClick={() => onMove({ t: "pickH", seat: seatIndex, heroId: id })}
-              >
-                <span className="cardName">{card.name}</span>
-                <span className="cardMeta">
-                  {town.name} · {card.className} ·{" "}
-                  {t(`result.${card.klass}` as MessageKey)}
-                </span>
-                <span className="cardMeta">
-                  {t("result.ability")}: {card.ability}
-                </span>
-                <span className="cardMeta">
-                  {t("result.specialty")}: {card.specialty}
-                </span>
-              </button>
+              <div className="cardSlot" key={id}>
+                <button
+                  type="button"
+                  className="card"
+                  style={{ "--tint": town.color } as React.CSSProperties}
+                  onClick={() => onMove({ t: "pickH", seat: seatIndex, heroId: id })}
+                >
+                  <span className="cardName">{card.name}</span>
+                  <span className="cardMeta">
+                    {town.name} · {card.className} ·{" "}
+                    {t(`result.${card.klass}` as MessageKey)}
+                  </span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="cardStats"
+                    src={heroStatsImage(card)}
+                    alt={t("draft.stats", { name: card.name })}
+                    loading="lazy"
+                  />
+                  <span className="cardMeta">
+                    {t("result.ability")}: {card.ability}
+                  </span>
+                  <span className="cardMeta">
+                    {t("result.specialty")}: {card.specialty}
+                  </span>
+                </button>
+                <WikiLink href={heroWikiUrl(card)} label={t("wiki.hero", { name: card.name })} />
+              </div>
             );
           })}
         </div>

@@ -506,7 +506,7 @@ Run in CI on the same workflow that deploys, gating the deploy.
 | **M3** ✅ | Full UI on **local/hotseat** transport: lobby → ban → faction → hero → printable result sheet, plus resume-from-code and localStorage autosave | **Genuinely useful already** — one laptop passed around the table |
 | **M4** ✅ | The rest of the `manual` transport: URLs, QR, seat claiming, per-seat invite links | Multi-computer drafting without passing a laptop |
 | **M5** ✅ | `p2p` transport via Trystero: presence, live turn passing, divergence banner, automatic fallback to M4 | The experience you actually want |
-| **M6** | Polish: 14 locales filled, faction crest art, hero stat blocks, optional commit-reveal blind bans | Matches the sibling apps' finish |
+| **M6** ◐ | Polish: hero stat blocks ✅, wiki links ✅, phone layout ✅. Still open: 14 locales, faction crest art, optional commit-reveal blind bans | Matches the sibling apps' finish |
 
 M3 is the point where the app stops being a plan and starts being usable; M4 is
 the point where it answers the original question. M5 is comfort.
@@ -562,6 +562,26 @@ settled by faction id because they are interchangeable.
   development the effect runs, cleans up and runs again, which produced two
   joins of one room and a relay complaining about a duplicate subscription.
   The join is deferred by a tick so the cycle collapses into one.
+
+### M6 so far
+
+- **Wiki links** on every faction and hero, in the pick board and on the
+  printed sheet, following the Random Scenario Generator's treatment. The page
+  name is carried in the catalogue rather than derived from a slug rule: that
+  is what makes the Necropolis Lord Haart link to *his* page rather than the
+  Castle one, with no override table. All 74 links were checked against the
+  live wiki at generation time.
+- **Hero stat strips** on the pick cards — attack, defense, spell power,
+  knowledge and the might/magic icon, so the choice is made on what the hero
+  actually is. Twenty images cover sixty-four heroes, because base statistics
+  depend only on faction and class.
+- **The phone layout was broken and is fixed.** A draft link is one long
+  unbreakable string, and its max-content width leaked out through every
+  ancestor however tightly they were clamped — the page scrolled sideways by
+  400 px. Flexbox could not hold it: a flex item stretches to the container's
+  content width, not its clamped border box. A `minmax(0, 1fr)` grid track
+  has no such loophole. Worth knowing because the QR exists precisely so
+  somebody can take their seat on a phone.
 
 ### Cost
 

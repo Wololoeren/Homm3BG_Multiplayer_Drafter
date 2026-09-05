@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import WikiLink from "./WikiLink";
 import { faction, factionName, hero } from "@/lib/catalogue";
+import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
 import { encodeDraft, formatCode } from "@/lib/draftCode";
 import type { DraftEvent, DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
@@ -97,8 +99,19 @@ export default function ResultSheet({
                   <td>
                     {town && <span className="sheetSwatch" style={{ background: town.color }} />}
                     {town?.name ?? "—"}
+                    {town && (
+                      <WikiLink
+                        href={factionWikiUrl(town)}
+                        label={t("wiki.faction", { name: town.name })}
+                      />
+                    )}
                   </td>
-                  <td>{card?.name ?? "—"}</td>
+                  <td>
+                    {card?.name ?? "—"}
+                    {card && (
+                      <WikiLink href={heroWikiUrl(card)} label={t("wiki.hero", { name: card.name })} />
+                    )}
+                  </td>
                   <td>
                     {card ? `${card.className} · ${t(`result.${card.klass}` as MessageKey)}` : "—"}
                   </td>

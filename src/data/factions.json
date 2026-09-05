@@ -7,70 +7,80 @@
       "name": "Castle",
       "set": "core-game",
       "color": "#d8c27a",
-      "crest": "/factions/castle.webp"
+      "crest": "/factions/castle.webp",
+      "wiki": "castle"
     },
     {
       "id": "necropolis",
       "name": "Necropolis",
       "set": "core-game",
       "color": "#8e8f96",
-      "crest": "/factions/necropolis.webp"
+      "crest": "/factions/necropolis.webp",
+      "wiki": "necropolis"
     },
     {
       "id": "dungeon",
       "name": "Dungeon",
       "set": "core-game",
       "color": "#9a6fbf",
-      "crest": "/factions/dungeon.webp"
+      "crest": "/factions/dungeon.webp",
+      "wiki": "dungeon"
     },
     {
       "id": "tower",
       "name": "Tower",
       "set": "tower-expansion",
       "color": "#7fb6d6",
-      "crest": "/factions/tower.webp"
+      "crest": "/factions/tower.webp",
+      "wiki": "tower"
     },
     {
       "id": "rampart",
       "name": "Rampart",
       "set": "rampart-expansion",
       "color": "#6ea55f",
-      "crest": "/factions/rampart.webp"
+      "crest": "/factions/rampart.webp",
+      "wiki": "rampart"
     },
     {
       "id": "fortress",
       "name": "Fortress",
       "set": "fortress-expansion",
       "color": "#7d8a4e",
-      "crest": "/factions/fortress.webp"
+      "crest": "/factions/fortress.webp",
+      "wiki": "fortress"
     },
     {
       "id": "inferno",
       "name": "Inferno",
       "set": "inferno-expansion",
       "color": "#c25a3a",
-      "crest": "/factions/inferno.webp"
+      "crest": "/factions/inferno.webp",
+      "wiki": "inferno"
     },
     {
       "id": "stronghold",
       "name": "Stronghold",
       "set": "stronghold-expansion",
       "color": "#c0703a",
-      "crest": "/factions/stronghold.webp"
+      "crest": "/factions/stronghold.webp",
+      "wiki": "stronghold"
     },
     {
       "id": "conflux",
       "name": "Conflux",
       "set": "conflux-expansion",
       "color": "#67c2b4",
-      "crest": "/factions/conflux.webp"
+      "crest": "/factions/conflux.webp",
+      "wiki": "conflux"
     },
     {
       "id": "cove",
       "name": "Cove",
       "set": "cove-expansion",
       "color": "#4d7fae",
-      "crest": "/factions/cove.webp"
+      "crest": "/factions/cove.webp",
+      "wiki": "cove"
     }
   ]
 }

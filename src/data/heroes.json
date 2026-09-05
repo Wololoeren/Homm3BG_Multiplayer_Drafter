@@ -4,6 +4,7 @@
   "heroes": [
     {
       "id": "adelaide",
+      "wiki": "adelaide",
       "name": "Adelaide",
       "factionId": "castle",
       "klass": "magic",
@@ -15,6 +16,7 @@
     },
     {
       "id": "catherine",
+      "wiki": "catherine",
       "name": "Catherine",
       "factionId": "castle",
       "klass": "might",
@@ -26,6 +28,7 @@
     },
     {
       "id": "ingham",
+      "wiki": "ingham",
       "name": "Ingham",
       "factionId": "castle",
       "klass": "magic",
@@ -37,6 +40,7 @@
     },
     {
       "id": "lord-haart-castle",
+      "wiki": "lord_haart_castle",
       "name": "Lord Haart",
       "factionId": "castle",
       "klass": "might",
@@ -48,6 +52,7 @@
     },
     {
       "id": "tarnum-castle",
+      "wiki": "tarnum_castle",
       "name": "Tarnum",
       "factionId": "castle",
       "klass": "might",
@@ -59,6 +64,7 @@
     },
     {
       "id": "rion",
+      "wiki": "rion",
       "name": "Rion",
       "factionId": "castle",
       "klass": "magic",
@@ -70,6 +76,7 @@
     },
     {
       "id": "valeska",
+      "wiki": "valeska",
       "name": "Valeska",
       "factionId": "castle",
       "klass": "might",
@@ -81,6 +88,7 @@
     },
     {
       "id": "lord-haart-necropolis",
+      "wiki": "lord_haart_necropolis",
       "name": "Lord Haart",
       "factionId": "necropolis",
       "klass": "might",
@@ -92,6 +100,7 @@
     },
     {
       "id": "moandor",
+      "wiki": "moandor",
       "name": "Moandor",
       "factionId": "necropolis",
       "klass": "might",
@@ -103,6 +112,7 @@
     },
     {
       "id": "sandro",
+      "wiki": "sandro",
       "name": "Sandro",
       "factionId": "necropolis",
       "klass": "magic",
@@ -114,6 +124,7 @@
     },
     {
       "id": "septienna",
+      "wiki": "septienna",
       "name": "Septienna",
       "factionId": "necropolis",
       "klass": "magic",
@@ -125,6 +136,7 @@
     },
     {
       "id": "tamika",
+      "wiki": "tamika",
       "name": "Tamika",
       "factionId": "necropolis",
       "klass": "might",
@@ -136,6 +148,7 @@
     },
     {
       "id": "vidomina",
+      "wiki": "vidomina",
       "name": "Vidomina",
       "factionId": "necropolis",
       "klass": "magic",
@@ -147,6 +160,7 @@
     },
     {
       "id": "alamar",
+      "wiki": "alamar",
       "name": "Alamar",
       "factionId": "dungeon",
       "klass": "magic",
@@ -158,6 +172,7 @@
     },
     {
       "id": "deemer",
+      "wiki": "deemer",
       "name": "Deemer",
       "factionId": "dungeon",
       "klass": "magic",
@@ -169,6 +184,7 @@
     },
     {
       "id": "jeddite",
+      "wiki": "jeddite",
       "name": "Jeddite",
       "factionId": "dungeon",
       "klass": "magic",
@@ -180,6 +196,7 @@
     },
     {
       "id": "lorelei",
+      "wiki": "lorelei",
       "name": "Lorelei",
       "factionId": "dungeon",
       "klass": "might",
@@ -191,6 +208,7 @@
     },
     {
       "id": "mutare",
+      "wiki": "mutare",
       "name": "Mutare",
       "factionId": "dungeon",
       "klass": "might",
@@ -202,6 +220,7 @@
     },
     {
       "id": "sephinroth",
+      "wiki": "sephinroth",
       "name": "Sephinroth",
       "factionId": "dungeon",
       "klass": "magic",
@@ -213,6 +232,7 @@
     },
     {
       "id": "tarnum-dungeon",
+      "wiki": "tarnum_dungeon",
       "name": "Tarnum",
       "factionId": "dungeon",
       "klass": "might",
@@ -224,6 +244,7 @@
     },
     {
       "id": "cyra",
+      "wiki": "cyra",
       "name": "Cyra",
       "factionId": "tower",
       "klass": "magic",
@@ -235,6 +256,7 @@
     },
     {
       "id": "dracon",
+      "wiki": "dracon",
       "name": "Dracon",
       "factionId": "tower",
       "klass": "magic",
@@ -246,6 +268,7 @@
     },
     {
       "id": "iona",
+      "wiki": "iona",
       "name": "Iona",
       "factionId": "tower",
       "klass": "might",
@@ -257,6 +280,7 @@
     },
     {
       "id": "josephine",
+      "wiki": "josephine",
       "name": "Josephine",
       "factionId": "tower",
       "klass": "might",
@@ -268,6 +292,7 @@
     },
     {
       "id": "solmyr",
+      "wiki": "solmyr",
       "name": "Solmyr",
       "factionId": "tower",
       "klass": "magic",
@@ -279,6 +304,7 @@
     },
     {
       "id": "torosar",
+      "wiki": "torosar",
       "name": "Torosar",
       "factionId": "tower",
       "klass": "might",
@@ -290,6 +316,7 @@
     },
     {
       "id": "clancy",
+      "wiki": "clancy",
       "name": "Clancy",
       "factionId": "rampart",
       "klass": "might",
@@ -301,6 +328,7 @@
     },
     {
       "id": "gelu",
+      "wiki": "gelu",
       "name": "Gelu",
       "factionId": "rampart",
       "klass": "might",
@@ -312,6 +340,7 @@
     },
     {
       "id": "gem",
+      "wiki": "gem",
       "name": "Gem",
       "factionId": "rampart",
       "klass": "magic",
@@ -323,6 +352,7 @@
     },
     {
       "id": "ivor",
+      "wiki": "ivor",
       "name": "Ivor",
       "factionId": "rampart",
       "klass": "might",
@@ -334,6 +364,7 @@
     },
     {
       "id": "melodia",
+      "wiki": "melodia",
       "name": "Melodia",
       "factionId": "rampart",
       "klass": "magic",
@@ -345,6 +376,7 @@
     },
     {
       "id": "mephala",
+      "wiki": "mephala",
       "name": "Mephala",
       "factionId": "rampart",
       "klass": "might",
@@ -356,6 +388,7 @@
     },
     {
       "id": "tarnum-rampart",
+      "wiki": "tarnum_rampart",
       "name": "Tarnum",
       "factionId": "rampart",
       "klass": "might",
@@ -367,6 +400,7 @@
     },
     {
       "id": "adrienne",
+      "wiki": "adrienne",
       "name": "Adrienne",
       "factionId": "fortress",
       "klass": "magic",
@@ -378,6 +412,7 @@
     },
     {
       "id": "bron",
+      "wiki": "bron",
       "name": "Bron",
       "factionId": "fortress",
       "klass": "might",
@@ -389,6 +424,7 @@
     },
     {
       "id": "gerwulf",
+      "wiki": "gerwulf",
       "name": "Gerwulf",
       "factionId": "fortress",
       "klass": "might",
@@ -400,6 +436,7 @@
     },
     {
       "id": "merist",
+      "wiki": "merist",
       "name": "Merist",
       "factionId": "fortress",
       "klass": "magic",
@@ -411,6 +448,7 @@
     },
     {
       "id": "tarnum-fortress",
+      "wiki": "tarnum_fortress",
       "name": "Tarnum",
       "factionId": "fortress",
       "klass": "might",
@@ -422,6 +460,7 @@
     },
     {
       "id": "tazar",
+      "wiki": "tazar",
       "name": "Tazar",
       "factionId": "fortress",
       "klass": "might",
@@ -433,6 +472,7 @@
     },
     {
       "id": "wystan",
+      "wiki": "wystan",
       "name": "Wystan",
       "factionId": "fortress",
       "klass": "might",
@@ -444,6 +484,7 @@
     },
     {
       "id": "ash",
+      "wiki": "ash",
       "name": "Ash",
       "factionId": "inferno",
       "klass": "magic",
@@ -455,6 +496,7 @@
     },
     {
       "id": "fiona",
+      "wiki": "fiona",
       "name": "Fiona",
       "factionId": "inferno",
       "klass": "might",
@@ -466,6 +508,7 @@
     },
     {
       "id": "octavia",
+      "wiki": "octavia",
       "name": "Octavia",
       "factionId": "inferno",
       "klass": "might",
@@ -477,6 +520,7 @@
     },
     {
       "id": "rashka",
+      "wiki": "rashka",
       "name": "Rashka",
       "factionId": "inferno",
       "klass": "might",
@@ -488,6 +532,7 @@
     },
     {
       "id": "xyron",
+      "wiki": "xyron",
       "name": "Xyron",
       "factionId": "inferno",
       "klass": "magic",
@@ -499,6 +544,7 @@
     },
     {
       "id": "zydar",
+      "wiki": "zydar",
       "name": "Zydar",
       "factionId": "inferno",
       "klass": "magic",
@@ -510,6 +556,7 @@
     },
     {
       "id": "crag-hack",
+      "wiki": "crag_hack",
       "name": "Crag Hack",
       "factionId": "stronghold",
       "klass": "might",
@@ -521,6 +568,7 @@
     },
     {
       "id": "dessa",
+      "wiki": "dessa",
       "name": "Dessa",
       "factionId": "stronghold",
       "klass": "magic",
@@ -532,6 +580,7 @@
     },
     {
       "id": "gundula",
+      "wiki": "gundula",
       "name": "Gundula",
       "factionId": "stronghold",
       "klass": "magic",
@@ -543,6 +592,7 @@
     },
     {
       "id": "shiva",
+      "wiki": "shiva",
       "name": "Shiva",
       "factionId": "stronghold",
       "klass": "might",
@@ -554,6 +604,7 @@
     },
     {
       "id": "tarnum-stronghold",
+      "wiki": "tarnum_stronghold",
       "name": "Tarnum",
       "factionId": "stronghold",
       "klass": "might",
@@ -565,6 +616,7 @@
     },
     {
       "id": "yog",
+      "wiki": "yog",
       "name": "Yog",
       "factionId": "stronghold",
       "klass": "might",
@@ -576,6 +628,7 @@
     },
     {
       "id": "ciele",
+      "wiki": "ciele",
       "name": "Ciele",
       "factionId": "conflux",
       "klass": "magic",
@@ -587,6 +640,7 @@
     },
     {
       "id": "erdamon",
+      "wiki": "erdamon",
       "name": "Erdamon",
       "factionId": "conflux",
       "klass": "might",
@@ -598,6 +652,7 @@
     },
     {
       "id": "luna",
+      "wiki": "luna",
       "name": "Luna",
       "factionId": "conflux",
       "klass": "magic",
@@ -609,6 +664,7 @@
     },
     {
       "id": "monere",
+      "wiki": "monere",
       "name": "Monere",
       "factionId": "conflux",
       "klass": "might",
@@ -620,6 +676,7 @@
     },
     {
       "id": "pasis",
+      "wiki": "pasis",
       "name": "Pasis",
       "factionId": "conflux",
       "klass": "might",
@@ -631,6 +688,7 @@
     },
     {
       "id": "tarnum-conflux",
+      "wiki": "tarnum_conflux",
       "name": "Tarnum",
       "factionId": "conflux",
       "klass": "magic",
@@ -642,6 +700,7 @@
     },
     {
       "id": "astra",
+      "wiki": "astra",
       "name": "Astra",
       "factionId": "cove",
       "klass": "magic",
@@ -653,6 +712,7 @@
     },
     {
       "id": "casmetra",
+      "wiki": "casmetra",
       "name": "Casmetra",
       "factionId": "cove",
       "klass": "magic",
@@ -664,6 +724,7 @@
     },
     {
       "id": "cassiopeia",
+      "wiki": "cassiopeia",
       "name": "Cassiopeia",
       "factionId": "cove",
       "klass": "might",
@@ -675,6 +736,7 @@
     },
     {
       "id": "jeremy",
+      "wiki": "jeremy",
       "name": "Jeremy",
       "factionId": "cove",
       "klass": "might",
@@ -686,6 +748,7 @@
     },
     {
       "id": "miriam",
+      "wiki": "miriam",
       "name": "Miriam",
       "factionId": "cove",
       "klass": "might",
@@ -697,6 +760,7 @@
     },
     {
       "id": "zilare",
+      "wiki": "zilare",
       "name": "Zilare",
       "factionId": "cove",
       "klass": "magic",

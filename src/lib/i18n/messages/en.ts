@@ -97,6 +97,11 @@ const en = {
   "draft.ready": "I have the screen",
   "draft.reveal": "Reveal the bans",
   "draft.notOffered": "Not dealt to anyone",
+  "draft.stats": "{name}'s attack, defense, spell power and knowledge",
+
+  // ------------------------------------------------------------------- wiki
+  "wiki.hero": "Read about {name} on the wiki",
+  "wiki.faction": "Read about {name} on the wiki",
 
   // ----------------------------------------------------------------- result
   "result.heading": "The draft",

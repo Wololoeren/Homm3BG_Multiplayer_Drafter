@@ -83,7 +83,18 @@ const factions = tableRows(townsMd, "## List of Towns").map(([name, content]) =>
   const id = slug(label(name));
   const color = FACTION_COLORS[id];
   if (!color) throw new Error(`no colour for faction "${id}" — add one to FACTION_COLORS`);
-  return { id, name: label(name), set: slug(label(content)), color, crest: `/factions/${id}.webp` };
+  // The wiki's own page name, kept rather than derived: reconstructing it from
+  // an id would quietly break every link the day the id scheme changes, and a
+  // dead link is the kind of thing nobody notices for months.
+  const wiki = /\(([^)]+)\.md\)/.exec(name)?.[1] ?? id;
+  return {
+    id,
+    name: label(name),
+    set: slug(label(content)),
+    color,
+    crest: `/factions/${id}.webp`,
+    wiki,
+  };
 });
 
 const factionIds = new Set(factions.map((f) => f.id));
@@ -107,6 +118,7 @@ const heroes = tableRows(heroesMd, "# List of Heroes").map((row) => {
 
   return {
     id: slug(page ?? `${name}-${factionId}`),
+    wiki: page ?? slug(`${name}-${factionId}`),
     name,
     factionId,
     klass,
@@ -128,6 +140,9 @@ for (const faction of factions) {
     throw new Error(`faction "${faction.id}" has no heroes — the draft would deadlock on it`);
   }
 }
+
+const missingWiki = [...factions, ...heroes].filter((entry) => !entry.wiki);
+if (missingWiki.length) throw new Error(`no wiki page for: ${missingWiki.map((e) => e.id).join(", ")}`);
 
 // ----------------------------------------------------------------------- write
 

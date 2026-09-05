@@ -16,10 +16,14 @@ export interface Faction {
   /** Banner tint; the only thing telling two faction cards apart at a glance. */
   color: string;
   crest: string;
+  /** Its page name on the community wiki — kept, not derived. See lib/wiki. */
+  wiki: string;
 }
 
 export interface Hero {
   id: string;
+  /** Its page name on the community wiki — kept, not derived. See lib/wiki. */
+  wiki: string;
   name: string;
   factionId: string;
   /** The card's might/magic icon, which is the authority — it does not always

@@ -416,6 +416,24 @@ button {
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 
+/* A card and its wiki link. The link sits over the card rather than inside
+   it: an anchor nested in a button is neither valid nor clickable in the way
+   either of them promises. */
+.cardSlot {
+  position: relative;
+  display: flex;
+}
+
+.cardSlot > .card {
+  flex: 1;
+}
+
+.cardWiki {
+  position: absolute;
+  right: 10px;
+  bottom: 9px;
+}
+
 .card {
   position: relative;
   display: flex;
@@ -459,6 +477,16 @@ button {
   color: #9c9179;
 }
 
+/* The stat strip sits under the name, at the width of the card: it is a row of
+   numbers, so it stays readable when it shrinks and there is nothing to crop. */
+.cardStats {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 4px 0 2px;
+  border-radius: 2px;
+}
+
 .cardTag {
   position: absolute;
   top: 10px;
@@ -490,6 +518,7 @@ button {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+  min-width: 0;
   padding: 14px 0;
   border-top: 1px solid var(--gold-dim);
   font-size: 14px;
@@ -522,6 +551,10 @@ button {
 
 .share {
   display: grid;
+  /* minmax(0, 1fr) rather than the default auto: a draft link is one long
+     unbreakable string, and an auto track sizes itself to fit it, which pushes
+     the whole page sideways on a phone. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   padding-bottom: 8px;
 }
@@ -572,6 +605,15 @@ button {
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  min-width: 0;
+}
+
+.seatLinks .code {
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .seatLinkName {
@@ -626,6 +668,41 @@ button {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--gold);
+}
+
+/* Small and quiet: next to a card whose whole point is to be clicked, "look
+   this up" must not compete with "take this". */
+.wikiLink {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.45;
+}
+
+.wikiLink:hover {
+  opacity: 1;
+}
+
+.wikiIcon {
+  width: 0.85em;
+  height: 0.85em;
+  margin-left: 0.3em;
+  vertical-align: -0.05em;
+}
+
+.cardSlot .wikiLink {
+  position: absolute;
+  right: 9px;
+  bottom: 8px;
+  padding: 4px;
+  color: var(--gold);
+}
+
+.cardSlot .wikiIcon {
+  width: 14px;
+  height: 14px;
+  margin: 0;
 }
 
 .linkish {
@@ -719,6 +796,42 @@ button {
   font-size: 11px;
   letter-spacing: 0.06em;
   word-break: break-all;
+}
+
+/* ---------------------------------------------------------------- phones */
+
+/* The draft is meant to be played on a phone — that is what the QR is for —
+   so the rows that hold a link stack instead of trying to fit a URL, a label
+   and two buttons across 340 pixels. */
+@media (max-width: 560px) {
+  .brand h1 {
+    font-size: 21px;
+  }
+
+  /* Grid, not a column flex box. A flex item stretches to the container's
+     content width, and a draft link is one unbreakable string, so its
+     max-content width leaks out through every ancestor however tightly they
+     are clamped. A minmax(0, 1fr) track has no such loophole. */
+  .share .shareBar,
+  .seatLinks li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .share .shareBar .code,
+  .seatLinks .code {
+    flex: none;
+  }
+
+  .sheet {
+    padding: 10mm 6mm;
+  }
+
+  .qr svg {
+    width: 180px;
+    height: 180px;
+  }
 }
 
 /* ----------------------------------------------------------------- print */
