@@ -422,16 +422,104 @@ describe("a hero pool of 'all'", () => {
 });
 
 describe("double-sided hero cards", () => {
-  it("is inert while the catalogue has no pairings, which is what ships today", () => {
-    expect(HEROES.some((h) => h.pairedWith)).toBe(false);
-    const rng = mulberry32(41);
-    for (let run = 0; run < 40; run++) {
-      const seed = `pairs${run}`;
-      const off = repair({ ...defaultConfig(), players: 3, sharedHeroCards: false });
-      const on = { ...off, sharedHeroCards: true };
-      // Same seed, same moves: with nothing paired the switch cannot bite.
-      const played = playOut(off, seed, rng);
-      expect(reduce(on, seed, played.log).hash).toBe(played.state.hash);
+  const pairOf = (id: string) => hero(id)!.pairedWith!;
+
+  /** A draft stopped at the hero step, with both seats' factions settled. */
+  function atHeroStep(over: Partial<DraftConfig> = {}) {
+    const config = repair({
+      ...defaultConfig(),
+      players: 2,
+      heroFactionPolicy: "any" as const,
+      uniqueHeroIdentity: false,
+      heroPoolSize: 1,
+      ...over,
+    });
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, "cards", log);
+    for (const seat of state.seats) {
+      log.push({ t: "pickF", seat: seat.index, factionId: state.pools[seat.index][0] });
+    }
+    state = reduce(config, "cards", log);
+    return { config, log, state };
+  }
+
+  it("knows both sides of every card, and knows them the same way round", () => {
+    for (const h of HEROES) {
+      if (!h.pairedWith) continue;
+      expect(hero(h.pairedWith), `${h.id} names a hero that is not there`).toBeTruthy();
+      expect(hero(h.pairedWith)!.pairedWith, `${h.id} is not paired back`).toBe(h.id);
+    }
+    // Every printed hero is on a card with another. Factory is print-and-play,
+    // so nothing there is printed back to back and nothing there is paired.
+    const unpaired = HEROES.filter((h) => !h.pairedWith);
+    expect(unpaired.every((h) => h.factionId === "factory")).toBe(true);
+    expect(HEROES.filter((h) => h.factionId !== "factory").every((h) => h.pairedWith)).toBe(true);
+  });
+
+  it("keeps Tarnum's six cards down to three", () => {
+    const tarnums = HEROES.filter((h) => h.identity === "tarnum");
+    expect(tarnums).toHaveLength(6);
+    const cards = new Set(tarnums.map((h) => [h.id, h.pairedWith].sort().join("+")));
+    // Two of his cards pair him with a townsman rather than with himself.
+    expect(cards.size).toBe(4);
+  });
+
+  it("takes the other face out of the game when one is drafted", () => {
+    const { config, log, state } = atHeroStep({ sharedHeroCards: true });
+    const taker = state.order[0];
+    const taken = state.pools[taker][0];
+    const back = pairOf(taken);
+
+    const after = reduce(config, "cards", [...log, { t: "pickH", seat: taker, heroId: taken }]);
+    for (const seat of after.seats) {
+      expect(legalHeroes(after, seat.index).map((h) => h.id)).not.toContain(back);
+    }
+  });
+
+  it("leaves the other face alone when one is banned", () => {
+    const { config, log, state } = atHeroStep({ sharedHeroCards: true, heroBansPerPlayer: 1 });
+    expect(state.phase).toBe("banHero");
+
+    const banner = state.turn ?? state.order[0];
+    const victim = legalHeroBans(state, banner)[0];
+    const back = pairOf(victim);
+
+    const after = reduce(config, "cards", [...log, { t: "banH", seat: banner, heroId: victim }]);
+    expect(after.bannedHeroes).toContain(victim);
+    // The ban took the hero, not the card.
+    expect(after.bannedHeroes).not.toContain(back);
+    const stillThere = after.order.some((i) =>
+      legalHeroes(after, i, { ignoreTaken: true }).some((h) => h.id === back),
+    );
+    expect(stillThere, `${back} left with ${victim}`).toBe(true);
+  });
+
+  it("does nothing at all while the setting is off", () => {
+    const { config, log, state } = atHeroStep({ sharedHeroCards: false });
+    const taker = state.order[0];
+    const taken = state.pools[taker][0];
+    const back = pairOf(taken);
+
+    const after = reduce(config, "cards", [...log, { t: "pickH", seat: taker, heroId: taken }]);
+    const other = after.order.find((i) => i !== taker)!;
+    expect(legalHeroes(after, other).map((h) => h.id)).toContain(back);
+  });
+
+  it("never offers both faces of one card at the same time", () => {
+    const rng = mulberry32(57);
+    for (let run = 0; run < 60; run++) {
+      const config = repair({
+        ...randomConfig(rng),
+        sharedHeroCards: true,
+        heroFactionPolicy: "any" as const,
+      });
+      const { state } = playOut(config, `card${run}`, rng);
+      expect(state.phase, `run ${run} stalled in ${state.phase}`).toBe("done");
+      const cards = state.seats.map((s) => {
+        const h = hero(s.heroId!)!;
+        return h.pairedWith ? [h.id, h.pairedWith].sort().join("+") : h.id;
+      });
+      expect(new Set(cards).size, `run ${run}: two players took one card`).toBe(config.players);
     }
   }, SLOW);
 });

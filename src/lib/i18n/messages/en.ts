@@ -61,7 +61,7 @@ const en = {
     "Always on with faction and hero in one turn: the first player takes a hero before the second has a town, so there is no other town to keep away from yet.",
   "lobby.sharedCards": "One card, two heroes",
   "lobby.sharedCards.help":
-    "Hero cards are double-sided, so drafting one face takes the whole card and the hero on its back leaves with it.",
+    "Hero cards are double-sided, so drafting one face takes the whole card and the hero on its back goes with it. Banning one does not — a ban takes the hero, not the card. Nearly every pair shares a town, so this rarely bites unless heroes can be drafted off-faction; the exception is Tarnum, whose six cards are really three.",
   "lobby.sharedCards.nodata":
     "Needs the list of which heroes share a card, which is not in the community database yet. Add the pairs to CARD_PAIRS in scripts/build-catalogue.mjs and this switches on.",
   "lobby.collection": "Your collection",

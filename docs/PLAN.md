@@ -615,12 +615,13 @@ settled by faction id because they are interchangeable.
   computed rather than assumed: a table with no shared identities and no
   uniqueness rule keeps picking simultaneously.
 - **Double-sided hero cards.** A hero card is one physical object with a hero
-  on each face, so drafting one takes the other out of the game with it. The
-  mechanism is built — a `pairedWith` field, a `sharedHeroCards` setting, and
-  the pair folded into the disjoint-deal keys — but the pairings are not in the
-  community database and have to be read off the cards. Until somebody fills in
-  `CARD_PAIRS` in the build script the setting is shown disabled, saying
-  exactly that, rather than pretending to do something.
+  on each face, so drafting one takes the other out of the game with it — but
+  *banning* one does not, because a ban takes the hero and not the card. All
+  thirty-two official pairings are now in `CARD_PAIRS`, read off the cards; the
+  setting is off by default and available under every hero rule, because the
+  three cards that hold two Tarnums span towns and so can bite even when
+  everyone drafts in faction. Factory has none: it is print-and-play, so
+  inventing pairs would enforce a restriction the table does not have.
 - **Wiki links on other players' picks**, not just your own options.
 - **The unofficial Factory expansion**, read off the hero boards in its own
   repository, since a fan expansion is in no database. Its seven heroes, their

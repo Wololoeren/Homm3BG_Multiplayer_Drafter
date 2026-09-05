@@ -120,16 +120,14 @@ export function legalHeroes(
       : [],
   );
 
+  // A ban takes the hero and not the card: banning one face deliberately
+  // leaves the other in the game. Only *drafting* a hero puts the card in
+  // play, and only that takes the reverse with it.
   const banned = new Set(state.bannedHeroes);
-  const bannedBacks = new Set(
-    config.sharedHeroCards
-      ? (state.bannedHeroes.map((id) => heroById(id)?.pairedWith).filter(Boolean) as string[])
-      : [],
-  );
 
   return HEROES.filter((h) => {
     if (!enabled.has(h.id)) return false;
-    if (banned.has(h.id) || bannedBacks.has(h.id)) return false;
+    if (banned.has(h.id)) return false;
     if (takenIds.has(h.id)) return false;
     if (takenBacks.has(h.id)) return false;
     if (config.uniqueHeroIdentity && takenIdentities.has(h.identity)) return false;

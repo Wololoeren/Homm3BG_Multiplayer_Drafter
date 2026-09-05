@@ -12,7 +12,8 @@
       "identity": "adelaide",
       "ability": "Wisdom",
       "specialty": "Frost Ring",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "lord-haart-castle"
     },
     {
       "id": "catherine",
@@ -24,7 +25,8 @@
       "identity": "catherine",
       "ability": "Leadership",
       "specialty": "Crusaders",
-      "set": "core-game"
+      "set": "core-game",
+      "pairedWith": "rion"
     },
     {
       "id": "ingham",
@@ -36,7 +38,8 @@
       "identity": "ingham",
       "ability": "Mysticism",
       "specialty": "Zealots",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "valeska"
     },
     {
       "id": "lord-haart-castle",
@@ -48,7 +51,8 @@
       "identity": "lord-haart",
       "ability": "Estates",
       "specialty": "Estates",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "adelaide"
     },
     {
       "id": "tarnum-castle",
@@ -60,7 +64,8 @@
       "identity": "tarnum",
       "ability": "Artillery",
       "specialty": "Ballista",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "tarnum-rampart"
     },
     {
       "id": "rion",
@@ -72,7 +77,8 @@
       "identity": "rion",
       "ability": "Wisdom",
       "specialty": "Battlefield Medic",
-      "set": "core-game"
+      "set": "core-game",
+      "pairedWith": "catherine"
     },
     {
       "id": "valeska",
@@ -84,7 +90,8 @@
       "identity": "valeska",
       "ability": "Archery",
       "specialty": "Marksmen",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "ingham"
     },
     {
       "id": "lord-haart-necropolis",
@@ -96,7 +103,8 @@
       "identity": "lord-haart",
       "ability": "Necromancy",
       "specialty": "Dread Knights",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "vidomina"
     },
     {
       "id": "moandor",
@@ -108,7 +116,8 @@
       "identity": "moandor",
       "ability": "Necromancy",
       "specialty": "Liches",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "septienna"
     },
     {
       "id": "sandro",
@@ -120,7 +129,8 @@
       "identity": "sandro",
       "ability": "Sorcery",
       "specialty": "Cloak of the Undead King",
-      "set": "core-game"
+      "set": "core-game",
+      "pairedWith": "tamika"
     },
     {
       "id": "septienna",
@@ -132,7 +142,8 @@
       "identity": "septienna",
       "ability": "Necromancy",
       "specialty": "Death Ripple",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "moandor"
     },
     {
       "id": "tamika",
@@ -144,7 +155,8 @@
       "identity": "tamika",
       "ability": "Offense",
       "specialty": "Dread Knights",
-      "set": "core-game"
+      "set": "core-game",
+      "pairedWith": "sandro"
     },
     {
       "id": "vidomina",
@@ -156,7 +168,8 @@
       "identity": "vidomina",
       "ability": "Necromancy",
       "specialty": "Necromancy",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "lord-haart-necropolis"
     },
     {
       "id": "alamar",
@@ -168,7 +181,8 @@
       "identity": "alamar",
       "ability": "Wisdom",
       "specialty": "Resurrection",
-      "set": "core-game"
+      "set": "core-game",
+      "pairedWith": "mutare"
     },
     {
       "id": "deemer",
@@ -180,7 +194,8 @@
       "identity": "deemer",
       "ability": "Scouting",
       "specialty": "Meteor Shower",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "jeddite"
     },
     {
       "id": "jeddite",
@@ -192,7 +207,8 @@
       "identity": "jeddite",
       "ability": "Sorcery",
       "specialty": "Mysterious Warlock",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "deemer"
     },
     {
       "id": "lorelei",
@@ -204,7 +220,8 @@
       "identity": "lorelei",
       "ability": "Scouting",
       "specialty": "Harpies",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "sephinroth"
     },
     {
       "id": "mutare",
@@ -216,7 +233,8 @@
       "identity": "mutare",
       "ability": "Tactics",
       "specialty": "Dragons",
-      "set": "core-game"
+      "set": "core-game",
+      "pairedWith": "alamar"
     },
     {
       "id": "sephinroth",
@@ -228,7 +246,8 @@
       "identity": "sephinroth",
       "ability": "Intelligence",
       "specialty": "Valuables",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "lorelei"
     },
     {
       "id": "tarnum-dungeon",
@@ -240,7 +259,8 @@
       "identity": "tarnum",
       "ability": "Estates",
       "specialty": "Dragons",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "tarnum-fortress"
     },
     {
       "id": "cyra",
@@ -252,7 +272,8 @@
       "identity": "cyra",
       "ability": "Diplomacy",
       "specialty": "Haste",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "torosar"
     },
     {
       "id": "dracon",
@@ -264,7 +285,8 @@
       "identity": "dracon",
       "ability": "Wisdom",
       "specialty": "Enchanters",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "solmyr"
     },
     {
       "id": "iona",
@@ -276,7 +298,8 @@
       "identity": "iona",
       "ability": "Intelligence",
       "specialty": "Genies",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "josephine"
     },
     {
       "id": "josephine",
@@ -288,7 +311,8 @@
       "identity": "josephine",
       "ability": "Sorcery",
       "specialty": "Golems",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "iona"
     },
     {
       "id": "solmyr",
@@ -300,7 +324,8 @@
       "identity": "solmyr",
       "ability": "Sorcery",
       "specialty": "Chain Lightning",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "dracon"
     },
     {
       "id": "torosar",
@@ -312,7 +337,8 @@
       "identity": "torosar",
       "ability": "Mysticism",
       "specialty": "Ballista",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "cyra"
     },
     {
       "id": "clancy",
@@ -324,7 +350,8 @@
       "identity": "clancy",
       "ability": "Pathfinding",
       "specialty": "Unicorns",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "mephala"
     },
     {
       "id": "gelu",
@@ -336,7 +363,8 @@
       "identity": "gelu",
       "ability": "Archery",
       "specialty": "Sharpshooters",
-      "set": "rampart-expansion"
+      "set": "rampart-expansion",
+      "pairedWith": "gem"
     },
     {
       "id": "gem",
@@ -348,7 +376,8 @@
       "identity": "gem",
       "ability": "First Aid",
       "specialty": "First Aid",
-      "set": "rampart-expansion"
+      "set": "rampart-expansion",
+      "pairedWith": "gelu"
     },
     {
       "id": "ivor",
@@ -360,7 +389,8 @@
       "identity": "ivor",
       "ability": "Offense",
       "specialty": "Elves",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "melodia"
     },
     {
       "id": "melodia",
@@ -372,7 +402,8 @@
       "identity": "melodia",
       "ability": "Luck",
       "specialty": "Fortune",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "ivor"
     },
     {
       "id": "mephala",
@@ -384,7 +415,8 @@
       "identity": "mephala",
       "ability": "Leadership",
       "specialty": "Armorer",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "clancy"
     },
     {
       "id": "tarnum-rampart",
@@ -396,7 +428,8 @@
       "identity": "tarnum",
       "ability": "Leadership",
       "specialty": "Sharpshooters",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "tarnum-castle"
     },
     {
       "id": "adrienne",
@@ -408,7 +441,8 @@
       "identity": "adrienne",
       "ability": "Wisdom",
       "specialty": "Fire Magic",
-      "set": "fortress-expansion"
+      "set": "fortress-expansion",
+      "pairedWith": "wystan"
     },
     {
       "id": "bron",
@@ -420,7 +454,8 @@
       "identity": "bron",
       "ability": "Resistance",
       "specialty": "Basilisks",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "tazar"
     },
     {
       "id": "gerwulf",
@@ -432,7 +467,8 @@
       "identity": "gerwulf",
       "ability": "Armorer",
       "specialty": "Ballista",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "merist"
     },
     {
       "id": "merist",
@@ -444,7 +480,8 @@
       "identity": "merist",
       "ability": "First Aid",
       "specialty": "Stone Skin",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "gerwulf"
     },
     {
       "id": "tarnum-fortress",
@@ -456,7 +493,8 @@
       "identity": "tarnum",
       "ability": "Armorer",
       "specialty": "Basilisks",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "tarnum-dungeon"
     },
     {
       "id": "tazar",
@@ -468,7 +506,8 @@
       "identity": "tazar",
       "ability": "Armorer",
       "specialty": "War Hero",
-      "set": "tower-expansion"
+      "set": "tower-expansion",
+      "pairedWith": "bron"
     },
     {
       "id": "wystan",
@@ -480,7 +519,8 @@
       "identity": "wystan",
       "ability": "Archery",
       "specialty": "Lizardmen",
-      "set": "fortress-expansion"
+      "set": "fortress-expansion",
+      "pairedWith": "adrienne"
     },
     {
       "id": "ash",
@@ -492,7 +532,8 @@
       "identity": "ash",
       "ability": "Eagle Eye",
       "specialty": "Bloodlust",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "octavia"
     },
     {
       "id": "fiona",
@@ -504,7 +545,8 @@
       "identity": "fiona",
       "ability": "Scouting",
       "specialty": "Cerberi",
-      "set": "inferno-expansion"
+      "set": "inferno-expansion",
+      "pairedWith": "xyron"
     },
     {
       "id": "octavia",
@@ -516,7 +558,8 @@
       "identity": "octavia",
       "ability": "Scholar",
       "specialty": "Gold",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "ash"
     },
     {
       "id": "rashka",
@@ -528,7 +571,8 @@
       "identity": "rashka",
       "ability": "Scholar",
       "specialty": "Efreet",
-      "set": "inferno-expansion"
+      "set": "inferno-expansion",
+      "pairedWith": "zydar"
     },
     {
       "id": "xyron",
@@ -540,7 +584,8 @@
       "identity": "xyron",
       "ability": "Wisdom",
       "specialty": "Inferno",
-      "set": "inferno-expansion"
+      "set": "inferno-expansion",
+      "pairedWith": "fiona"
     },
     {
       "id": "zydar",
@@ -552,7 +597,8 @@
       "identity": "zydar",
       "ability": "Sorcery",
       "specialty": "Sorcery",
-      "set": "inferno-expansion"
+      "set": "inferno-expansion",
+      "pairedWith": "rashka"
     },
     {
       "id": "crag-hack",
@@ -564,7 +610,8 @@
       "identity": "crag-hack",
       "ability": "Offense",
       "specialty": "Offense",
-      "set": "stronghold-expansion"
+      "set": "stronghold-expansion",
+      "pairedWith": "yog"
     },
     {
       "id": "dessa",
@@ -576,7 +623,8 @@
       "identity": "dessa",
       "ability": "Logistics",
       "specialty": "Logistics",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "tarnum-stronghold"
     },
     {
       "id": "gundula",
@@ -588,7 +636,8 @@
       "identity": "gundula",
       "ability": "Wisdom",
       "specialty": "Slow",
-      "set": "stronghold-expansion"
+      "set": "stronghold-expansion",
+      "pairedWith": "shiva"
     },
     {
       "id": "shiva",
@@ -600,7 +649,8 @@
       "identity": "shiva",
       "ability": "Scouting",
       "specialty": "Thunderbirds",
-      "set": "stronghold-expansion"
+      "set": "stronghold-expansion",
+      "pairedWith": "gundula"
     },
     {
       "id": "tarnum-stronghold",
@@ -612,7 +662,8 @@
       "identity": "tarnum",
       "ability": "Offense",
       "specialty": "Offense",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "dessa"
     },
     {
       "id": "yog",
@@ -624,7 +675,8 @@
       "identity": "yog",
       "ability": "Offense",
       "specialty": "Cyclopes",
-      "set": "stronghold-expansion"
+      "set": "stronghold-expansion",
+      "pairedWith": "crag-hack"
     },
     {
       "id": "ciele",
@@ -636,7 +688,8 @@
       "identity": "ciele",
       "ability": "Water Magic",
       "specialty": "Magic Arrow",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "pasis"
     },
     {
       "id": "erdamon",
@@ -648,7 +701,8 @@
       "identity": "erdamon",
       "ability": "Estates",
       "specialty": "Magma Elementals",
-      "set": "conflux-expansion"
+      "set": "conflux-expansion",
+      "pairedWith": "tarnum-conflux"
     },
     {
       "id": "luna",
@@ -660,7 +714,8 @@
       "identity": "luna",
       "ability": "Basic Fire Magic",
       "specialty": "Fire Wall",
-      "set": "conflux-expansion"
+      "set": "conflux-expansion",
+      "pairedWith": "monere"
     },
     {
       "id": "monere",
@@ -672,7 +727,8 @@
       "identity": "monere",
       "ability": "Logistics",
       "specialty": "Magic Elementals",
-      "set": "conflux-expansion"
+      "set": "conflux-expansion",
+      "pairedWith": "luna"
     },
     {
       "id": "pasis",
@@ -684,7 +740,8 @@
       "identity": "pasis",
       "ability": "Artillery",
       "specialty": "Elementals",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "ciele"
     },
     {
       "id": "tarnum-conflux",
@@ -696,7 +753,8 @@
       "identity": "tarnum",
       "ability": "Wisdom",
       "specialty": "Enchanters",
-      "set": "conflux-expansion"
+      "set": "conflux-expansion",
+      "pairedWith": "erdamon"
     },
     {
       "id": "astra",
@@ -708,7 +766,8 @@
       "identity": "astra",
       "ability": "Luck",
       "specialty": "Cure",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "miriam"
     },
     {
       "id": "casmetra",
@@ -720,7 +779,8 @@
       "identity": "casmetra",
       "ability": "Wisdom",
       "specialty": "Sorceresses",
-      "set": "cove-expansion"
+      "set": "cove-expansion",
+      "pairedWith": "cassiopeia"
     },
     {
       "id": "cassiopeia",
@@ -732,7 +792,8 @@
       "identity": "cassiopeia",
       "ability": "Tactics",
       "specialty": "Oceanids",
-      "set": "cove-expansion"
+      "set": "cove-expansion",
+      "pairedWith": "casmetra"
     },
     {
       "id": "jeremy",
@@ -744,7 +805,8 @@
       "identity": "jeremy",
       "ability": "Offense",
       "specialty": "Cannon",
-      "set": "cove-expansion"
+      "set": "cove-expansion",
+      "pairedWith": "zilare"
     },
     {
       "id": "miriam",
@@ -756,7 +818,8 @@
       "identity": "miriam",
       "ability": "Logistics",
       "specialty": "Scouting",
-      "set": "regular-stretch-goals-2024"
+      "set": "regular-stretch-goals-2024",
+      "pairedWith": "astra"
     },
     {
       "id": "zilare",
@@ -768,7 +831,8 @@
       "identity": "zilare",
       "ability": "Interference",
       "specialty": "Forgetfulness",
-      "set": "cove-expansion"
+      "set": "cove-expansion",
+      "pairedWith": "jeremy"
     },
     {
       "id": "agar-factory",

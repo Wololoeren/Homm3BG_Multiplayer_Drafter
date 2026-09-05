@@ -454,22 +454,22 @@ export default function DraftSetup({
                 )}
               </span>
             </label>
-            <label className="toggle" style={{ marginTop: 8 }}>
-              <input
-                type="checkbox"
-                checked={config.sharedHeroCards}
-                disabled={!HAVE_CARD_PAIRINGS}
-                onChange={(e) => set({ sharedHeroCards: e.target.checked })}
-              />
-              <span>
-                {t("lobby.sharedCards")}
-                <span className="hint" style={{ display: "block" }}>
-                  {HAVE_CARD_PAIRINGS ? t("lobby.sharedCards.help") : t("lobby.sharedCards.nodata")}
-                </span>
-              </span>
-            </label>
           </>
         )}
+        <label className="toggle" style={{ marginTop: 8 }}>
+          <input
+            type="checkbox"
+            checked={config.sharedHeroCards}
+            disabled={!HAVE_CARD_PAIRINGS}
+            onChange={(e) => set({ sharedHeroCards: e.target.checked })}
+          />
+          <span>
+            {t("lobby.sharedCards")}
+            <span className="hint" style={{ display: "block" }}>
+              {HAVE_CARD_PAIRINGS ? t("lobby.sharedCards.help") : t("lobby.sharedCards.nodata")}
+            </span>
+          </span>
+        </label>
       </Row>
 
       <Row

@@ -42,6 +42,13 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   **One of each hero** is on by default and matters more than it looks:
   Tarnum has a card in six factions and Lord Haart in two, so without it two
   players can both end up as Tarnum from two different towns.
+- **One card, two heroes** treats a hero card as the double-sided object it is:
+  drafting one face takes the whole card, so the hero on its back goes with it.
+  Banning one does not — a ban takes the hero, not the card. Nearly every pair
+  shares a town, so it rarely bites unless heroes can be drafted off-faction;
+  the exception is Tarnum, whose six cards are really three. Off by default.
+  Factory has no pairings: it is print-and-play, so nothing there is printed
+  back to back.
 - **What you are actually choosing between.** Every faction carries its own
   crest — drawn rather than photographed, so it stays legible on a card, in the
   seat strip and printed on the sheet. A hero card carries the stat

@@ -71,17 +71,63 @@ const FACTION_COLORS = {
 /**
  * Which heroes are printed on the two sides of one physical card.
  *
- * Not in the community database — it has to be read off the cards themselves —
- * so this is empty until somebody does that. Write each pair once, by hero id
- * (the wiki page name with dashes, e.g. "lord_haart_castle" -> "lord-haart-castle");
- * the reverse direction is filled in automatically, and an id that does not
- * exist stops the build rather than silently doing nothing.
+ * Not in the community database — it has to be read off the cards — so it is
+ * kept here by hand. Each pair is written once and the reverse direction is
+ * filled in automatically; an id that does not exist, or a card given three
+ * sides, stops the build rather than quietly doing nothing.
  *
- * Until it is populated the "one card, two heroes" setting has nothing to act
- * on, which is exactly what the lobby says about it.
+ * Nearly every card pairs two heroes of the same town, which is why this
+ * matters most to a table drafting off-faction heroes. The exceptions are the
+ * Tarnums: his six cards are three, each holding two towns' worth of him.
+ *
+ * Factory is deliberately absent. It is a print-and-play expansion, so its
+ * heroes are not printed back to back with anything and inventing pairs for
+ * them would enforce a restriction the cards on the table do not have.
  */
 const CARD_PAIRS = {
-  // "valeska": "adelaide",
+  // Castle
+  catherine: "rion",
+  adelaide: "lord-haart-castle",
+  valeska: "ingham",
+  // Dungeon
+  mutare: "alamar",
+  jeddite: "deemer",
+  lorelei: "sephinroth",
+  // Necropolis
+  tamika: "sandro",
+  vidomina: "lord-haart-necropolis",
+  moandor: "septienna",
+  // Tower
+  solmyr: "dracon",
+  iona: "josephine",
+  torosar: "cyra",
+  // Rampart
+  gelu: "gem",
+  mephala: "clancy",
+  ivor: "melodia",
+  // Fortress
+  wystan: "adrienne",
+  bron: "tazar",
+  gerwulf: "merist",
+  // Inferno
+  fiona: "xyron",
+  rashka: "zydar",
+  octavia: "ash",
+  // Stronghold
+  "crag-hack": "yog",
+  shiva: "gundula",
+  "tarnum-stronghold": "dessa",
+  // Conflux
+  monere: "luna",
+  erdamon: "tarnum-conflux",
+  pasis: "ciele",
+  // Cove
+  jeremy: "zilare",
+  cassiopeia: "casmetra",
+  miriam: "astra",
+  // The Tarnums who share a card with another Tarnum rather than a townsman.
+  "tarnum-castle": "tarnum-rampart",
+  "tarnum-fortress": "tarnum-dungeon",
 };
 
 const slug = (s) =>
