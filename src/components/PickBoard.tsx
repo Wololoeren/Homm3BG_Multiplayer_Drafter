@@ -126,9 +126,39 @@ export default function PickBoard({
     );
   }
 
+  if (state.phase === "position") {
+    const pool = state.pools[seatIndex] ?? [];
+    return (
+      <>
+        <div className="phaseBar">
+          <h2>{t("draft.pickSeat")}</h2>
+          <span className="label">{t("draft.pickSeat.help")}</span>
+        </div>
+        <div className="cards">
+          {pool.map((n) => (
+            <button
+              key={n}
+              type="button"
+              className="card seatCard"
+              onClick={() => onMove({ t: "pickP", seat: seatIndex, position: Number(n) })}
+            >
+              <span className="cardName">{n}</span>
+              <span className="cardMeta">
+                {Number(n) === 1 ? t("draft.seatFirst") : t("draft.seatNth", { n })}
+              </span>
+            </button>
+          ))}
+        </div>
+      </>
+    );
+  }
+
   const pool = state.pools[seatIndex] ?? [];
 
-  if (state.phase === "faction") {
+  const choosingFaction = state.phase === "faction" || (state.phase === "pick" && !seat.factionId);
+  const choosingHero = state.phase === "hero" || (state.phase === "pick" && Boolean(seat.factionId));
+
+  if (choosingFaction) {
     // A pool of one is not a choice, so it is not presented as one — it is
     // told to the player, who confirms it.
     const forced = pool.length === 1;
@@ -163,7 +193,7 @@ export default function PickBoard({
     );
   }
 
-  if (state.phase === "hero") {
+  if (choosingHero) {
     const forced = pool.length === 1;
     return (
       <>

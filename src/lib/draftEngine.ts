@@ -33,7 +33,16 @@ export class DraftReplayError extends Error {
 }
 
 function emptySeat(index: number): Seat {
-  return { index, name: "", joined: false, factionId: null, heroId: null, bans: [], heroBans: [] };
+  return {
+    index,
+    name: "",
+    joined: false,
+    factionId: null,
+    heroId: null,
+    bans: [],
+    heroBans: [],
+    position: null,
+  };
 }
 
 export function initialState(config: DraftConfig, seed: string): DraftState {
@@ -127,10 +136,27 @@ export function legalHeroes(
 
     switch (config.heroFactionPolicy) {
       case "own":
-        return h.factionId === seat.factionId;
+        // A seat that has not drafted yet could end up with any town still in
+        // the game, so every one of their heroes is a hero it could take. Only
+        // reachable with combined picks, where the hero bans come first.
+        return seat.factionId === null
+          ? config.factionIds.includes(h.factionId)
+          : h.factionId === seat.factionId;
       case "unique-faction":
         if (takenHeroFactions.has(h.factionId)) return false;
-        if (!config.heroMayComeFromAnotherPlayersTown && otherTowns.has(h.factionId)) return false;
+        // "Not from another player's town" needs the other towns to exist. With
+        // combined picks the first player takes a hero before the second has
+        // drafted at all, so the rule would only ever be enforced against
+        // whoever happened to go first — and enforcing it the other way, by
+        // forbidding a town because somebody already took its hero, is a
+        // different game. It does not apply here, and the lobby says so.
+        if (
+          !config.heroMayComeFromAnotherPlayersTown &&
+          !config.combinedPicks &&
+          otherTowns.has(h.factionId)
+        ) {
+          return false;
+        }
         return true;
       case "any":
         return true;
@@ -280,6 +306,19 @@ function heroBansDone(state: DraftState): number {
   return state.seats.reduce((n, seat) => n + seat.heroBans.length, 0);
 }
 
+function positionsPicked(state: DraftState): number {
+  return state.seats.filter((s) => s.position !== null).length;
+}
+
+/**
+ * Where a player sits. Their own choice when the seating order was drafted,
+ * and otherwise their place in the order the seed rolled — which is the same
+ * thing arrived at differently, so everything downstream can just ask.
+ */
+export function seatPosition(state: DraftState, seatIndex: number): number {
+  return state.seats[seatIndex].position ?? state.order.indexOf(seatIndex) + 1;
+}
+
 function factionsPicked(state: DraftState): number {
   return state.seats.filter((s) => s.factionId).length;
 }
@@ -312,6 +351,12 @@ function turnFor(state: DraftState): number | null {
     case "faction":
       if (state.config.format === "dealt") return null;
       return state.order[factionsPicked(state)] ?? null;
+    case "pick":
+      // Always one at a time: a hero picked "immediately after" a faction only
+      // means anything if the next player is waiting for both.
+      return state.order.find((i) => !state.seats[i].heroId) ?? null;
+    case "position":
+      return state.order[positionsPicked(state)] ?? null;
     case "hero":
       if (state.config.format === "dealt" && !heroPoolsCollide(state)) return null;
       return heroOrder(state)[heroesPicked(state)] ?? null;
@@ -320,22 +365,48 @@ function turnFor(state: DraftState): number | null {
   }
 }
 
+/** Once the drafting is done, the seating order is either drafted too or the
+ * seed's business and there is nothing left to do. */
+function afterDrafting(config: DraftConfig): Phase {
+  return config.draftSeats ? "position" : "done";
+}
+
+/**
+ * Where a hero-ban round sits.
+ *
+ * After the factions when they are drafted as a phase of their own, because a
+ * ban is only a decision once you know who is playing what. Combined picks
+ * leave no such moment — the first player picks a hero before the second has a
+ * faction — so there the bans come first and are a guess, which the lobby says.
+ */
+function afterFactionBans(config: DraftConfig): Phase {
+  if (config.combinedPicks) return config.heroBansPerPlayer > 0 ? "banHero" : "pick";
+  return "faction";
+}
+
 function phaseAfter(state: DraftState): Phase {
   const { config } = state;
   if (state.phase === "ban" && bansDone(state) >= config.players * config.bansPerPlayer) {
-    return "faction";
+    return afterFactionBans(config);
   }
   if (state.phase === "faction" && factionsPicked(state) === config.players) {
     return config.heroBansPerPlayer > 0 ? "banHero" : "hero";
   }
   if (state.phase === "banHero") {
-    if (heroBansDone(state) >= config.players * config.heroBansPerPlayer) return "hero";
+    const next: Phase = config.combinedPicks ? "pick" : "hero";
+    if (heroBansDone(state) >= config.players * config.heroBansPerPlayer) return next;
     // Also over when nobody has a ban left that would not starve somebody:
     // there is no move to wait for, so waiting would hang the draft.
     const context = heroBanContext(state);
-    if (state.order.every((i) => legalHeroBans(state, i, context).length === 0)) return "hero";
+    if (state.order.every((i) => legalHeroBans(state, i, context).length === 0)) return next;
   }
-  if (state.phase === "hero" && heroesPicked(state) === config.players) return "done";
+  if (state.phase === "hero" && heroesPicked(state) === config.players) {
+    return afterDrafting(config);
+  }
+  if (state.phase === "pick" && heroesPicked(state) === config.players) {
+    return afterDrafting(config);
+  }
+  if (state.phase === "position" && positionsPicked(state) === config.players) return "done";
   return state.phase;
 }
 
@@ -370,6 +441,31 @@ function dealShrinking<T>(
 }
 
 /**
+ * The disjoint faction deal, dealt from the table as it stood when the bans
+ * finished rather than as it stands now: a pool that changed under a player
+ * every time somebody else picked would be unusable, and disjointness means it
+ * never has to. Shared by the faction phase and the combined one, which deals
+ * the same way and only differs in when a seat gets to look at it.
+ */
+function dealtFactionPools(state: DraftState): Record<number, string[]> {
+  const { config, seed } = state;
+  const banned = new Set(state.bannedFactions);
+  const table = config.factionIds.filter((id) => !banned.has(id));
+  const deal = dealShrinking(
+    () => rngFor(seed, "deal", "faction"),
+    state.order,
+    () => table,
+    Math.min(config.factionPoolSize, Math.floor(table.length / config.players)),
+    (id) => [`id:${id}`],
+  );
+  const pools: Record<number, string[]> = {};
+  // Falling back to the open table is only reachable when there are fewer
+  // factions than players, which the lobby refuses to start.
+  for (const seatIndex of state.order) pools[seatIndex] = deal?.get(seatIndex) ?? table;
+  return pools;
+}
+
+/**
  * The options in front of each seat right now — derived, never stored and
  * never sent. Recomputing them from (seed, config, log) on every replay is
  * what keeps a shared draft code down to a few dozen bytes.
@@ -378,23 +474,49 @@ function poolsFor(state: DraftState): Record<number, string[]> {
   const { config, seed } = state;
   const pools: Record<number, string[]> = {};
 
+  if (state.phase === "position") {
+    if (state.turn !== null) {
+      const taken = new Set(state.seats.map((s) => s.position));
+      pools[state.turn] = Array.from({ length: config.players }, (_, i) => i + 1)
+        .filter((n) => !taken.has(n))
+        .map(String);
+    }
+    return pools;
+  }
+
+  // One turn, two picks: a seat without a faction is choosing one, and a seat
+  // with a faction but no hero is choosing that. Both draw from exactly the
+  // same places they would in their own phases.
+  if (state.phase === "pick") {
+    if (state.turn === null) return pools;
+    const seat = state.seats[state.turn];
+    if (!seat.factionId) {
+      pools[state.turn] =
+        config.format === "dealt"
+          ? (dealtFactionPools(state)[state.turn] ?? availableFactions(state))
+          : sample(
+              rngFor(seed, "turn", "faction", factionsPicked(state)),
+              availableFactions(state),
+              config.factionPoolSize,
+            );
+    } else {
+      const legal = legalHeroes(state, state.turn);
+      pools[state.turn] =
+        config.heroPoolSize === HERO_POOL_ALL
+          ? legal.map((h) => h.id)
+          : sample(
+              rngFor(seed, "turn", "hero", heroesPicked(state)),
+              legal,
+              config.heroPoolSize,
+            ).map((h) => h.id);
+    }
+    return pools;
+  }
+
   if (state.phase === "faction") {
     if (config.format === "dealt") {
-      // Dealt from the table as it stood when the bans finished, not as it
-      // stands now: a pool that changed under a player every time somebody
-      // else picked would be unusable, and disjointness means it never has to.
-      const banned = new Set(state.bannedFactions);
-      const table = config.factionIds.filter((id) => !banned.has(id));
-      const deal = dealShrinking(
-        () => rngFor(seed, "deal", "faction"),
-        state.order,
-        () => table,
-        Math.min(config.factionPoolSize, Math.floor(table.length / config.players)),
-        (id) => [`id:${id}`],
-      );
-      // Only reachable when there are fewer factions than players, which the
-      // lobby refuses to start — the open table at least shows what is there.
-      for (const seatIndex of state.order) pools[seatIndex] = deal?.get(seatIndex) ?? table;
+      const deal = dealtFactionPools(state);
+      for (const seatIndex of state.order) pools[seatIndex] = deal[seatIndex];
     } else if (state.turn !== null) {
       pools[state.turn] = sample(
         rngFor(seed, "turn", "faction", factionsPicked(state)),
@@ -455,7 +577,7 @@ function fingerprint(state: Omit<DraftState, "hash" | "pools">): string {
     state.seats
       .map(
         (s) =>
-          `${s.index}:${s.factionId ?? ""}:${s.heroId ?? ""}:${s.bans.join("+")}:${s.heroBans.join("+")}`,
+          `${s.index}:${s.factionId ?? ""}:${s.heroId ?? ""}:${s.position ?? ""}:${s.bans.join("+")}:${s.heroBans.join("+")}`,
       )
       .join("|"),
   ];
@@ -501,7 +623,8 @@ export function apply(state: DraftState, event: DraftEvent): ApplyResult {
 
     case "start": {
       if (state.phase !== "lobby") return reject("wrong-phase");
-      const phase: Phase = state.config.bansPerPlayer > 0 ? "ban" : "faction";
+      const phase: Phase =
+        state.config.bansPerPlayer > 0 ? "ban" : afterFactionBans(state.config);
       return { ok: true, state: withDerived({ ...state, phase }) };
     }
 
@@ -545,7 +668,7 @@ export function apply(state: DraftState, event: DraftEvent): ApplyResult {
     }
 
     case "pickF": {
-      if (state.phase !== "faction") return reject("wrong-phase");
+      if (state.phase !== "faction" && state.phase !== "pick") return reject("wrong-phase");
       if (state.seats[seatIndex].factionId) return reject("already-picked");
       if (state.turn !== null && state.turn !== seatIndex) return reject("not-your-turn");
       if (!(state.pools[seatIndex] ?? []).includes(event.factionId)) return reject("not-in-pool");
@@ -557,13 +680,25 @@ export function apply(state: DraftState, event: DraftEvent): ApplyResult {
     }
 
     case "pickH": {
-      if (state.phase !== "hero") return reject("wrong-phase");
+      if (state.phase !== "hero" && state.phase !== "pick") return reject("wrong-phase");
       if (state.seats[seatIndex].heroId) return reject("already-picked");
       if (state.turn !== null && state.turn !== seatIndex) return reject("not-your-turn");
       if (!(state.pools[seatIndex] ?? []).includes(event.heroId)) return reject("not-in-pool");
       if (!heroById(event.heroId)) return reject("unknown-id");
 
       const seats = state.seats.map((s) => (s.index === seatIndex ? { ...s, heroId: event.heroId } : s));
+      return { ok: true, state: withDerived({ ...state, seats }) };
+    }
+
+    case "pickP": {
+      if (state.phase !== "position") return reject("wrong-phase");
+      if (state.seats[seatIndex].position !== null) return reject("already-picked");
+      if (state.turn !== null && state.turn !== seatIndex) return reject("not-your-turn");
+      if (!(state.pools[seatIndex] ?? []).includes(String(event.position))) return reject("not-in-pool");
+
+      const seats = state.seats.map((s) =>
+        s.index === seatIndex ? { ...s, position: event.position } : s,
+      );
       return { ok: true, state: withDerived({ ...state, seats }) };
     }
 
@@ -633,6 +768,8 @@ export function isSeatWaiting(state: DraftState, seatIndex: number): boolean {
   }
   if (state.phase === "faction") return state.seats[seatIndex].factionId !== null;
   if (state.phase === "hero") return state.seats[seatIndex].heroId !== null;
+  if (state.phase === "pick") return state.seats[seatIndex].heroId !== null;
+  if (state.phase === "position") return state.seats[seatIndex].position !== null;
   return true;
 }
 

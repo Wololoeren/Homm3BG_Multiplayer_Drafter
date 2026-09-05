@@ -7,6 +7,7 @@ import { faction, factionName, hero, heroName } from "@/lib/catalogue";
 import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
 import { copyText } from "@/lib/clipboard";
 import { encodeDraft, formatCode } from "@/lib/draftCode";
+import { seatPosition } from "@/lib/draftEngine";
 import type { DraftEvent, DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
 import type { MessageKey } from "@/lib/i18n/messages/en";
@@ -35,19 +36,24 @@ export default function ResultSheet({
   const [copied, setCopied] = useState(false);
   const code = encodeDraft(state.config, state.seed, events);
 
-  const rows = state.order.map((index) => {
-    const seat = state.seats[index];
-    return {
-      seat,
-      town: seat.factionId ? faction(seat.factionId) : null,
-      card: seat.heroId ? hero(seat.heroId) : null,
-    };
-  });
+  // Printed in seating order, which is the order the table will actually play
+  // in — drafted or rolled from the seed, seatPosition knows which.
+  const rows = state.order
+    .map((index) => {
+      const seat = state.seats[index];
+      return {
+        seat,
+        position: seatPosition(state, index),
+        town: seat.factionId ? faction(seat.factionId) : null,
+        card: seat.heroId ? hero(seat.heroId) : null,
+      };
+    })
+    .sort((a, b) => a.position - b.position);
 
   function copyAsText() {
     const lines = rows.map(
-      ({ seat, town, card }) =>
-        `${seat.name || t("draft.seat", { n: seat.index + 1 })}: ${town?.name ?? "—"} — ${card?.name ?? "—"}` +
+      ({ seat, position, town, card }) =>
+        `${position}. ${seat.name || t("draft.seat", { n: seat.index + 1 })}: ${town?.name ?? "—"} — ${card?.name ?? "—"}` +
         (card ? ` (${card.className})` : ""),
     );
     if (state.bannedFactions.length) {
@@ -89,15 +95,17 @@ export default function ResultSheet({
           <table className="sheetTable">
             <thead>
               <tr>
-                <th style={{ width: "26%" }}>{t("result.player")}</th>
+                <th style={{ width: "8%" }}>{t("result.seat")}</th>
+                <th style={{ width: "22%" }}>{t("result.player")}</th>
                 <th style={{ width: "24%" }}>{t("result.faction")}</th>
                 <th style={{ width: "26%" }}>{t("result.hero")}</th>
                 <th>{t("result.class")}</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ seat, town, card }) => (
+              {rows.map(({ seat, position, town, card }) => (
                 <tr key={seat.index}>
+                  <td>{position}</td>
                   <td className="who">{seat.name || t("draft.seat", { n: seat.index + 1 })}</td>
                   <td>
                     {town && <Crest factionId={town.id} className="sheetCrest" />}

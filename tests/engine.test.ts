@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { FACTIONS, HEROES, hero } from "@/lib/catalogue";
 import { defaultConfig, feasibility, repair } from "@/lib/draftConfig";
-import { apply, canMove, heroBanOptions, legalHeroBans, legalHeroes, reduce } from "@/lib/draftEngine";
+import {
+  apply,
+  canMove,
+  heroBanOptions,
+  legalHeroBans,
+  legalHeroes,
+  reduce,
+  seatPosition,
+} from "@/lib/draftEngine";
 import { mulberry32 } from "@/lib/rng";
 import { HERO_POOL_ALL, type DraftConfig, type DraftEvent, type DraftState } from "@/lib/draftTypes";
 
@@ -35,6 +43,10 @@ function randomConfig(rng: Rng): DraftConfig {
     heroFactionPolicy,
     uniqueHeroIdentity: rng() < 0.8,
     heroMayComeFromAnotherPlayersTown: rng() < 0.5,
+    // The two shapes a turn can take, so every invariant below is defended in
+    // both of them rather than only in the one that came first.
+    combinedPicks: rng() < 0.4,
+    draftSeats: rng() < 0.4,
   };
   return repair(config);
 }
@@ -65,6 +77,13 @@ function playOut(config: DraftConfig, seed: string, rng: Rng): { state: DraftSta
       event = { t: "ban", seat: seat.index, factionId: pick(rng, options) };
     } else if (state.phase === "banHero") {
       event = { t: "banH", seat: seat.index, heroId: pick(rng, legalHeroBans(state, seat.index)) };
+    } else if (state.phase === "pick") {
+      // One turn, two picks: the pool holds whichever the seat still owes.
+      event = state.seats[seat.index].factionId
+        ? { t: "pickH", seat: seat.index, heroId: pick(rng, state.pools[seat.index]) }
+        : { t: "pickF", seat: seat.index, factionId: pick(rng, state.pools[seat.index]) };
+    } else if (state.phase === "position") {
+      event = { t: "pickP", seat: seat.index, position: Number(pick(rng, state.pools[seat.index])) };
     } else if (state.phase === "faction") {
       event = { t: "pickF", seat: seat.index, factionId: pick(rng, state.pools[seat.index]) };
     } else {
@@ -132,7 +151,9 @@ describe("draft invariants", () => {
       const { state } = playOut(config, `uf${run}`, rng);
       const homes = state.seats.map((s) => hero(s.heroId!)!.factionId);
       expect(new Set(homes).size, `run ${run}: ${homes.join()}`).toBe(config.players);
-      if (!config.heroMayComeFromAnotherPlayersTown) {
+      // The rule does not apply to combined picks: there is no "other town"
+      // yet when the first player takes their hero.
+      if (!config.heroMayComeFromAnotherPlayersTown && !config.combinedPicks) {
         for (const seat of state.seats) {
           const home = hero(seat.heroId!)!.factionId;
           const otherTowns = state.seats.filter((s) => s.index !== seat.index).map((s) => s.factionId);
@@ -152,6 +173,11 @@ describe("draft invariants", () => {
       // Every seat had something to take at every step, which is what
       // feasibility() promises up front.
       expect(state.seats.every((s) => s.factionId && s.heroId)).toBe(true);
+      // Everybody has somewhere to sit, and no two in the same place.
+      const seats = state.seats.map((s) => seatPosition(state, s.index));
+      expect(new Set(seats).size).toBe(config.players);
+      expect(Math.min(...seats)).toBe(1);
+      expect(Math.max(...seats)).toBe(config.players);
     }
   }, SLOW);
 
@@ -171,7 +197,9 @@ describe("draft invariants", () => {
   it("P7: dealt pools are pairwise disjoint, so simultaneous picks cannot collide", () => {
     const rng = mulberry32(7);
     for (let run = 0; run < RUNS; run++) {
-      const config = repair({ ...randomConfig(rng), format: "dealt" as const });
+      // Disjoint dealing is what the simultaneous shape rests on; combined
+      // picks are sequential by construction and have nothing to be disjoint.
+      const config = repair({ ...randomConfig(rng), format: "dealt" as const, combinedPicks: false });
       const log: DraftEvent[] = [{ t: "start" }];
       let state = reduce(config, `deal${run}`, log);
 
@@ -209,7 +237,7 @@ function expectDisjoint(state: DraftState, run: number, label: string) {
 
 describe("pool stability", () => {
   it("a dealt pool does not change when somebody else picks", () => {
-    const config = repair({ ...defaultConfig(), format: "dealt", players: 4 });
+    const config = repair({ ...defaultConfig(), format: "dealt", players: 4, combinedPicks: false });
     const log: DraftEvent[] = [{ t: "start" }];
     let state = reduce(config, "stable", log);
     const before = { ...state.pools };
@@ -501,4 +529,76 @@ describe("banning heroes", () => {
       }
     }
   }, SLOW);
+});
+
+describe("a turn that takes both", () => {
+  const combined = (over: Partial<DraftConfig> = {}) =>
+    repair({ ...defaultConfig(), players: 4, combinedPicks: true, ...over });
+
+  it("gives a seat its hero before the next seat has a faction", () => {
+    const config = combined();
+    const log: DraftEvent[] = [{ t: "start" }];
+    let state = reduce(config, "combined", log);
+    expect(state.phase).toBe("pick");
+
+    const first = state.turn!;
+    log.push({ t: "pickF", seat: first, factionId: state.pools[first][0] });
+    state = reduce(config, "combined", log);
+    // Still the same player: they owe a hero before anybody else moves.
+    expect(state.turn).toBe(first);
+    expect(state.seats.filter((s) => s.factionId)).toHaveLength(1);
+
+    log.push({ t: "pickH", seat: first, heroId: state.pools[first][0] });
+    state = reduce(config, "combined", log);
+    expect(state.turn).not.toBe(first);
+    expect(state.seats[first].heroId).toBeTruthy();
+  });
+
+  it("refuses a second player moving before the first has finished", () => {
+    const config = combined();
+    const state = reduce(config, "queue", [{ t: "start" }]);
+    const other = state.order.find((i) => i !== state.turn)!;
+    const result = apply(state, { t: "pickF", seat: other, factionId: state.pools[other]?.[0] ?? "castle" });
+    expect(result.ok).toBe(false);
+  });
+
+  it("puts the hero bans first, since there is no later moment for them", () => {
+    const config = combined({ heroBansPerPlayer: 1 });
+    const state = reduce(config, "bansfirst", [{ t: "start" }]);
+    expect(state.phase).toBe("banHero");
+    expect(state.seats.every((s) => s.factionId === null)).toBe(true);
+  });
+});
+
+describe("drafting where you sit", () => {
+  it("hands out every place exactly once", () => {
+    const rng = mulberry32(91);
+    for (let run = 0; run < 60; run++) {
+      const config = repair({ ...defaultConfig(), players: 2 + Math.floor(rng() * 5), draftSeats: true });
+      const { state } = playOut(config, `seats${run}`, rng);
+      expect(state.phase).toBe("done");
+      const taken = state.seats.map((s) => s.position);
+      expect(new Set(taken).size).toBe(config.players);
+      expect([...taken].sort((a, b) => a! - b!)).toEqual(
+        Array.from({ length: config.players }, (_, i) => i + 1),
+      );
+    }
+  }, SLOW);
+
+  it("falls back to the seed's order when it is not drafted", () => {
+    const config = repair({ ...defaultConfig(), players: 4, draftSeats: false });
+    const state = reduce(config, "rolled", [{ t: "start" }]);
+    expect(state.seats.every((s) => s.position === null)).toBe(true);
+    for (const [place, seatIndex] of state.order.entries()) {
+      expect(seatPosition(state, seatIndex)).toBe(place + 1);
+    }
+  });
+
+  it("comes after everything else, so the choice is an informed one", () => {
+    const config = repair({ ...defaultConfig(), players: 3, draftSeats: true });
+    const { state, log } = playOut(config, "last", mulberry32(4));
+    expect(state.phase).toBe("done");
+    const lastMoves = log.slice(-config.players).map((e) => e.t);
+    expect(lastMoves.every((t) => t === "pickP")).toBe(true);
+  });
 });

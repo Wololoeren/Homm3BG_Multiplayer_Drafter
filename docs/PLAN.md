@@ -655,6 +655,39 @@ This bumped `DRAFT_VERSION` to 2: a pool size of 0 would have been clamped to 1
 by an older build, which would have silently dealt a different draft rather
 than refusing the code.
 
+### Asked for after the second round of play-testing
+
+- **Impossible settings are greyed out** rather than silently repaired. Two
+  different questions, deliberately: a *pool size* is judged as it stands,
+  because that is exactly what is being chosen, while a *player count* or a
+  *ban budget* is judged after repair, because those are facts about the table
+  that the pools should give way to. A faction the draft could not be dealt
+  without cannot be switched off either.
+- **Faction and hero in one turn.** A player takes both before the next moves,
+  which makes it sequential by construction. Faction pools are still dealt
+  disjointly up front where the format says so — that deal never depended on
+  anyone's pick — while the hero is sampled when the turn comes round.
+- **Drafting the seating order**, as a last round once everything else is
+  settled, so the choice is an informed one. When it is off, `seatPosition`
+  falls back to the order the seed rolled, so the rest of the app never has to
+  ask which of the two it is looking at.
+
+Two rules turned out not to survive combined picks, and both are now handled
+where they belong rather than in the lobby:
+
+- **Hero bans have no informed moment.** With one turn taking both, the first
+  player picks a hero before the second has a town, so the ban round runs
+  before anything is drafted and is a guess. The lobby says so. It also meant
+  `legalHeroes` had to answer for a seat with no faction yet — the heroes of
+  every town still in the game — or the ban board would have been empty.
+- **"No hero from another player's town" is unenforceable.** The other towns do
+  not exist yet when the first player picks. Enforcing it the other way, by
+  forbidding a town because somebody already took its hero, is a different
+  game. So it does not apply in combined mode, in the engine rather than only
+  in `sanitizeConfig` — a config assembled by hand would otherwise slip past it
+  and deal a draft that could not be finished, which is exactly what the
+  property tests caught.
+
 ### Cost
 
 Trystero and the QR generator are both dynamically imported, so a page that is

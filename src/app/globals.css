@@ -375,6 +375,24 @@ button {
   color: #ded4bb;
 }
 
+/* The drafted turn order, in front of the name it belongs to. */
+.seatPos {
+  display: inline-block;
+  min-width: 1.5em;
+  margin-right: 0.4em;
+  padding: 0 0.25em;
+  font-size: 12px;
+  text-align: center;
+  color: #241c10;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+/* A seat is a number and nothing else, so the number is the card. */
+.seatCard .cardName {
+  font-size: 30px;
+}
+
 /* Stays a block: text-overflow only truncates in a block, and a long hero
    name in a narrow seat has to end in an ellipsis rather than be cut mid-word.
    The crest sits inline in the line, aligned by its own vertical-align. */

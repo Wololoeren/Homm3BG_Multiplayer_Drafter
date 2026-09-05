@@ -40,6 +40,8 @@ export function eventKey(event: DraftEvent): string {
       return `pickF:${event.seat}`;
     case "pickH":
       return `pickH:${event.seat}`;
+    case "pickP":
+      return `pickP:${event.seat}`;
     case "undo":
       // Never merged or transmitted: undo is a local convenience for one
       // screen being passed round a table (see draftSession's `undoLast`),
@@ -58,15 +60,21 @@ export function mergeEvents(existing: readonly DraftEvent[], incoming: readonly 
   return [...byKey.values()];
 }
 
-const PHASE_RANK: Record<DraftEvent["t"], number> = {
-  join: 0,
-  start: 1,
-  ban: 2,
-  pickF: 3,
-  banH: 4,
-  pickH: 5,
-  undo: 6,
-};
+/**
+ * Which round a move belongs to.
+ *
+ * Two orders, because the draft has two shapes. Normally the factions are all
+ * drafted, then the heroes, so a faction move always sorts before a hero one.
+ * With combined picks a seat takes both before the next seat moves, so they
+ * share a rank and interleave by seat instead — sorting all the factions first
+ * would produce a log that will not replay, because the second player cannot
+ * move until the first has a hero.
+ */
+function phaseRanks(combined: boolean): Record<DraftEvent["t"], number> {
+  return combined
+    ? { join: 0, start: 1, ban: 2, banH: 3, pickF: 4, pickH: 4, pickP: 5, undo: 6 }
+    : { join: 0, start: 1, ban: 2, pickF: 3, banH: 4, pickH: 5, pickP: 6, undo: 7 };
+}
 
 /**
  * Sorts a bag of moves into the order the draft itself implies.
@@ -108,11 +116,15 @@ export function canonicalise(
   }
   for (const own of bansBySeat.values()) own.sort();
 
+  const rankOf = phaseRanks(config.combinedPicks);
+
   function key(event: DraftEvent): [number, number, number] {
-    const phase = PHASE_RANK[event.t];
+    const phase = rankOf[event.t];
     if (!("seat" in event)) return [phase, 0, 0];
-    const rank =
-      event.t === "pickH" && config.format === "snake"
+    const rank = config.combinedPicks
+      ? // A seat's faction and its hero, in that order, before the next seat.
+        seatRankOf(event.seat) * 2 + (event.t === "pickH" ? 1 : 0)
+      : event.t === "pickH" && config.format === "snake"
         ? config.players - 1 - seatRankOf(event.seat)
         : seatRankOf(event.seat);
     const round =

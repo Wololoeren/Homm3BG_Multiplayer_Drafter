@@ -38,33 +38,51 @@ const HAVE_CARD_PAIRINGS = HEROES.some((h) => h.pairedWith);
 
 const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
-/** A row of numbers to choose between, which is faster to hit than a slider
- * and shows the whole range at once — the range being small enough to. */
+/**
+ * A row of numbers to choose between, which is faster to hit than a slider and
+ * shows the whole range at once — the range being small enough to.
+ *
+ * A value that cannot work is greyed rather than hidden, so the shape of the
+ * limit stays visible: five players cannot each be offered three of eleven
+ * factions, and watching 3, 4 and 5 go dim as the table fills says why far
+ * better than a sentence would.
+ */
 function NumberRow({
   value,
   from,
   to,
   onPick,
   labelFor,
+  isDisabled,
+  titleFor,
 }: {
   value: number;
   from: number;
   to: number;
   onPick: (n: number) => void;
   labelFor?: (n: number) => string;
+  isDisabled?: (n: number) => boolean;
+  titleFor?: (n: number) => string | undefined;
 }) {
   return (
     <div className="segmented">
-      {range(from, to).map((n) => (
-        <button
-          key={n}
-          type="button"
-          className={n === value ? "active" : ""}
-          onClick={() => onPick(n)}
-        >
-          {labelFor ? labelFor(n) : n}
-        </button>
-      ))}
+      {range(from, to).map((n) => {
+        // Never grey the current value: it is what the draft is set to, and a
+        // control that disables its own selection cannot be undone.
+        const off = n !== value && (isDisabled?.(n) ?? false);
+        return (
+          <button
+            key={n}
+            type="button"
+            className={n === value ? "active" : ""}
+            disabled={off}
+            title={off ? titleFor?.(n) : undefined}
+            onClick={() => onPick(n)}
+          >
+            {labelFor ? labelFor(n) : n}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -108,6 +126,18 @@ export default function DraftSetup({
   // shrinks the pools instead of leaving the player to unpick a red error.
   const set = (patch: Partial<DraftConfig>) => onChange(repair({ ...config, ...patch }));
 
+  /**
+   * Whether a setting can be chosen at all.
+   *
+   * Two different questions, deliberately. A pool size is asked about as it
+   * stands — "can five players each be offered three factions?" — because that
+   * is exactly what is being chosen. A player count or a ban budget is asked
+   * about after repair, because those are facts about the table that the pools
+   * should give way to, not preferences to be refused.
+   */
+  const poolFits = (patch: Partial<DraftConfig>) => feasibility({ ...config, ...patch }).ok;
+  const tableFits = (patch: Partial<DraftConfig>) => feasibility(repair({ ...config, ...patch })).ok;
+
   const ownedSets = SETS.filter(
     (s) =>
       FACTIONS.some((f) => f.set === s && config.factionIds.includes(f.id)) ||
@@ -126,6 +156,16 @@ export default function DraftSetup({
     set({ factionIds, heroIds });
   }
 
+  /**
+   * Switching a faction off is refused when the table could not then be dealt
+   * at all — the direct form of "five players cannot draft from three
+   * factions", stopped before it happens rather than explained afterwards.
+   */
+  function canRemoveFaction(id: string) {
+    const factionIds = config.factionIds.filter((f) => f !== id);
+    return factionIds.length > 0 && feasibility(repair({ ...config, factionIds })).ok;
+  }
+
   function toggleFaction(id: string) {
     const on = config.factionIds.includes(id);
     const factionIds = on
@@ -142,6 +182,8 @@ export default function DraftSetup({
           value={config.players}
           from={MIN_PLAYERS}
           to={MAX_PLAYERS}
+          isDisabled={(players) => !tableFits({ players })}
+          titleFor={() => t("lobby.tooManyPlayers", { factions: config.factionIds.length })}
           onPick={(players) => {
             set({ players });
             onNames(
@@ -231,6 +273,13 @@ export default function DraftSetup({
           value={config.factionPoolSize}
           from={1}
           to={MAX_POOL}
+          isDisabled={(factionPoolSize) => !poolFits({ factionPoolSize })}
+          titleFor={(n) =>
+            t("lobby.poolTooBig", {
+              need: config.players * n,
+              left: feasibility(config).factionsAfterBans,
+            })
+          }
           onPick={(factionPoolSize) => set({ factionPoolSize })}
         />
       </Row>
@@ -251,6 +300,7 @@ export default function DraftSetup({
               key={n}
               type="button"
               className={n === config.heroPoolSize ? "active" : ""}
+              disabled={n !== config.heroPoolSize && !poolFits({ heroPoolSize: n })}
               onClick={() => set({ heroPoolSize: n })}
             >
               {n}
@@ -270,7 +320,39 @@ export default function DraftSetup({
         </div>
       </Row>
 
-      <Row label={t("lobby.heroBans")} hint={t("lobby.heroBans.help")}>
+      <Row label={t("lobby.turns")} hint={t("lobby.turns.help")}>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={config.combinedPicks}
+            onChange={(e) => set({ combinedPicks: e.target.checked })}
+          />
+          <span>
+            {t("lobby.combined")}
+            <span className="hint" style={{ display: "block" }}>
+              {t("lobby.combined.help")}
+            </span>
+          </span>
+        </label>
+        <label className="toggle" style={{ marginTop: 8 }}>
+          <input
+            type="checkbox"
+            checked={config.draftSeats}
+            onChange={(e) => set({ draftSeats: e.target.checked })}
+          />
+          <span>
+            {t("lobby.draftSeats")}
+            <span className="hint" style={{ display: "block" }}>
+              {t("lobby.draftSeats.help")}
+            </span>
+          </span>
+        </label>
+      </Row>
+
+      <Row
+        label={t("lobby.heroBans")}
+        hint={t(config.combinedPicks ? "lobby.heroBans.blindHelp" : "lobby.heroBans.help")}
+      >
         <NumberRow
           value={config.heroBansPerPlayer}
           from={0}
@@ -293,6 +375,8 @@ export default function DraftSetup({
             value={config.bansPerPlayer}
             from={0}
             to={MAX_BANS}
+            isDisabled={(bansPerPlayer) => !tableFits({ bansPerPlayer })}
+            titleFor={() => t("lobby.tooManyBans", { players: config.players })}
             onPick={(bansPerPlayer) => set({ bansPerPlayer })}
             labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}
           />
@@ -358,9 +442,17 @@ export default function DraftSetup({
               <input
                 type="checkbox"
                 checked={config.heroMayComeFromAnotherPlayersTown}
+                disabled={config.combinedPicks}
                 onChange={(e) => set({ heroMayComeFromAnotherPlayersTown: e.target.checked })}
               />
-              <span>{t("lobby.otherTowns")}</span>
+              <span>
+                {t("lobby.otherTowns")}
+                {config.combinedPicks && (
+                  <span className="hint" style={{ display: "block" }}>
+                    {t("lobby.otherTowns.combined")}
+                  </span>
+                )}
+              </span>
             </label>
             <label className="toggle" style={{ marginTop: 8 }}>
               <input
@@ -400,17 +492,23 @@ export default function DraftSetup({
           ))}
         </div>
         <div className="collection" style={{ marginTop: 8 }}>
-          {FACTIONS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              className={config.factionIds.includes(f.id) ? "chip on" : "chip"}
-              onClick={() => toggleFaction(f.id)}
-            >
-              <span className="chipDot" style={{ background: f.color }} />
-              {f.name}
-            </button>
-          ))}
+          {FACTIONS.map((f) => {
+            const on = config.factionIds.includes(f.id);
+            const stuck = on && !canRemoveFaction(f.id);
+            return (
+              <button
+                key={f.id}
+                type="button"
+                className={on ? "chip on" : "chip"}
+                disabled={stuck}
+                title={stuck ? t("lobby.factionNeeded", { players: config.players }) : undefined}
+                onClick={() => toggleFaction(f.id)}
+              >
+                <span className="chipDot" style={{ background: f.color }} />
+                {f.name}
+              </button>
+            );
+          })}
         </div>
       </Row>
 

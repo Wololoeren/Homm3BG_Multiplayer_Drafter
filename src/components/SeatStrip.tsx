@@ -43,7 +43,12 @@ export default function SeatStrip({
             className={`seat${index === activeSeat ? " active" : ""}${index === mySeat ? " you" : ""}`}
             style={town ? { borderLeftColor: town.color } : undefined}
           >
-            <div className="seatName">{seat.name || t("draft.seat", { n: index + 1 })}</div>
+            <div className="seatName">
+              {state.config.draftSeats && seat.position !== null && (
+                <span className="seatPos">{seat.position}</span>
+              )}
+              {seat.name || t("draft.seat", { n: index + 1 })}
+            </div>
             <div className={`seatLine${town ? " filled" : ""}`} style={town ? { color: town.color } : undefined}>
               {town ? (
                 <>

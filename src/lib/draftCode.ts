@@ -30,6 +30,7 @@ const EVENT_PICK_FACTION = 3;
 const EVENT_PICK_HERO = 4;
 const EVENT_UNDO = 5;
 const EVENT_BAN_HERO = 6;
+const EVENT_PICK_POSITION = 7;
 
 const POLICIES: HeroFactionPolicy[] = ["own", "unique-faction", "any"];
 
@@ -124,7 +125,9 @@ export function encodeDraft(config: DraftConfig, seed: string, events: readonly 
       (config.banVisibility === "blind" ? 2 : 0) |
       (config.uniqueHeroIdentity ? 4 : 0) |
       (config.heroMayComeFromAnotherPlayersTown ? 8 : 0) |
-      (config.sharedHeroCards ? 16 : 0),
+      (config.sharedHeroCards ? 16 : 0) |
+      (config.draftSeats ? 32 : 0) |
+      (config.combinedPicks ? 64 : 0),
   );
   out.push((config.factionPoolSize & 0x0f) | ((config.heroPoolSize & 0x0f) << 4));
   out.push((config.bansPerPlayer & 0x0f) | (POLICIES.indexOf(config.heroFactionPolicy) << 4));
@@ -156,6 +159,9 @@ export function encodeDraft(config: DraftConfig, seed: string, events: readonly 
         break;
       case "pickH":
         out.push((EVENT_PICK_HERO << 5) | event.seat, heroAt.get(event.heroId) ?? 0xff);
+        break;
+      case "pickP":
+        out.push((EVENT_PICK_POSITION << 5) | event.seat, event.position & 0xff);
         break;
       case "undo":
         out.push(EVENT_UNDO << 5);
@@ -222,6 +228,8 @@ export function decodeDraft(input: string): Draft {
     uniqueHeroIdentity: (flags & 4) !== 0,
     heroMayComeFromAnotherPlayersTown: (flags & 8) !== 0,
     sharedHeroCards: (flags & 16) !== 0,
+    draftSeats: (flags & 32) !== 0,
+    combinedPicks: (flags & 64) !== 0,
     factionPoolSize: pools & 0x0f,
     heroPoolSize: (pools >> 4) & 0x0f,
     bansPerPlayer: bansAndPolicy & 0x0f,
@@ -263,6 +271,10 @@ export function decodeDraft(input: string): Draft {
       case EVENT_PICK_HERO:
         need(1);
         events.push({ t: "pickH", seat, heroId: HERO_INDEX[bytes[at++]] ?? "" });
+        break;
+      case EVENT_PICK_POSITION:
+        need(1);
+        events.push({ t: "pickP", seat, position: bytes[at++] });
         break;
       case EVENT_UNDO:
         events.push({ t: "undo" });

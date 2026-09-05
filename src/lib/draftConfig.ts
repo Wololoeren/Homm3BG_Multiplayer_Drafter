@@ -25,6 +25,8 @@ export function defaultConfig(): DraftConfig {
     heroFactionPolicy: "own",
     uniqueHeroIdentity: true,
     sharedHeroCards: false,
+    draftSeats: false,
+    combinedPicks: false,
     heroMayComeFromAnotherPlayersTown: false,
     factionIds: FACTIONS.map((f) => f.id),
     heroIds: HEROES.map((h) => h.id),
@@ -65,6 +67,7 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
   const factionIds = keep(input.factionIds, knownFactions, base.factionIds);
   const heroIds = keep(input.heroIds, knownHeroes, base.heroIds);
 
+  const combinedPicks = input.combinedPicks === true;
   const format: DraftFormat = input.format === "snake" ? "snake" : "dealt";
   const policy: HeroFactionPolicy =
     input.heroFactionPolicy === "unique-faction" || input.heroFactionPolicy === "any"
@@ -90,7 +93,14 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
     heroFactionPolicy: policy,
     uniqueHeroIdentity: input.uniqueHeroIdentity !== false,
     sharedHeroCards: input.sharedHeroCards === true,
-    heroMayComeFromAnotherPlayersTown: input.heroMayComeFromAnotherPlayersTown === true,
+    draftSeats: input.draftSeats === true,
+    combinedPicks,
+    // Combined picks settle this one for you. The first player takes a hero
+    // before the second has a town, so "not from another player's town" is a
+    // rule about facts that do not exist yet; keeping it would mean enforcing
+    // it backwards, forbidding a town because somebody already took its hero.
+    heroMayComeFromAnotherPlayersTown:
+      combinedPicks || input.heroMayComeFromAnotherPlayersTown === true,
     // An empty list would be a draft with nothing to draft; fall back rather
     // than shipping a config that can only deadlock.
     factionIds: factionIds.length ? factionIds : base.factionIds,
@@ -213,11 +223,13 @@ export function feasibility(config: DraftConfig): Feasibility {
       supply = Math.min(supply, new Set(pile.map((h) => h.factionId)).size);
     }
 
-    maxHeroPoolSize =
-      config.format === "dealt"
-        ? Math.max(1, Math.min(MAX_POOL, Math.floor(supply / players)))
-        : Math.max(1, Math.min(MAX_POOL, supply - players + 1));
-    const need = config.format === "dealt" && sizedHeroPool ? players * config.heroPoolSize : players;
+    // Combined picks take a hero at the moment a seat's turn comes round, so
+    // the pool is sampled rather than dealt — the same as a snake draft.
+    const heroesDealt = config.format === "dealt" && !config.combinedPicks;
+    maxHeroPoolSize = heroesDealt
+      ? Math.max(1, Math.min(MAX_POOL, Math.floor(supply / players)))
+      : Math.max(1, Math.min(MAX_POOL, supply - players + 1));
+    const need = heroesDealt && sizedHeroPool ? players * config.heroPoolSize : players;
     if (need > supply) {
       issues.push({ code: "not-enough-heroes", vars: { faction: "", have: supply, need } });
     }

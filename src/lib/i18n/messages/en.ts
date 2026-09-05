@@ -26,9 +26,19 @@ const en = {
     "Every hero your faction still has. Where two players could be offered the same person — Tarnum has a card in six factions — the hero step goes round the table one at a time instead of everyone at once.",
   "lobby.bans": "Bans each",
   "lobby.bans.none": "None",
+  "lobby.turns": "Turns",
+  "lobby.turns.help": "How a turn is shaped, and whether where you sit is yours to choose.",
+  "lobby.combined": "Faction and hero in one turn",
+  "lobby.draftSeats": "Draft the seating order",
+  "lobby.combined.help":
+    "A player takes their faction and then that faction's hero before the next player moves, one at a time round the table. Off, everyone drafts factions first and heroes afterwards.",
+  "lobby.draftSeats.help":
+    "After everything else is drafted, each player picks where they sit from the places still free. Off, the seed decides it.",
   "lobby.heroBans": "Hero bans each",
   "lobby.heroBans.help":
     "Spent in a round of their own, after the factions are drafted — until you know who is playing what, banning a hero is a guess. A ban that would leave somebody with nothing to draft is refused.",
+  "lobby.heroBans.blindHelp":
+    "With faction and hero in one turn there is no moment when the towns are known and the heroes are not, so these bans happen before anything is drafted — a guess rather than a read.",
   "lobby.banVisibility": "Bans are",
   "lobby.banVisibility.open": "Open",
   "lobby.banVisibility.blind": "Blind",
@@ -47,6 +57,8 @@ const en = {
   "lobby.uniqueIdentity.help":
     "Tarnum has a card in six factions and Lord Haart in two. With this on, only one player can be Tarnum.",
   "lobby.otherTowns": "Heroes may come from another player's town",
+  "lobby.otherTowns.combined":
+    "Always on with faction and hero in one turn: the first player takes a hero before the second has a town, so there is no other town to keep away from yet.",
   "lobby.sharedCards": "One card, two heroes",
   "lobby.sharedCards.help":
     "Hero cards are double-sided, so drafting one face takes the whole card and the hero on its back leaves with it.",
@@ -67,6 +79,10 @@ const en = {
   "lobby.mode.p2p.help":
     "Everyone opens the same link and the browsers talk to each other directly. Falls back to passing links if the network blocks it.",
   "lobby.youAre": "You are",
+  "lobby.tooManyPlayers": "There are only {factions} factions in play.",
+  "lobby.poolTooBig": "That would need {need} factions; {left} are on the table.",
+  "lobby.tooManyBans": "That many bans would not leave a faction for each of {players} players.",
+  "lobby.factionNeeded": "Needed to deal {players} players a draft.",
   "lobby.start": "Start the draft",
   "lobby.seed": "Seed",
   "lobby.reroll": "New seed",
@@ -86,6 +102,8 @@ const en = {
   // ------------------------------------------------------------------ draft
   "phase.lobby": "Not started",
   "phase.ban": "Bans",
+  "phase.pick": "Faction and hero",
+  "phase.position": "Seating",
   "phase.banHero": "Hero bans",
   "phase.faction": "Faction",
   "phase.hero": "Hero",
@@ -99,6 +117,10 @@ const en = {
   "draft.pickHero": "Choose a hero",
   "draft.banPrompt": "Ban a faction",
   "draft.banHeroPrompt": "Ban a hero",
+  "draft.pickSeat": "Choose where you sit",
+  "draft.pickSeat.help": "Turn order for the game itself",
+  "draft.seatFirst": "Goes first",
+  "draft.seatNth": "{n}th to play",
   "draft.kept": "Cannot be banned",
   "draft.bansLeft": "{n} left",
   "draft.bansProgress": "{done} of {total} spent",
@@ -128,6 +150,7 @@ const en = {
 
   // ----------------------------------------------------------------- result
   "result.heading": "The draft",
+  "result.seat": "Seat",
   "result.player": "Player",
   "result.faction": "Faction",
   "result.hero": "Hero",

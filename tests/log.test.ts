@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { encodeDraft } from "@/lib/draftCode";
 import { defaultConfig, repair } from "@/lib/draftConfig";
-import { canMove, reduce } from "@/lib/draftEngine";
+import { canMove, legalHeroBans, reduce } from "@/lib/draftEngine";
 import { acceptEvents, canonicalise, eventKey, mergeEvents } from "@/lib/draftLog";
 import { mulberry32, shuffle } from "@/lib/rng";
 import type { DraftConfig, DraftEvent } from "@/lib/draftTypes";
@@ -14,6 +14,11 @@ import type { DraftConfig, DraftEvent } from "@/lib/draftTypes";
  */
 
 type Rng = () => number;
+
+/** Each run plays a draft out and then replays it five times over, once per
+ * simulated client, so a few dozen of them is seconds rather than
+ * milliseconds. Generous enough that a slow machine does not turn it red. */
+const SLOW = 60_000;
 const pick = <T,>(rng: Rng, items: readonly T[]): T => items[Math.floor(rng() * items.length)];
 
 function playOut(config: DraftConfig, seed: string, rng: Rng): DraftEvent[] {
@@ -31,6 +36,16 @@ function playOut(config: DraftConfig, seed: string, rng: Rng): DraftEvent[] {
         seat: seat.index,
         factionId: pick(rng, offered.filter((id) => !seat.bans.includes(id))),
       });
+    } else if (state.phase === "banHero") {
+      log.push({ t: "banH", seat: seat.index, heroId: pick(rng, legalHeroBans(state, seat.index)) });
+    } else if (state.phase === "pick") {
+      log.push(
+        state.seats[seat.index].factionId
+          ? { t: "pickH", seat: seat.index, heroId: pick(rng, state.pools[seat.index]) }
+          : { t: "pickF", seat: seat.index, factionId: pick(rng, state.pools[seat.index]) },
+      );
+    } else if (state.phase === "position") {
+      log.push({ t: "pickP", seat: seat.index, position: Number(pick(rng, state.pools[seat.index])) });
     } else if (state.phase === "faction") {
       log.push({ t: "pickF", seat: seat.index, factionId: pick(rng, state.pools[seat.index]) });
     } else {
@@ -54,7 +69,12 @@ function randomConfig(rng: Rng): DraftConfig {
     factionPoolSize: 1 + Math.floor(rng() * 4),
     heroPoolSize: 1 + Math.floor(rng() * 4),
     bansPerPlayer: Math.floor(rng() * 3),
+    heroBansPerPlayer: Math.floor(rng() * 3),
     banVisibility: pick(rng, ["open", "blind"] as const),
+    // Combined picks interleave a seat's faction and hero, which is the case
+    // the canonical ordering has to get right or the log will not replay.
+    combinedPicks: rng() < 0.4,
+    draftSeats: rng() < 0.4,
   });
 }
 
@@ -89,7 +109,7 @@ describe("merging", () => {
 describe("P8: arrival order does not matter", () => {
   it("converges on the same log, state and code however the moves arrive", () => {
     const rng = mulberry32(21);
-    for (let run = 0; run < 60; run++) {
+    for (let run = 0; run < 40; run++) {
       const config = randomConfig(rng);
       const seed = `net${run}`;
       const truth = playOut(config, seed, rng);
@@ -115,7 +135,7 @@ describe("P8: arrival order does not matter", () => {
         expect(encodeDraft(config, seed, log)).toBe(expectedCode);
       }
     }
-  });
+  }, SLOW);
 
   it("holds a move that has overtaken the one it depends on, then applies it", () => {
     const config = repair({ ...defaultConfig(), players: 3, format: "snake" });

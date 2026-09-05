@@ -1,7 +1,7 @@
 /** Bumped when the stored/encoded draft format changes, so an old code or an
  * old localStorage entry can be recognised and refused rather than
  * half-loaded into a draft that then deals the wrong thing. */
-export const DRAFT_VERSION = 3;
+export const DRAFT_VERSION = 4;
 
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 8;
@@ -104,6 +104,18 @@ export interface DraftConfig {
    * effect until the catalogue carries the pairings.
    */
   sharedHeroCards: boolean;
+  /**
+   * Draft the seating order too: each player picks where they sit from what is
+   * left, once everything else is settled. Off by default, which leaves the
+   * seed to assign it — the way it has always been.
+   */
+  draftSeats: boolean;
+  /**
+   * Take a whole turn at once: faction, then that faction's hero, before the
+   * next player moves. It goes round the table one player at a time, because
+   * "immediately after" is only meaningful if somebody is waiting.
+   */
+  combinedPicks: boolean;
   /** Only meaningful under "unique-faction": may your hero hail from a faction
    * another player drafted as their town? */
   heroMayComeFromAnotherPlayersTown: boolean;
@@ -114,7 +126,17 @@ export interface DraftConfig {
   heroIds: string[];
 }
 
-export type Phase = "lobby" | "ban" | "faction" | "banHero" | "hero" | "done";
+export type Phase =
+  | "lobby"
+  | "ban"
+  | "faction"
+  | "banHero"
+  | "hero"
+  /** Faction and hero in one turn, when combinedPicks is on. */
+  | "pick"
+  /** Choosing where to sit, when draftSeats is on. */
+  | "position"
+  | "done";
 
 export type DraftEvent =
   | { t: "join"; seat: number; name: string }
@@ -123,6 +145,7 @@ export type DraftEvent =
   | { t: "banH"; seat: number; heroId: string }
   | { t: "pickF"; seat: number; factionId: string }
   | { t: "pickH"; seat: number; heroId: string }
+  | { t: "pickP"; seat: number; position: number }
   | { t: "undo" };
 
 export interface Seat {
@@ -135,6 +158,9 @@ export interface Seat {
   bans: string[];
   /** And which heroes, in the round after the factions were drafted. */
   heroBans: string[];
+  /** Where this player sits, 1-based, when the seating order is drafted.
+   * Null while it is still the seed's to decide — see seatPosition. */
+  position: number | null;
 }
 
 export interface DraftState {

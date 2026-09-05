@@ -13,9 +13,11 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
 - **Set up the draft** — players (2–8), how many options each of them is
   offered, how many bans, where heroes may come from, and which boxes you own.
   A line under the settings says whether what you have asked for can actually
-  be dealt, with the arithmetic: *"4 players, 10 factions on the table — 8 of
-  them dealt out."* Change something impossible and the pools shrink to fit
-  rather than leaving you with an error to unpick.
+  be dealt, with the arithmetic: *"4 players, 11 factions on the table — 8 of
+  them dealt out."* Anything that cannot work is greyed out before you pick it:
+  five players cannot each be offered three of eleven factions, so 3, 4 and 5
+  go dim as the table fills, and a faction the draft could not do without
+  cannot be switched off.
 - **Dealt or Snake.** *Dealt* shuffles once and hands every player a pool
   nobody else was offered, so everyone can pick at the same time and no two
   players can collide. *Snake* goes round the table one at a time, each player
@@ -50,6 +52,11 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   on what everyone else has drafted in the seat strip, and on the printed
   sheet, so a PDF of the draft stays clickable. Clicking it never drafts the
   card underneath.
+- **Turns** — **Faction and hero in one turn** takes both in one go, one player
+  at a time round the table, instead of everyone drafting factions and then
+  everyone drafting heroes. **Draft the seating order** adds a last round where
+  each player picks where they sit from the places still free; off, the seed
+  decides it.
 - **Play on** — three ways to get the players and the draft into the same
   place:
   - **One screen** passes a browser round the table. The app names whoever is
