@@ -93,6 +93,30 @@ describe("draft codes", () => {
     }
   });
 
+  it("keeps a fan expansion a draft opted into", () => {
+    // The default leaves Factory out, so a config that includes it is exactly
+    // the case a sanitiser filtering against the *default* list would quietly
+    // strip — losing a faction from a pasted code without a word.
+    const withFactory = repair({
+      ...defaultConfig(),
+      players: 3,
+      factionIds: FACTIONS.map((f) => f.id),
+      heroIds: HEROES.map((h) => h.id),
+    });
+    expect(withFactory.factionIds).toContain("factory");
+
+    const back = decodeDraft(encodeDraft(withFactory, "fan"));
+    expect(back.config.factionIds).toContain("factory");
+    expect(back.config).toEqual(withFactory);
+  });
+
+  it("leaves a fan expansion out of a draft that never asked for it", () => {
+    const plain = defaultConfig();
+    expect(plain.factionIds).not.toContain("factory");
+    expect(plain.heroIds.some((id) => id.endsWith("-factory"))).toBe(false);
+    expect(decodeDraft(encodeDraft(plain, "plain")).config).toEqual(plain);
+  });
+
   it("refuses junk rather than half-decoding it", () => {
     expect(() => decodeDraft("")).toThrow(DraftCodeError);
     expect(() => decodeDraft("!!!!")).toThrow(DraftCodeError);

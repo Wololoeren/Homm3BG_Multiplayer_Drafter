@@ -46,9 +46,9 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   drafting one face takes the whole card, so the hero on its back goes with it.
   Banning one does not — a ban takes the hero, not the card. Nearly every pair
   shares a town, so it rarely bites unless heroes can be drafted off-faction;
-  the exception is Tarnum, whose six cards are really three. Off by default.
-  Factory has no pairings: it is print-and-play, so nothing there is printed
-  back to back.
+  the exception is Tarnum, whose six cards are really three. On by default,
+  because it is what the cards do. Factory has no pairings: it is
+  print-and-play, so nothing there is printed back to back.
 - **What you are actually choosing between.** Every faction carries its own
   crest — drawn rather than photographed, so it stays legible on a card, in the
   seat strip and printed on the sheet. A hero card carries the stat
@@ -152,8 +152,9 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 
 - The unofficial **Factory** faction and its seven heroes:
   [piotrbruzda/Homm3BG-Factory][factory], read off its own hero boards. It is
-  in the catalogue like any other box, so a table that does not play with it
-  switches "Unofficial Factory" off in **Your collection**.
+  in the catalogue like any other box, but switched **off** by default — a
+  table that plays with it turns "Unofficial Factory" on in **Your
+  collection**.
 - Peer-to-peer matchmaking: [Trystero](https://github.com/dmotz/trystero)
 - Hero stat strips: composited for the [Hero Randomizer][randomizer] from the
   Cards Database — twenty images cover all sixty-four heroes, because base
@@ -166,8 +167,14 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 - Chrome, stylesheet and i18n scaffolding: **Wololoeren**'s
   [Scenario Editor][editor]
 
+## Also by the same hand
+
+- [Card Creator](https://wololoeren.github.io/homm3_card_creator/)
+- [Random Scenario Generator](https://wololoeren.github.io/homm3_Random_Scenario_Generator/)
+- [Scenario Editor](https://wololoeren.github.io/homm3BG_scenario_editor./)
+
 [mission-book]: https://github.com/qwrtln/Homm3BG-mission-book
-[editor]: https://github.com/Wololoeren/homm3BG_scenario_editor
+[editor]: https://github.com/Wololoeren/homm3BG_scenario_editor.
 [generator]: https://github.com/Wololoeren/Homm3BG-Random-Scenario-Generator
 [randomizer]: https://github.com/Imrauviel/Homm3_BG_Hero_Randomizer
 [factory]: https://github.com/piotrbruzda/Homm3BG-Factory

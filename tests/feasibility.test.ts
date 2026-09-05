@@ -11,6 +11,10 @@ import { defaultConfig, feasibility, repair } from "@/lib/draftConfig";
  * of the rule is the arithmetic, not the number that happened to come out of
  * it on the day it was written.
  */
+/** How many factions a fresh draft starts with — the official ten; the
+ * unofficial Factory is switched on in the lobby, not by default. */
+const TABLE = defaultConfig().factionIds.length;
+
 describe("what the dealt format can actually deal", () => {
   const cases: Array<[players: number, bans: number]> = [
     [2, 0],
@@ -21,7 +25,7 @@ describe("what the dealt format can actually deal", () => {
   ];
 
   it.each(cases)("deals %i players with %i ban(s) each as much as will fit", (players, bans) => {
-    const left = FACTIONS.length - players * bans;
+    const left = TABLE - players * bans;
     const maxPool = Math.min(5, Math.floor(left / players));
     const config = { ...defaultConfig(), players, bansPerPlayer: bans, factionPoolSize: maxPool };
 
@@ -44,8 +48,8 @@ describe("feasibility explains itself", () => {
       players: 6,
       pool: 2,
       need: 12,
-      left: FACTIONS.length,
-      max: Math.floor(FACTIONS.length / 6),
+      left: TABLE,
+      max: Math.floor(TABLE / 6),
     });
   });
 
@@ -53,7 +57,7 @@ describe("feasibility explains itself", () => {
     const config = { ...defaultConfig(), players: 5, bansPerPlayer: 2 };
     const check = feasibility(config);
     expect(check.issues.some((i) => i.code === "not-enough-factions")).toBe(true);
-    expect(check.factionsAfterBans).toBe(FACTIONS.length - 10);
+    expect(check.factionsAfterBans).toBe(TABLE - 10);
     expect(check.factionsAfterBans).toBeLessThan(config.players);
   });
 
@@ -90,7 +94,7 @@ describe("feasibility explains itself", () => {
     };
     // Four seats needing five distinct home factions each would want twenty
     // towns; the catalogue has nowhere near that.
-    expect(feasibility(config).maxHeroPoolSize).toBe(Math.floor(FACTIONS.length / 4));
+    expect(feasibility(config).maxHeroPoolSize).toBe(Math.floor(TABLE / 4));
   });
 });
 

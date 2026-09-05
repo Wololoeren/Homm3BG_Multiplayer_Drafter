@@ -88,6 +88,7 @@
       "set": "unofficial-factory",
       "color": "#e0954f",
       "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory",
+      "unofficial": true,
       "crest": "/factions/factory.webp"
     }
   ]

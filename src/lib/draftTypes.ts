@@ -6,13 +6,17 @@ export const DRAFT_VERSION = 4;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 8;
 export const MAX_POOL = 5;
-export const MAX_BANS = 2;
+export const MAX_BANS = 3;
 
 /**
  * Hero bans go further than faction bans because there is far more to spend
- * them on: ten factions against a couple of dozen heroes anybody could draft.
- * The round still stops itself when no ban is left that would not starve
- * somebody, so a generous budget costs nothing.
+ * them on: eleven factions against a couple of dozen heroes anybody could
+ * draft. The round still stops itself when no ban is left that would not
+ * starve somebody, so a generous budget costs nothing.
+ *
+ * Faction bans stop at three because the table itself runs out: three each
+ * across four players is twelve, and there are eleven factions. The lobby
+ * greys out what will not fit rather than refusing it after the fact.
  */
 export const MAX_HERO_BANS = 5;
 
@@ -35,8 +39,12 @@ export interface Faction {
   /** Banner tint; the only thing telling two faction cards apart at a glance. */
   color: string;
   crest: string;
-  /** Its page name on the community wiki — kept, not derived. See lib/wiki. */
+  /** Where to read about it. A full URL: the official ten point at the
+   * community database and a fan expansion at its own repository. */
   wiki: string;
+  /** Fan-made rather than printed by Archon. Left out of a fresh draft, since
+   * most tables do not own it, and switched on in the lobby by those who do. */
+  unofficial?: boolean;
 }
 
 export interface Hero {
@@ -100,8 +108,9 @@ export interface DraftConfig {
   uniqueHeroIdentity: boolean;
   /**
    * Treat a hero card as the physical, double-sided object it is: drafting one
-   * face takes the whole card, so the hero on its back goes with it. Has no
-   * effect until the catalogue carries the pairings.
+   * face takes the whole card, so the hero on its back goes with it. On by
+   * default, because it is what the cards on the table actually do — a ban is
+   * the exception, since that takes the hero and not the card.
    */
   sharedHeroCards: boolean;
   /**

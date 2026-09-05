@@ -1,7 +1,7 @@
 "use client";
 
 import { FACTIONS, HEROES, SETS, setLabel } from "@/lib/catalogue";
-import { feasibility, repair } from "@/lib/draftConfig";
+import { feasibility, repair, shrinkPools } from "@/lib/draftConfig";
 import {
   HERO_POOL_ALL,
   MAX_BANS,
@@ -137,6 +137,10 @@ export default function DraftSetup({
    */
   const poolFits = (patch: Partial<DraftConfig>) => feasibility({ ...config, ...patch }).ok;
   const tableFits = (patch: Partial<DraftConfig>) => feasibility(repair({ ...config, ...patch })).ok;
+  /** Bans sit between the two: the pools may give way to make room for them,
+   * but the ban count itself may not, or every count would look possible. */
+  const bansFit = (patch: Partial<DraftConfig>) =>
+    feasibility(shrinkPools({ ...config, ...patch })).ok;
 
   const ownedSets = SETS.filter(
     (s) =>
@@ -375,7 +379,7 @@ export default function DraftSetup({
             value={config.bansPerPlayer}
             from={0}
             to={MAX_BANS}
-            isDisabled={(bansPerPlayer) => !tableFits({ bansPerPlayer })}
+            isDisabled={(bansPerPlayer) => !bansFit({ bansPerPlayer })}
             titleFor={() => t("lobby.tooManyBans", { players: config.players })}
             onPick={(bansPerPlayer) => set({ bansPerPlayer })}
             labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}

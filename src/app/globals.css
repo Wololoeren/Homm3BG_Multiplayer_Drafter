@@ -856,6 +856,30 @@ button {
   word-break: break-all;
 }
 
+/* ---------------------------------------------------------------- footer */
+
+.siteFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: baseline;
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--gold-dim);
+  font-size: 13px;
+  color: #6f6749;
+}
+
+.siteFooter a {
+  color: #9c9179;
+  text-decoration: none;
+}
+
+.siteFooter a:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
 /* ---------------------------------------------------------------- phones */
 
 /* The draft is meant to be played on a phone — that is what the QR is for —

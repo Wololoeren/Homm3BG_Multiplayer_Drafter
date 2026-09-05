@@ -1,4 +1,4 @@
-import { FACTIONS, HEROES, heroesOf } from "./catalogue";
+import { DEFAULT_FACTIONS, DEFAULT_HEROES, FACTIONS, HEROES, heroesOf } from "./catalogue";
 import {
   DRAFT_VERSION,
   HERO_POOL_ALL,
@@ -24,12 +24,12 @@ export function defaultConfig(): DraftConfig {
     banVisibility: "open",
     heroFactionPolicy: "own",
     uniqueHeroIdentity: true,
-    sharedHeroCards: false,
+    sharedHeroCards: true,
     draftSeats: false,
     combinedPicks: false,
     heroMayComeFromAnotherPlayersTown: false,
-    factionIds: FACTIONS.map((f) => f.id),
-    heroIds: HEROES.map((h) => h.id),
+    factionIds: DEFAULT_FACTIONS.map((f) => f.id),
+    heroIds: DEFAULT_HEROES.map((h) => h.id),
   };
 }
 
@@ -52,6 +52,8 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
   if (input.version !== undefined && input.version !== DRAFT_VERSION) return null;
 
   const base = defaultConfig();
+  // Sets built from the catalogue arrays, so iterating one yields catalogue
+  // order — which is what keeps a config canonical.
   const knownFactions = new Set(FACTIONS.map((f) => f.id));
   const knownHeroes = new Set(HEROES.map((h) => h.id));
 
@@ -59,13 +61,16 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
   // pools, so two clients holding the same factions in a different order would
   // deal each other different games — and a draft code, which stores them as a
   // bitmap, would not round-trip.
-  const keep = (raw: unknown, known: Set<string>, all: string[]) => {
-    if (!Array.isArray(raw)) return all;
+  const keep = (raw: unknown, known: Set<string>, universe: string[], fallback: string[]) => {
+    if (!Array.isArray(raw)) return fallback;
     const chosen = new Set(raw.filter((id): id is string => typeof id === "string" && known.has(id)));
-    return all.filter((id) => chosen.has(id));
+    // Ordered by the whole catalogue, not by the default selection: a draft
+    // that opted into a fan expansion must keep it, and it is not in the
+    // default. Getting this wrong silently drops Factory from a pasted code.
+    return universe.filter((id) => chosen.has(id));
   };
-  const factionIds = keep(input.factionIds, knownFactions, base.factionIds);
-  const heroIds = keep(input.heroIds, knownHeroes, base.heroIds);
+  const factionIds = keep(input.factionIds, knownFactions, [...knownFactions], base.factionIds);
+  const heroIds = keep(input.heroIds, knownHeroes, [...knownHeroes], base.heroIds);
 
   const combinedPicks = input.combinedPicks === true;
   const format: DraftFormat = input.format === "snake" ? "snake" : "dealt";
@@ -254,20 +259,34 @@ export function feasibility(config: DraftConfig): Feasibility {
  * changes the shape of the game. If neither is enough — a table of eight on
  * three factions — the config comes back as it was and the lobby says why.
  */
+/**
+ * The pools clamped to what the players, bans and collection leave room for —
+ * the first half of `repair`, on its own.
+ *
+ * Separate because "could this many bans work?" has to be asked with the bans
+ * held fixed. Ask it through `repair` and the answer is always yes, since
+ * repair's own last resort is to hand a ban back.
+ */
+export function shrinkPools(config: DraftConfig): DraftConfig {
+  const check = feasibility(config);
+  if (check.ok) return config;
+  return {
+    ...config,
+    factionPoolSize: Math.min(config.factionPoolSize, check.maxFactionPoolSize),
+    heroPoolSize:
+      config.heroPoolSize === HERO_POOL_ALL
+        ? HERO_POOL_ALL
+        : Math.min(config.heroPoolSize, check.maxHeroPoolSize),
+  };
+}
+
 export function repair(config: DraftConfig): DraftConfig {
   let next = config;
   for (let guard = 0; guard <= MAX_BANS; guard++) {
     const check = feasibility(next);
     if (check.ok) return next;
 
-    const shrunk = {
-      ...next,
-      factionPoolSize: Math.min(next.factionPoolSize, check.maxFactionPoolSize),
-      heroPoolSize:
-        next.heroPoolSize === HERO_POOL_ALL
-          ? HERO_POOL_ALL
-          : Math.min(next.heroPoolSize, check.maxHeroPoolSize),
-    };
+    const shrunk = shrinkPools(next);
     if (feasibility(shrunk).ok) return shrunk;
     if (shrunk.bansPerPlayer === 0) return shrunk;
     next = { ...shrunk, bansPerPlayer: shrunk.bansPerPlayer - 1 };

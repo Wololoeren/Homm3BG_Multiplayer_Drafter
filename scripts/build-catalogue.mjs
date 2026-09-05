@@ -34,6 +34,9 @@ const FAN_EXPANSIONS = [
       set: "unofficial-factory",
       color: "#e0954f",
       wiki: "https://github.com/piotrbruzda/Homm3BG-Factory",
+      // Off unless a table asks for it: most people do not own a fan
+      // expansion, and a draft that quietly included one would be wrong.
+      unofficial: true,
     },
     // Stats are uniform per class, exactly as in the official game: the
     // Artificers are 0/1/2/2 and the Mercenaries 3/1/1/1.

@@ -36,6 +36,14 @@ export function heroesOf(factionId: string): Hero[] {
   return HEROES.filter((h) => h.factionId === factionId);
 }
 
+/** The factions a fresh draft starts with: everything Archon printed, and
+ * nothing fan-made. The lobby's collection chips are how the rest get in. */
+export const DEFAULT_FACTIONS: Faction[] = FACTIONS.filter((f) => !f.unofficial);
+
+const UNOFFICIAL = new Set(FACTIONS.filter((f) => f.unofficial).map((f) => f.id));
+
+export const DEFAULT_HEROES: Hero[] = HEROES.filter((h) => !UNOFFICIAL.has(h.factionId));
+
 /** Every box the catalogue mentions, in the order the factions come in, so the
  * lobby's ownership toggles read like a shelf rather than an alphabet. */
 export const SETS: string[] = (() => {

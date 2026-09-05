@@ -7,6 +7,10 @@ const en = {
   "app.title": "Multiplayer Drafter",
   "app.subtitle": "Heroes of Might & Magic III: The Board Game",
   "lang.label": "Language",
+  "footer.more": "More for this table:",
+  "footer.cardCreator": "Card Creator",
+  "footer.editor": "Scenario Editor",
+  "footer.generator": "Random Scenario Generator",
 
   // ---------------------------------------------------------------- lobby
   "lobby.heading": "Set up the draft",
@@ -24,7 +28,7 @@ const en = {
   "lobby.pool.all": "All",
   "lobby.pool.all.help":
     "Every hero your faction still has. Where two players could be offered the same person — Tarnum has a card in six factions — the hero step goes round the table one at a time instead of everyone at once.",
-  "lobby.bans": "Bans each",
+  "lobby.bans": "Faction bans each",
   "lobby.bans.none": "None",
   "lobby.turns": "Turns",
   "lobby.turns.help": "How a turn is shaped, and whether where you sit is yours to choose.",
@@ -108,7 +112,7 @@ const en = {
   "phase.faction": "Faction",
   "phase.hero": "Hero",
   "phase.done": "Drafted",
-  "draft.seat": "Seat {n}",
+  "draft.seat": "Player {n}",
   "draft.turn": "{name} to move",
   "draft.yourTurn": "Your move",
   "draft.simultaneous": "Everyone picks at once",

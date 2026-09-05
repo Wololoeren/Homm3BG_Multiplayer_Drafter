@@ -6,6 +6,7 @@ import LanguagePicker from "@/components/LanguagePicker";
 import LiveBar from "@/components/LiveBar";
 import PickBoard from "@/components/PickBoard";
 import ResumeBar from "@/components/ResumeBar";
+import SiteFooter from "@/components/SiteFooter";
 import ResultSheet from "@/components/ResultSheet";
 import SeatClaim from "@/components/SeatClaim";
 import SeatStrip from "@/components/SeatStrip";
@@ -446,6 +447,8 @@ export default function Page() {
           {mode === "p2p" && live.status === "failed" && <p className="note">{t("live.fallback")}</p>}
         </>
       )}
+
+      <SiteFooter />
     </div>
   );
 }

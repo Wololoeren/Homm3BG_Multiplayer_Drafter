@@ -5,7 +5,7 @@ Infrastructure analysis and implementation plan.
 Sibling apps this one joins, and whose look, stack and conventions it copies:
 
 - [Random Scenario Generator](https://github.com/Wololoeren/Homm3BG-Random-Scenario-Generator)
-- [Scenario Editor](https://github.com/Wololoeren/homm3BG_scenario_editor)
+- [Scenario Editor](https://github.com/Wololoeren/homm3BG_scenario_editor.)
 - [Hero Randomizer](https://github.com/Imrauviel/Homm3_BG_Hero_Randomizer)
 
 ---
@@ -618,9 +618,9 @@ settled by faction id because they are interchangeable.
   on each face, so drafting one takes the other out of the game with it — but
   *banning* one does not, because a ban takes the hero and not the card. All
   thirty-two official pairings are now in `CARD_PAIRS`, read off the cards; the
-  setting is off by default and available under every hero rule, because the
-  three cards that hold two Tarnums span towns and so can bite even when
-  everyone drafts in faction. Factory has none: it is print-and-play, so
+  setting is on by default — it is what the cards on the table do — and
+  available under every hero rule, because two of the three cards that hold two
+  Tarnums span towns and so bite even when everyone drafts in faction. Factory has none: it is print-and-play, so
   inventing pairs would enforce a restriction the table does not have.
 - **Wiki links on other players' picks**, not just your own options.
 - **The unofficial Factory expansion**, read off the hero boards in its own
@@ -658,12 +658,15 @@ than refusing the code.
 
 ### Asked for after the second round of play-testing
 
-- **Impossible settings are greyed out** rather than silently repaired. Two
-  different questions, deliberately: a *pool size* is judged as it stands,
-  because that is exactly what is being chosen, while a *player count* or a
-  *ban budget* is judged after repair, because those are facts about the table
-  that the pools should give way to. A faction the draft could not be dealt
-  without cannot be switched off either.
+- **Impossible settings are greyed out** rather than silently repaired, and
+  three different questions hide behind that. A *pool size* is judged as it
+  stands, because that is exactly what is being chosen. A *player count* is
+  judged after a full repair, because the table size is a fact the rest should
+  give way to. A *ban budget* sits between them: the pools may shrink to make
+  room, but the bans may not, or `repair`'s own last resort — handing a ban
+  back — would make every ban count look possible. That is what `shrinkPools`
+  is for. A faction the draft could not be dealt without cannot be switched off
+  either.
 - **Faction and hero in one turn.** A player takes both before the next moves,
   which makes it sequential by construction. Faction pools are still dealt
   disjointly up front where the format says so — that deal never depended on
