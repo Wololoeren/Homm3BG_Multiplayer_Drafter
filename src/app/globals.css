@@ -375,6 +375,9 @@ button {
   color: #ded4bb;
 }
 
+/* Stays a block: text-overflow only truncates in a block, and a long hero
+   name in a narrow seat has to end in an ellipsis rather than be cut mid-word.
+   The crest sits inline in the line, aligned by its own vertical-align. */
 .seatLine {
   font-size: 13px;
   color: #9c9179;
@@ -468,6 +471,8 @@ button {
 }
 
 .cardName {
+  display: flex;
+  align-items: center;
   font-size: 19px;
   color: var(--tint, var(--gold));
 }
@@ -475,6 +480,41 @@ button {
 .cardMeta {
   font-size: 13px;
   color: #9c9179;
+}
+
+/* Crests take their colour from whatever they sit in, so one component serves
+   the dark cards, the seat strip and the parchment sheet without knowing
+   which it is on. */
+.crest {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  vertical-align: -0.13em;
+  color: currentColor;
+}
+
+.cardName .crest {
+  margin-right: 0.4em;
+}
+
+.cardName .crest.big {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.seatLine .crest {
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.35em;
+  vertical-align: -0.12em;
+  opacity: 0.9;
+}
+
+.sheetCrest {
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0.4em;
+  vertical-align: -0.15em;
 }
 
 /* The stat strip sits under the name, at the width of the card: it is a row of

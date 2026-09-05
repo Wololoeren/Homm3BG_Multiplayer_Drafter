@@ -1,5 +1,6 @@
 "use client";
 
+import Crest from "./Crest";
 import WikiLink from "./WikiLink";
 import { faction, factionName, hero } from "@/lib/catalogue";
 import { factionWikiUrl, heroStatsImage, heroWikiUrl } from "@/lib/wiki";
@@ -52,7 +53,10 @@ export default function PickBoard({
                 disabled={gone}
                 onClick={() => onMove({ t: "ban", seat: seatIndex, factionId: id })}
               >
-                <span className="cardName">{town.name}</span>
+                <span className="cardName">
+                  <Crest factionId={town.id} />
+                  {town.name}
+                </span>
                 {gone && <span className="cardTag">{t("draft.banned")}</span>}
               </button>
             );
@@ -84,7 +88,10 @@ export default function PickBoard({
                   style={{ "--tint": town.color } as React.CSSProperties}
                   onClick={() => onMove({ t: "pickF", seat: seatIndex, factionId: id })}
                 >
-                  <span className="cardName">{town.name}</span>
+                  <span className="cardName">
+                    <Crest factionId={town.id} className="big" />
+                    {town.name}
+                  </span>
                   {forced && <span className="cardMeta">{t("draft.confirm")}</span>}
                 </button>
                 <WikiLink href={factionWikiUrl(town)} label={t("wiki.faction", { name: town.name })} />

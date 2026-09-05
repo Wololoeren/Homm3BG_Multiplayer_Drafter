@@ -506,7 +506,7 @@ Run in CI on the same workflow that deploys, gating the deploy.
 | **M3** ✅ | Full UI on **local/hotseat** transport: lobby → ban → faction → hero → printable result sheet, plus resume-from-code and localStorage autosave | **Genuinely useful already** — one laptop passed around the table |
 | **M4** ✅ | The rest of the `manual` transport: URLs, QR, seat claiming, per-seat invite links | Multi-computer drafting without passing a laptop |
 | **M5** ✅ | `p2p` transport via Trystero: presence, live turn passing, divergence banner, automatic fallback to M4 | The experience you actually want |
-| **M6** ◐ | Polish: hero stat blocks ✅, wiki links ✅, phone layout ✅. Still open: 14 locales, faction crest art, optional commit-reveal blind bans | Matches the sibling apps' finish |
+| **M6** ◐ | Polish: hero stat blocks ✅, wiki links ✅, phone layout ✅, faction crests ✅. Still open: 13 locales, optional commit-reveal blind bans | Matches the sibling apps' finish |
 
 M3 is the point where the app stops being a plan and starts being usable; M4 is
 the point where it answers the original question. M5 is comfort.
@@ -575,6 +575,22 @@ settled by faction id because they are interchangeable.
   knowledge and the might/magic icon, so the choice is made on what the hero
   actually is. Twenty images cover sixty-four heroes, because base statistics
   depend only on faction and class.
+- **Faction crests, drawn rather than sourced.** There is no crest artwork to
+  fetch: the rulebook has box shots and the card database has photographs of
+  whole town boards, neither of which survives being shrunk to the corner of a
+  card. So `Crest.tsx` draws ten silhouettes inline, the same way and for the
+  same reason as the Scenario Editor's `Flag.tsx`. Everything is
+  `currentColor`, so one component serves the dark cards, the seat strip and
+  the parchment sheet without knowing which it is on — and on the sheet it
+  prints as ink, because the faction colours were chosen to read on dark
+  chrome and would vanish on parchment.
+
+  Three of the first ten did not survive being looked at 64 pixels wide: the
+  Dungeon arch read as a magnet, the Tower as a chess pawn, and the Inferno
+  teardrop as a raindrop. They are now a dragon's slit eye, a keep with a
+  peaked roof, and a flame with the curl that makes it fire. Worth doing the
+  pass — at card size the shape is the whole identity.
+
 - **The phone layout was broken and is fixed.** A draft link is one long
   unbreakable string, and its max-content width leaked out through every
   ancestor however tightly they were clamped — the page scrolled sideways by

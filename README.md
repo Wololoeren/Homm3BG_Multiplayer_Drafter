@@ -31,7 +31,9 @@ Fan-made, not affiliated with Ubisoft or Archon Studio.
   **One of each hero** is on by default and matters more than it looks:
   Tarnum has a card in six factions and Lord Haart in two, so without it two
   players can both end up as Tarnum from two different towns.
-- **What you are actually choosing between.** A hero card carries the stat
+- **What you are actually choosing between.** Every faction carries its own
+  crest — drawn rather than photographed, so it stays legible on a card, in the
+  seat strip and printed on the sheet. A hero card carries the stat
   strip you are drafting — attack, defense, spell power, knowledge, and the
   helmet or hat for might or magic — plus their ability and specialty. The ↗
   in the corner of any faction or hero opens its page on the

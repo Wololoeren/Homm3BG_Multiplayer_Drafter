@@ -1,5 +1,6 @@
 "use client";
 
+import Crest from "./Crest";
 import { faction, factionName, hero } from "@/lib/catalogue";
 import type { DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
@@ -41,8 +42,15 @@ export default function SeatStrip({
             style={town ? { borderLeftColor: town.color } : undefined}
           >
             <div className="seatName">{seat.name || t("draft.seat", { n: index + 1 })}</div>
-            <div className={`seatLine${town ? " filled" : ""}`}>
-              {town ? factionName(town.id) : "—"}
+            <div className={`seatLine${town ? " filled" : ""}`} style={town ? { color: town.color } : undefined}>
+              {town ? (
+                <>
+                  <Crest factionId={town.id} />
+                  {factionName(town.id)}
+                </>
+              ) : (
+                "—"
+              )}
             </div>
             <div className={`seatLine${drafted ? " filled" : ""}`}>{drafted ? drafted.name : "—"}</div>
             {state.config.bansPerPlayer > 0 && (

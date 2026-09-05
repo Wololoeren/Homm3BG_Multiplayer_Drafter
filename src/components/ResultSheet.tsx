@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Crest from "./Crest";
 import WikiLink from "./WikiLink";
 import { faction, factionName, hero } from "@/lib/catalogue";
 import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
@@ -97,7 +98,7 @@ export default function ResultSheet({
                 <tr key={seat.index}>
                   <td className="who">{seat.name || t("draft.seat", { n: seat.index + 1 })}</td>
                   <td>
-                    {town && <span className="sheetSwatch" style={{ background: town.color }} />}
+                    {town && <Crest factionId={town.id} className="sheetCrest" />}
                     {town?.name ?? "—"}
                     {town && (
                       <WikiLink
