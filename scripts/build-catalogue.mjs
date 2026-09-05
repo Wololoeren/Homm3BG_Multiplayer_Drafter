@@ -16,6 +16,39 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const RAW = "https://raw.githubusercontent.com/Mirzipan/Homm3_BG_Database/main/docs";
+const WIKI = "https://en.homm3bg.wiki";
+
+/**
+ * Fan-made expansions, which by definition are not in the community database
+ * and so are kept here by hand, read off the cards in their own repositories.
+ *
+ * They are part of the catalogue like any other box, which means they arrive
+ * switched on and a table that does not own them turns them off in the lobby —
+ * the same as every official expansion.
+ */
+const FAN_EXPANSIONS = [
+  {
+    faction: {
+      id: "factory",
+      name: "Factory",
+      set: "unofficial-factory",
+      color: "#e0954f",
+      wiki: "https://github.com/piotrbruzda/Homm3BG-Factory",
+    },
+    // Stats are uniform per class, exactly as in the official game: the
+    // Artificers are 0/1/2/2 and the Mercenaries 3/1/1/1.
+    heroesBoards: "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards",
+    heroes: [
+      ["agar", "Agar", "magic", "Artificer", "Wisdom", "Sandworms"],
+      ["celestine", "Celestine", "magic", "Artificer", "Pathfinding", "Armadillos"],
+      ["frederick", "Frederick", "magic", "Artificer", "Intelligence", "Automatons"],
+      ["henrietta", "Henrietta", "might", "Mercenary", "Luck", "Halflings"],
+      ["melchior", "Melchior", "might", "Mercenary", "Diplomacy", "Diplomacy"],
+      ["victoria", "Victoria", "magic", "Artificer", "Learning", "Land Mine"],
+      ["wynona", "Wynona", "might", "Mercenary", "Archery", "Scouting"],
+    ],
+  },
+];
 const OUT = (name) => fileURLToPath(new URL(`../src/data/${name}`, import.meta.url));
 
 /** Banner tints for the seat strip and the faction cards. Chosen to stay
@@ -32,6 +65,7 @@ const FACTION_COLORS = {
   stronghold: "#c0703a",
   conflux: "#67c2b4",
   cove: "#4d7fae",
+  factory: "#e0954f",
 };
 
 /**
@@ -99,10 +133,11 @@ const factions = tableRows(townsMd, "## List of Towns").map(([name, content]) =>
   const id = slug(label(name));
   const color = FACTION_COLORS[id];
   if (!color) throw new Error(`no colour for faction "${id}" — add one to FACTION_COLORS`);
-  // The wiki's own page name, kept rather than derived: reconstructing it from
-  // an id would quietly break every link the day the id scheme changes, and a
-  // dead link is the kind of thing nobody notices for months.
-  const wiki = /\(([^)]+)\.md\)/.exec(name)?.[1] ?? id;
+  // The whole link, not a page name: fan expansions live in their own
+  // repositories rather than on the wiki, and one field that always holds a
+  // URL is simpler than a field plus a rule for what to wrap round it.
+  const page = /\(([^)]+)\.md\)/.exec(name)?.[1] ?? id;
+  const wiki = `${WIKI}/towns/${page}/`;
   return {
     id,
     name: label(name),
@@ -134,7 +169,7 @@ const heroes = tableRows(heroesMd, "# List of Heroes").map((row) => {
 
   return {
     id: slug(page ?? `${name}-${factionId}`),
-    wiki: page ?? slug(`${name}-${factionId}`),
+    wiki: `${WIKI}/heroes/${page ?? slug(`${name}-${factionId}`)}/`,
     name,
     factionId,
     klass,
@@ -147,6 +182,30 @@ const heroes = tableRows(heroesMd, "# List of Heroes").map((row) => {
     set: slug(label(contentCell)),
   };
 });
+
+// --------------------------------------------------------- fan expansions
+
+for (const expansion of FAN_EXPANSIONS) {
+  const color = FACTION_COLORS[expansion.faction.id];
+  if (!color) throw new Error(`no colour for faction "${expansion.faction.id}"`);
+  factions.push({ ...expansion.faction, color, crest: `/factions/${expansion.faction.id}.webp` });
+  factionIds.add(expansion.faction.id);
+
+  for (const [page, name, klass, className, ability, specialty] of expansion.heroes) {
+    heroes.push({
+      id: slug(`${name}-${expansion.faction.id}`),
+      wiki: `${expansion.heroesBoards}/hero_${page}_sm.png`,
+      name,
+      factionId: expansion.faction.id,
+      klass,
+      className,
+      identity: slug(name),
+      ability,
+      specialty,
+      set: expansion.faction.set,
+    });
+  }
+}
 
 // ------------------------------------------------------------- card pairings
 

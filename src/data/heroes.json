@@ -4,7 +4,7 @@
   "heroes": [
     {
       "id": "adelaide",
-      "wiki": "adelaide",
+      "wiki": "https://en.homm3bg.wiki/heroes/adelaide/",
       "name": "Adelaide",
       "factionId": "castle",
       "klass": "magic",
@@ -16,7 +16,7 @@
     },
     {
       "id": "catherine",
-      "wiki": "catherine",
+      "wiki": "https://en.homm3bg.wiki/heroes/catherine/",
       "name": "Catherine",
       "factionId": "castle",
       "klass": "might",
@@ -28,7 +28,7 @@
     },
     {
       "id": "ingham",
-      "wiki": "ingham",
+      "wiki": "https://en.homm3bg.wiki/heroes/ingham/",
       "name": "Ingham",
       "factionId": "castle",
       "klass": "magic",
@@ -40,7 +40,7 @@
     },
     {
       "id": "lord-haart-castle",
-      "wiki": "lord_haart_castle",
+      "wiki": "https://en.homm3bg.wiki/heroes/lord_haart_castle/",
       "name": "Lord Haart",
       "factionId": "castle",
       "klass": "might",
@@ -52,7 +52,7 @@
     },
     {
       "id": "tarnum-castle",
-      "wiki": "tarnum_castle",
+      "wiki": "https://en.homm3bg.wiki/heroes/tarnum_castle/",
       "name": "Tarnum",
       "factionId": "castle",
       "klass": "might",
@@ -64,7 +64,7 @@
     },
     {
       "id": "rion",
-      "wiki": "rion",
+      "wiki": "https://en.homm3bg.wiki/heroes/rion/",
       "name": "Rion",
       "factionId": "castle",
       "klass": "magic",
@@ -76,7 +76,7 @@
     },
     {
       "id": "valeska",
-      "wiki": "valeska",
+      "wiki": "https://en.homm3bg.wiki/heroes/valeska/",
       "name": "Valeska",
       "factionId": "castle",
       "klass": "might",
@@ -88,7 +88,7 @@
     },
     {
       "id": "lord-haart-necropolis",
-      "wiki": "lord_haart_necropolis",
+      "wiki": "https://en.homm3bg.wiki/heroes/lord_haart_necropolis/",
       "name": "Lord Haart",
       "factionId": "necropolis",
       "klass": "might",
@@ -100,7 +100,7 @@
     },
     {
       "id": "moandor",
-      "wiki": "moandor",
+      "wiki": "https://en.homm3bg.wiki/heroes/moandor/",
       "name": "Moandor",
       "factionId": "necropolis",
       "klass": "might",
@@ -112,7 +112,7 @@
     },
     {
       "id": "sandro",
-      "wiki": "sandro",
+      "wiki": "https://en.homm3bg.wiki/heroes/sandro/",
       "name": "Sandro",
       "factionId": "necropolis",
       "klass": "magic",
@@ -124,7 +124,7 @@
     },
     {
       "id": "septienna",
-      "wiki": "septienna",
+      "wiki": "https://en.homm3bg.wiki/heroes/septienna/",
       "name": "Septienna",
       "factionId": "necropolis",
       "klass": "magic",
@@ -136,7 +136,7 @@
     },
     {
       "id": "tamika",
-      "wiki": "tamika",
+      "wiki": "https://en.homm3bg.wiki/heroes/tamika/",
       "name": "Tamika",
       "factionId": "necropolis",
       "klass": "might",
@@ -148,7 +148,7 @@
     },
     {
       "id": "vidomina",
-      "wiki": "vidomina",
+      "wiki": "https://en.homm3bg.wiki/heroes/vidomina/",
       "name": "Vidomina",
       "factionId": "necropolis",
       "klass": "magic",
@@ -160,7 +160,7 @@
     },
     {
       "id": "alamar",
-      "wiki": "alamar",
+      "wiki": "https://en.homm3bg.wiki/heroes/alamar/",
       "name": "Alamar",
       "factionId": "dungeon",
       "klass": "magic",
@@ -172,7 +172,7 @@
     },
     {
       "id": "deemer",
-      "wiki": "deemer",
+      "wiki": "https://en.homm3bg.wiki/heroes/deemer/",
       "name": "Deemer",
       "factionId": "dungeon",
       "klass": "magic",
@@ -184,7 +184,7 @@
     },
     {
       "id": "jeddite",
-      "wiki": "jeddite",
+      "wiki": "https://en.homm3bg.wiki/heroes/jeddite/",
       "name": "Jeddite",
       "factionId": "dungeon",
       "klass": "magic",
@@ -196,7 +196,7 @@
     },
     {
       "id": "lorelei",
-      "wiki": "lorelei",
+      "wiki": "https://en.homm3bg.wiki/heroes/lorelei/",
       "name": "Lorelei",
       "factionId": "dungeon",
       "klass": "might",
@@ -208,7 +208,7 @@
     },
     {
       "id": "mutare",
-      "wiki": "mutare",
+      "wiki": "https://en.homm3bg.wiki/heroes/mutare/",
       "name": "Mutare",
       "factionId": "dungeon",
       "klass": "might",
@@ -220,7 +220,7 @@
     },
     {
       "id": "sephinroth",
-      "wiki": "sephinroth",
+      "wiki": "https://en.homm3bg.wiki/heroes/sephinroth/",
       "name": "Sephinroth",
       "factionId": "dungeon",
       "klass": "magic",
@@ -232,7 +232,7 @@
     },
     {
       "id": "tarnum-dungeon",
-      "wiki": "tarnum_dungeon",
+      "wiki": "https://en.homm3bg.wiki/heroes/tarnum_dungeon/",
       "name": "Tarnum",
       "factionId": "dungeon",
       "klass": "might",
@@ -244,7 +244,7 @@
     },
     {
       "id": "cyra",
-      "wiki": "cyra",
+      "wiki": "https://en.homm3bg.wiki/heroes/cyra/",
       "name": "Cyra",
       "factionId": "tower",
       "klass": "magic",
@@ -256,7 +256,7 @@
     },
     {
       "id": "dracon",
-      "wiki": "dracon",
+      "wiki": "https://en.homm3bg.wiki/heroes/dracon/",
       "name": "Dracon",
       "factionId": "tower",
       "klass": "magic",
@@ -268,7 +268,7 @@
     },
     {
       "id": "iona",
-      "wiki": "iona",
+      "wiki": "https://en.homm3bg.wiki/heroes/iona/",
       "name": "Iona",
       "factionId": "tower",
       "klass": "might",
@@ -280,7 +280,7 @@
     },
     {
       "id": "josephine",
-      "wiki": "josephine",
+      "wiki": "https://en.homm3bg.wiki/heroes/josephine/",
       "name": "Josephine",
       "factionId": "tower",
       "klass": "might",
@@ -292,7 +292,7 @@
     },
     {
       "id": "solmyr",
-      "wiki": "solmyr",
+      "wiki": "https://en.homm3bg.wiki/heroes/solmyr/",
       "name": "Solmyr",
       "factionId": "tower",
       "klass": "magic",
@@ -304,7 +304,7 @@
     },
     {
       "id": "torosar",
-      "wiki": "torosar",
+      "wiki": "https://en.homm3bg.wiki/heroes/torosar/",
       "name": "Torosar",
       "factionId": "tower",
       "klass": "might",
@@ -316,7 +316,7 @@
     },
     {
       "id": "clancy",
-      "wiki": "clancy",
+      "wiki": "https://en.homm3bg.wiki/heroes/clancy/",
       "name": "Clancy",
       "factionId": "rampart",
       "klass": "might",
@@ -328,7 +328,7 @@
     },
     {
       "id": "gelu",
-      "wiki": "gelu",
+      "wiki": "https://en.homm3bg.wiki/heroes/gelu/",
       "name": "Gelu",
       "factionId": "rampart",
       "klass": "might",
@@ -340,7 +340,7 @@
     },
     {
       "id": "gem",
-      "wiki": "gem",
+      "wiki": "https://en.homm3bg.wiki/heroes/gem/",
       "name": "Gem",
       "factionId": "rampart",
       "klass": "magic",
@@ -352,7 +352,7 @@
     },
     {
       "id": "ivor",
-      "wiki": "ivor",
+      "wiki": "https://en.homm3bg.wiki/heroes/ivor/",
       "name": "Ivor",
       "factionId": "rampart",
       "klass": "might",
@@ -364,7 +364,7 @@
     },
     {
       "id": "melodia",
-      "wiki": "melodia",
+      "wiki": "https://en.homm3bg.wiki/heroes/melodia/",
       "name": "Melodia",
       "factionId": "rampart",
       "klass": "magic",
@@ -376,7 +376,7 @@
     },
     {
       "id": "mephala",
-      "wiki": "mephala",
+      "wiki": "https://en.homm3bg.wiki/heroes/mephala/",
       "name": "Mephala",
       "factionId": "rampart",
       "klass": "might",
@@ -388,7 +388,7 @@
     },
     {
       "id": "tarnum-rampart",
-      "wiki": "tarnum_rampart",
+      "wiki": "https://en.homm3bg.wiki/heroes/tarnum_rampart/",
       "name": "Tarnum",
       "factionId": "rampart",
       "klass": "might",
@@ -400,7 +400,7 @@
     },
     {
       "id": "adrienne",
-      "wiki": "adrienne",
+      "wiki": "https://en.homm3bg.wiki/heroes/adrienne/",
       "name": "Adrienne",
       "factionId": "fortress",
       "klass": "magic",
@@ -412,7 +412,7 @@
     },
     {
       "id": "bron",
-      "wiki": "bron",
+      "wiki": "https://en.homm3bg.wiki/heroes/bron/",
       "name": "Bron",
       "factionId": "fortress",
       "klass": "might",
@@ -424,7 +424,7 @@
     },
     {
       "id": "gerwulf",
-      "wiki": "gerwulf",
+      "wiki": "https://en.homm3bg.wiki/heroes/gerwulf/",
       "name": "Gerwulf",
       "factionId": "fortress",
       "klass": "might",
@@ -436,7 +436,7 @@
     },
     {
       "id": "merist",
-      "wiki": "merist",
+      "wiki": "https://en.homm3bg.wiki/heroes/merist/",
       "name": "Merist",
       "factionId": "fortress",
       "klass": "magic",
@@ -448,7 +448,7 @@
     },
     {
       "id": "tarnum-fortress",
-      "wiki": "tarnum_fortress",
+      "wiki": "https://en.homm3bg.wiki/heroes/tarnum_fortress/",
       "name": "Tarnum",
       "factionId": "fortress",
       "klass": "might",
@@ -460,7 +460,7 @@
     },
     {
       "id": "tazar",
-      "wiki": "tazar",
+      "wiki": "https://en.homm3bg.wiki/heroes/tazar/",
       "name": "Tazar",
       "factionId": "fortress",
       "klass": "might",
@@ -472,7 +472,7 @@
     },
     {
       "id": "wystan",
-      "wiki": "wystan",
+      "wiki": "https://en.homm3bg.wiki/heroes/wystan/",
       "name": "Wystan",
       "factionId": "fortress",
       "klass": "might",
@@ -484,7 +484,7 @@
     },
     {
       "id": "ash",
-      "wiki": "ash",
+      "wiki": "https://en.homm3bg.wiki/heroes/ash/",
       "name": "Ash",
       "factionId": "inferno",
       "klass": "magic",
@@ -496,7 +496,7 @@
     },
     {
       "id": "fiona",
-      "wiki": "fiona",
+      "wiki": "https://en.homm3bg.wiki/heroes/fiona/",
       "name": "Fiona",
       "factionId": "inferno",
       "klass": "might",
@@ -508,7 +508,7 @@
     },
     {
       "id": "octavia",
-      "wiki": "octavia",
+      "wiki": "https://en.homm3bg.wiki/heroes/octavia/",
       "name": "Octavia",
       "factionId": "inferno",
       "klass": "might",
@@ -520,7 +520,7 @@
     },
     {
       "id": "rashka",
-      "wiki": "rashka",
+      "wiki": "https://en.homm3bg.wiki/heroes/rashka/",
       "name": "Rashka",
       "factionId": "inferno",
       "klass": "might",
@@ -532,7 +532,7 @@
     },
     {
       "id": "xyron",
-      "wiki": "xyron",
+      "wiki": "https://en.homm3bg.wiki/heroes/xyron/",
       "name": "Xyron",
       "factionId": "inferno",
       "klass": "magic",
@@ -544,7 +544,7 @@
     },
     {
       "id": "zydar",
-      "wiki": "zydar",
+      "wiki": "https://en.homm3bg.wiki/heroes/zydar/",
       "name": "Zydar",
       "factionId": "inferno",
       "klass": "magic",
@@ -556,7 +556,7 @@
     },
     {
       "id": "crag-hack",
-      "wiki": "crag_hack",
+      "wiki": "https://en.homm3bg.wiki/heroes/crag_hack/",
       "name": "Crag Hack",
       "factionId": "stronghold",
       "klass": "might",
@@ -568,7 +568,7 @@
     },
     {
       "id": "dessa",
-      "wiki": "dessa",
+      "wiki": "https://en.homm3bg.wiki/heroes/dessa/",
       "name": "Dessa",
       "factionId": "stronghold",
       "klass": "magic",
@@ -580,7 +580,7 @@
     },
     {
       "id": "gundula",
-      "wiki": "gundula",
+      "wiki": "https://en.homm3bg.wiki/heroes/gundula/",
       "name": "Gundula",
       "factionId": "stronghold",
       "klass": "magic",
@@ -592,7 +592,7 @@
     },
     {
       "id": "shiva",
-      "wiki": "shiva",
+      "wiki": "https://en.homm3bg.wiki/heroes/shiva/",
       "name": "Shiva",
       "factionId": "stronghold",
       "klass": "might",
@@ -604,7 +604,7 @@
     },
     {
       "id": "tarnum-stronghold",
-      "wiki": "tarnum_stronghold",
+      "wiki": "https://en.homm3bg.wiki/heroes/tarnum_stronghold/",
       "name": "Tarnum",
       "factionId": "stronghold",
       "klass": "might",
@@ -616,7 +616,7 @@
     },
     {
       "id": "yog",
-      "wiki": "yog",
+      "wiki": "https://en.homm3bg.wiki/heroes/yog/",
       "name": "Yog",
       "factionId": "stronghold",
       "klass": "might",
@@ -628,7 +628,7 @@
     },
     {
       "id": "ciele",
-      "wiki": "ciele",
+      "wiki": "https://en.homm3bg.wiki/heroes/ciele/",
       "name": "Ciele",
       "factionId": "conflux",
       "klass": "magic",
@@ -640,7 +640,7 @@
     },
     {
       "id": "erdamon",
-      "wiki": "erdamon",
+      "wiki": "https://en.homm3bg.wiki/heroes/erdamon/",
       "name": "Erdamon",
       "factionId": "conflux",
       "klass": "might",
@@ -652,7 +652,7 @@
     },
     {
       "id": "luna",
-      "wiki": "luna",
+      "wiki": "https://en.homm3bg.wiki/heroes/luna/",
       "name": "Luna",
       "factionId": "conflux",
       "klass": "magic",
@@ -664,7 +664,7 @@
     },
     {
       "id": "monere",
-      "wiki": "monere",
+      "wiki": "https://en.homm3bg.wiki/heroes/monere/",
       "name": "Monere",
       "factionId": "conflux",
       "klass": "might",
@@ -676,7 +676,7 @@
     },
     {
       "id": "pasis",
-      "wiki": "pasis",
+      "wiki": "https://en.homm3bg.wiki/heroes/pasis/",
       "name": "Pasis",
       "factionId": "conflux",
       "klass": "might",
@@ -688,7 +688,7 @@
     },
     {
       "id": "tarnum-conflux",
-      "wiki": "tarnum_conflux",
+      "wiki": "https://en.homm3bg.wiki/heroes/tarnum_conflux/",
       "name": "Tarnum",
       "factionId": "conflux",
       "klass": "magic",
@@ -700,7 +700,7 @@
     },
     {
       "id": "astra",
-      "wiki": "astra",
+      "wiki": "https://en.homm3bg.wiki/heroes/astra/",
       "name": "Astra",
       "factionId": "cove",
       "klass": "magic",
@@ -712,7 +712,7 @@
     },
     {
       "id": "casmetra",
-      "wiki": "casmetra",
+      "wiki": "https://en.homm3bg.wiki/heroes/casmetra/",
       "name": "Casmetra",
       "factionId": "cove",
       "klass": "magic",
@@ -724,7 +724,7 @@
     },
     {
       "id": "cassiopeia",
-      "wiki": "cassiopeia",
+      "wiki": "https://en.homm3bg.wiki/heroes/cassiopeia/",
       "name": "Cassiopeia",
       "factionId": "cove",
       "klass": "might",
@@ -736,7 +736,7 @@
     },
     {
       "id": "jeremy",
-      "wiki": "jeremy",
+      "wiki": "https://en.homm3bg.wiki/heroes/jeremy/",
       "name": "Jeremy",
       "factionId": "cove",
       "klass": "might",
@@ -748,7 +748,7 @@
     },
     {
       "id": "miriam",
-      "wiki": "miriam",
+      "wiki": "https://en.homm3bg.wiki/heroes/miriam/",
       "name": "Miriam",
       "factionId": "cove",
       "klass": "might",
@@ -760,7 +760,7 @@
     },
     {
       "id": "zilare",
-      "wiki": "zilare",
+      "wiki": "https://en.homm3bg.wiki/heroes/zilare/",
       "name": "Zilare",
       "factionId": "cove",
       "klass": "magic",
@@ -769,6 +769,90 @@
       "ability": "Interference",
       "specialty": "Forgetfulness",
       "set": "cove-expansion"
+    },
+    {
+      "id": "agar-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_agar_sm.png",
+      "name": "Agar",
+      "factionId": "factory",
+      "klass": "magic",
+      "className": "Artificer",
+      "identity": "agar",
+      "ability": "Wisdom",
+      "specialty": "Sandworms",
+      "set": "unofficial-factory"
+    },
+    {
+      "id": "celestine-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_celestine_sm.png",
+      "name": "Celestine",
+      "factionId": "factory",
+      "klass": "magic",
+      "className": "Artificer",
+      "identity": "celestine",
+      "ability": "Pathfinding",
+      "specialty": "Armadillos",
+      "set": "unofficial-factory"
+    },
+    {
+      "id": "frederick-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_frederick_sm.png",
+      "name": "Frederick",
+      "factionId": "factory",
+      "klass": "magic",
+      "className": "Artificer",
+      "identity": "frederick",
+      "ability": "Intelligence",
+      "specialty": "Automatons",
+      "set": "unofficial-factory"
+    },
+    {
+      "id": "henrietta-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_henrietta_sm.png",
+      "name": "Henrietta",
+      "factionId": "factory",
+      "klass": "might",
+      "className": "Mercenary",
+      "identity": "henrietta",
+      "ability": "Luck",
+      "specialty": "Halflings",
+      "set": "unofficial-factory"
+    },
+    {
+      "id": "melchior-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_melchior_sm.png",
+      "name": "Melchior",
+      "factionId": "factory",
+      "klass": "might",
+      "className": "Mercenary",
+      "identity": "melchior",
+      "ability": "Diplomacy",
+      "specialty": "Diplomacy",
+      "set": "unofficial-factory"
+    },
+    {
+      "id": "victoria-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_victoria_sm.png",
+      "name": "Victoria",
+      "factionId": "factory",
+      "klass": "magic",
+      "className": "Artificer",
+      "identity": "victoria",
+      "ability": "Learning",
+      "specialty": "Land Mine",
+      "set": "unofficial-factory"
+    },
+    {
+      "id": "wynona-factory",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory/blob/main/heroes%20boards/hero_wynona_sm.png",
+      "name": "Wynona",
+      "factionId": "factory",
+      "klass": "might",
+      "className": "Mercenary",
+      "identity": "wynona",
+      "ability": "Archery",
+      "specialty": "Scouting",
+      "set": "unofficial-factory"
     }
   ]
 }

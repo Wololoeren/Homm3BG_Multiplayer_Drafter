@@ -136,6 +136,10 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 
 ## Credits
 
+- The unofficial **Factory** faction and its seven heroes:
+  [piotrbruzda/Homm3BG-Factory][factory], read off its own hero boards. It is
+  in the catalogue like any other box, so a table that does not play with it
+  switches "Unofficial Factory" off in **Your collection**.
 - Peer-to-peer matchmaking: [Trystero](https://github.com/dmotz/trystero)
 - Hero stat strips: composited for the [Hero Randomizer][randomizer] from the
   Cards Database — twenty images cover all sixty-four heroes, because base
@@ -152,3 +156,4 @@ announced Factory, Bulwark and Forge — except a colour for it in the script's
 [editor]: https://github.com/Wololoeren/homm3BG_scenario_editor
 [generator]: https://github.com/Wololoeren/Homm3BG-Random-Scenario-Generator
 [randomizer]: https://github.com/Imrauviel/Homm3_BG_Hero_Randomizer
+[factory]: https://github.com/piotrbruzda/Homm3BG-Factory

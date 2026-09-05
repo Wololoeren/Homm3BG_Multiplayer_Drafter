@@ -69,6 +69,15 @@ const CRESTS: Record<string, React.ReactNode> = {
   fortress: <path d="M12 2l8 3v7.2C20 17.4 16.4 20.8 12 22.5 7.6 20.8 4 17.4 4 12.2V5z" />,
   // Four points for four elements.
   conflux: <path d="M12 1.5l3.2 6.6H8.8zM22.5 12l-6.6 3.2V8.8zM12 22.5l-3.2-6.6h6.4zM1.5 12l6.6-3.2v6.4z" />,
+  // A cog, for the only faction here that builds its army rather than raising
+  // it. Generated rather than drawn by eye — eight teeth spaced by arithmetic
+  // stay even in a way a hand-written path does not.
+  factory: (
+    <path
+      fillRule="evenodd"
+      d="M19.99,10.15L22.46,10.26L22.46,13.74L19.99,13.85L18.96,16.34L20.62,18.16L18.16,20.62L16.34,18.96L13.85,19.99L13.74,22.46L10.26,22.46L10.15,19.99L7.66,18.96L5.84,20.62L3.38,18.16L5.04,16.34L4.01,13.85L1.54,13.74L1.54,10.26L4.01,10.15L5.04,7.66L3.38,5.84L5.84,3.38L7.66,5.04L10.15,4.01L10.26,1.54L13.74,1.54L13.85,4.01L16.34,5.04L18.16,3.38L20.62,5.84L18.96,7.66ZM15.40,12A3.4,3.4 0 1 0 8.60,12A3.4,3.4 0 1 0 15.40,12Z"
+    />
+  ),
   // Two swells of sea.
   cove: (
     <>

@@ -8,7 +8,7 @@
       "set": "core-game",
       "color": "#d8c27a",
       "crest": "/factions/castle.webp",
-      "wiki": "castle"
+      "wiki": "https://en.homm3bg.wiki/towns/castle/"
     },
     {
       "id": "necropolis",
@@ -16,7 +16,7 @@
       "set": "core-game",
       "color": "#8e8f96",
       "crest": "/factions/necropolis.webp",
-      "wiki": "necropolis"
+      "wiki": "https://en.homm3bg.wiki/towns/necropolis/"
     },
     {
       "id": "dungeon",
@@ -24,7 +24,7 @@
       "set": "core-game",
       "color": "#9a6fbf",
       "crest": "/factions/dungeon.webp",
-      "wiki": "dungeon"
+      "wiki": "https://en.homm3bg.wiki/towns/dungeon/"
     },
     {
       "id": "tower",
@@ -32,7 +32,7 @@
       "set": "tower-expansion",
       "color": "#7fb6d6",
       "crest": "/factions/tower.webp",
-      "wiki": "tower"
+      "wiki": "https://en.homm3bg.wiki/towns/tower/"
     },
     {
       "id": "rampart",
@@ -40,7 +40,7 @@
       "set": "rampart-expansion",
       "color": "#6ea55f",
       "crest": "/factions/rampart.webp",
-      "wiki": "rampart"
+      "wiki": "https://en.homm3bg.wiki/towns/rampart/"
     },
     {
       "id": "fortress",
@@ -48,7 +48,7 @@
       "set": "fortress-expansion",
       "color": "#7d8a4e",
       "crest": "/factions/fortress.webp",
-      "wiki": "fortress"
+      "wiki": "https://en.homm3bg.wiki/towns/fortress/"
     },
     {
       "id": "inferno",
@@ -56,7 +56,7 @@
       "set": "inferno-expansion",
       "color": "#c25a3a",
       "crest": "/factions/inferno.webp",
-      "wiki": "inferno"
+      "wiki": "https://en.homm3bg.wiki/towns/inferno/"
     },
     {
       "id": "stronghold",
@@ -64,7 +64,7 @@
       "set": "stronghold-expansion",
       "color": "#c0703a",
       "crest": "/factions/stronghold.webp",
-      "wiki": "stronghold"
+      "wiki": "https://en.homm3bg.wiki/towns/stronghold/"
     },
     {
       "id": "conflux",
@@ -72,7 +72,7 @@
       "set": "conflux-expansion",
       "color": "#67c2b4",
       "crest": "/factions/conflux.webp",
-      "wiki": "conflux"
+      "wiki": "https://en.homm3bg.wiki/towns/conflux/"
     },
     {
       "id": "cove",
@@ -80,7 +80,15 @@
       "set": "cove-expansion",
       "color": "#4d7fae",
       "crest": "/factions/cove.webp",
-      "wiki": "cove"
+      "wiki": "https://en.homm3bg.wiki/towns/cove/"
+    },
+    {
+      "id": "factory",
+      "name": "Factory",
+      "set": "unofficial-factory",
+      "color": "#e0954f",
+      "wiki": "https://github.com/piotrbruzda/Homm3BG-Factory",
+      "crest": "/factions/factory.webp"
     }
   ]
 }

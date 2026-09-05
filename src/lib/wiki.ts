@@ -2,23 +2,21 @@ import { asset } from "./assets";
 import type { Faction, Hero } from "./draftTypes";
 
 /**
- * Links out to the community card database, the same wiki the Random Scenario
- * Generator links its campaign casts to.
+ * Where to read more about a faction or a hero.
  *
- * The page name travels in the catalogue rather than being derived from an id,
- * because a slug rule that drifts produces dead links nobody notices for
- * months. scripts/build-catalogue.mjs takes it straight from the wiki's own
- * markdown, which is also what disambiguates the six Tarnums.
+ * The catalogue carries the whole link rather than a page name to wrap: the
+ * official ten point at the community card database, and a fan-made expansion
+ * points at its own repository, so there is no single base to bolt a slug on
+ * to. It is also what disambiguates the six Tarnums, since the link comes
+ * straight from the source rather than from a slug rule that could drift.
  */
 
-const BASE = "https://en.homm3bg.wiki";
-
 export function heroWikiUrl(hero: Hero): string {
-  return `${BASE}/heroes/${hero.wiki}/`;
+  return hero.wiki;
 }
 
 export function factionWikiUrl(faction: Faction): string {
-  return `${BASE}/towns/${faction.wiki}/`;
+  return faction.wiki;
 }
 
 /**
