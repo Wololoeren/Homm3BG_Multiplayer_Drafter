@@ -1,0 +1,76 @@
+{
+  "source": "https://github.com/Mirzipan/Homm3_BG_Database",
+  "fetched": "2026-09-05",
+  "factions": [
+    {
+      "id": "castle",
+      "name": "Castle",
+      "set": "core-game",
+      "color": "#d8c27a",
+      "crest": "/factions/castle.webp"
+    },
+    {
+      "id": "necropolis",
+      "name": "Necropolis",
+      "set": "core-game",
+      "color": "#8e8f96",
+      "crest": "/factions/necropolis.webp"
+    },
+    {
+      "id": "dungeon",
+      "name": "Dungeon",
+      "set": "core-game",
+      "color": "#9a6fbf",
+      "crest": "/factions/dungeon.webp"
+    },
+    {
+      "id": "tower",
+      "name": "Tower",
+      "set": "tower-expansion",
+      "color": "#7fb6d6",
+      "crest": "/factions/tower.webp"
+    },
+    {
+      "id": "rampart",
+      "name": "Rampart",
+      "set": "rampart-expansion",
+      "color": "#6ea55f",
+      "crest": "/factions/rampart.webp"
+    },
+    {
+      "id": "fortress",
+      "name": "Fortress",
+      "set": "fortress-expansion",
+      "color": "#7d8a4e",
+      "crest": "/factions/fortress.webp"
+    },
+    {
+      "id": "inferno",
+      "name": "Inferno",
+      "set": "inferno-expansion",
+      "color": "#c25a3a",
+      "crest": "/factions/inferno.webp"
+    },
+    {
+      "id": "stronghold",
+      "name": "Stronghold",
+      "set": "stronghold-expansion",
+      "color": "#c0703a",
+      "crest": "/factions/stronghold.webp"
+    },
+    {
+      "id": "conflux",
+      "name": "Conflux",
+      "set": "conflux-expansion",
+      "color": "#67c2b4",
+      "crest": "/factions/conflux.webp"
+    },
+    {
+      "id": "cove",
+      "name": "Cove",
+      "set": "cove-expansion",
+      "color": "#4d7fae",
+      "crest": "/factions/cove.webp"
+    }
+  ]
+}

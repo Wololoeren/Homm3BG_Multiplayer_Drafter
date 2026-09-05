@@ -1,0 +1,332 @@
+"use client";
+
+import { FACTIONS, HEROES, SETS, setLabel } from "@/lib/catalogue";
+import { feasibility, repair } from "@/lib/draftConfig";
+import { MAX_BANS, MAX_PLAYERS, MAX_POOL, MIN_PLAYERS, type DraftConfig } from "@/lib/draftTypes";
+import { useT, type Translate } from "@/lib/i18n";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+
+interface Props {
+  config: DraftConfig;
+  names: string[];
+  seed: string;
+  onChange: (config: DraftConfig) => void;
+  onNames: (names: string[]) => void;
+  onReroll: () => void;
+  onReset: () => void;
+  onStart: () => void;
+}
+
+const range = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, i) => from + i);
+
+/** A row of numbers to choose between, which is faster to hit than a slider
+ * and shows the whole range at once — the range being small enough to. */
+function NumberRow({
+  value,
+  from,
+  to,
+  onPick,
+  labelFor,
+}: {
+  value: number;
+  from: number;
+  to: number;
+  onPick: (n: number) => void;
+  labelFor?: (n: number) => string;
+}) {
+  return (
+    <div className="segmented">
+      {range(from, to).map((n) => (
+        <button
+          key={n}
+          type="button"
+          className={n === value ? "active" : ""}
+          onClick={() => onPick(n)}
+        >
+          {labelFor ? labelFor(n) : n}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Row({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+  return (
+    <div className="setupRow">
+      <span className="label">{label}</span>
+      <div>
+        {children}
+        {hint && <p className="hint">{hint}</p>}
+      </div>
+    </div>
+  );
+}
+
+/** Turns a feasibility issue into the sentence that explains it. The numbers
+ * travel with the issue precisely so this can say *why* rather than "no". */
+function issueText(t: Translate, code: string, vars: Record<string, string | number>): string {
+  return t(`feas.${code}` as MessageKey, vars);
+}
+
+export default function DraftSetup({
+  config,
+  names,
+  seed,
+  onChange,
+  onNames,
+  onReroll,
+  onReset,
+  onStart,
+}: Props) {
+  const t = useT();
+  const check = feasibility(config);
+
+  // Every change is repaired on the way in, so raising the player count
+  // shrinks the pools instead of leaving the player to unpick a red error.
+  const set = (patch: Partial<DraftConfig>) => onChange(repair({ ...config, ...patch }));
+
+  const ownedSets = SETS.filter(
+    (s) =>
+      FACTIONS.some((f) => f.set === s && config.factionIds.includes(f.id)) ||
+      HEROES.some((h) => h.set === s && config.heroIds.includes(h.id)),
+  );
+
+  function toggleSet(setId: string) {
+    const on = ownedSets.includes(setId);
+    const factionIds = FACTIONS.filter(
+      (f) => (f.set === setId ? !on : config.factionIds.includes(f.id)),
+    ).map((f) => f.id);
+    const heroIds = HEROES.filter((h) => (h.set === setId ? !on : config.heroIds.includes(h.id))).map(
+      (h) => h.id,
+    );
+    if (!factionIds.length) return;
+    set({ factionIds, heroIds });
+  }
+
+  function toggleFaction(id: string) {
+    const on = config.factionIds.includes(id);
+    const factionIds = on
+      ? config.factionIds.filter((f) => f !== id)
+      : FACTIONS.filter((f) => f.id === id || config.factionIds.includes(f.id)).map((f) => f.id);
+    if (!factionIds.length) return;
+    set({ factionIds });
+  }
+
+  return (
+    <div className="setup">
+      <Row label={t("lobby.players")}>
+        <NumberRow
+          value={config.players}
+          from={MIN_PLAYERS}
+          to={MAX_PLAYERS}
+          onPick={(players) => {
+            set({ players });
+            onNames(
+              Array.from({ length: players }, (_, i) => names[i] ?? ""),
+            );
+          }}
+        />
+        <div className="collection" style={{ marginTop: 10 }}>
+          {Array.from({ length: config.players }, (_, i) => (
+            <input
+              key={i}
+              className="codeInput"
+              style={{ flex: "0 1 150px" }}
+              value={names[i] ?? ""}
+              maxLength={24}
+              placeholder={t("draft.seat", { n: i + 1 })}
+              onChange={(e) => {
+                const next = [...names];
+                next[i] = e.target.value;
+                onNames(next);
+              }}
+            />
+          ))}
+        </div>
+      </Row>
+
+      <Row
+        label={t("lobby.format")}
+        hint={t(config.format === "dealt" ? "lobby.format.dealt.help" : "lobby.format.snake.help")}
+      >
+        <div className="segmented">
+          {(["dealt", "snake"] as const).map((format) => (
+            <button
+              key={format}
+              type="button"
+              className={config.format === format ? "active" : ""}
+              onClick={() => set({ format })}
+            >
+              {t(`lobby.format.${format}` as MessageKey)}
+            </button>
+          ))}
+        </div>
+      </Row>
+
+      <Row
+        label={t("lobby.factionPool")}
+        hint={config.factionPoolSize === 1 ? t("lobby.pool.forced") : undefined}
+      >
+        <NumberRow
+          value={config.factionPoolSize}
+          from={1}
+          to={MAX_POOL}
+          onPick={(factionPoolSize) => set({ factionPoolSize })}
+        />
+      </Row>
+
+      <Row
+        label={t("lobby.heroPool")}
+        hint={config.heroPoolSize === 1 ? t("lobby.pool.forced") : undefined}
+      >
+        <NumberRow
+          value={config.heroPoolSize}
+          from={1}
+          to={MAX_POOL}
+          onPick={(heroPoolSize) => set({ heroPoolSize })}
+        />
+      </Row>
+
+      <Row
+        label={t("lobby.bans")}
+        hint={
+          config.bansPerPlayer > 0
+            ? t(`lobby.banVisibility.${config.banVisibility}.help` as MessageKey)
+            : undefined
+        }
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          <NumberRow
+            value={config.bansPerPlayer}
+            from={0}
+            to={MAX_BANS}
+            onPick={(bansPerPlayer) => set({ bansPerPlayer })}
+            labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}
+          />
+          {config.bansPerPlayer > 0 && (
+            <div className="segmented">
+              {(["open", "blind"] as const).map((banVisibility) => (
+                <button
+                  key={banVisibility}
+                  type="button"
+                  className={config.banVisibility === banVisibility ? "active" : ""}
+                  onClick={() => set({ banVisibility })}
+                >
+                  {t(`lobby.banVisibility.${banVisibility}` as MessageKey)}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </Row>
+
+      <Row
+        label={t("lobby.heroRule")}
+        hint={t(`lobby.heroRule.${config.heroFactionPolicy}.help` as MessageKey)}
+      >
+        <div className="segmented">
+          {(["own", "unique-faction", "any"] as const).map((policy) => (
+            <button
+              key={policy}
+              type="button"
+              className={config.heroFactionPolicy === policy ? "active" : ""}
+              onClick={() => set({ heroFactionPolicy: policy })}
+            >
+              {t(`lobby.heroRule.${policy}` as MessageKey)}
+            </button>
+          ))}
+        </div>
+        <label className="toggle" style={{ marginTop: 10 }}>
+          <input
+            type="checkbox"
+            checked={config.uniqueHeroIdentity}
+            onChange={(e) => set({ uniqueHeroIdentity: e.target.checked })}
+          />
+          <span>
+            {t("lobby.uniqueIdentity")}
+            <span className="hint" style={{ display: "block" }}>
+              {t("lobby.uniqueIdentity.help")}
+            </span>
+          </span>
+        </label>
+        {config.heroFactionPolicy === "unique-faction" && (
+          <label className="toggle" style={{ marginTop: 8 }}>
+            <input
+              type="checkbox"
+              checked={config.heroMayComeFromAnotherPlayersTown}
+              onChange={(e) => set({ heroMayComeFromAnotherPlayersTown: e.target.checked })}
+            />
+            <span>{t("lobby.otherTowns")}</span>
+          </label>
+        )}
+      </Row>
+
+      <Row
+        label={t("lobby.collection")}
+        hint={t("lobby.collection.summary", {
+          factions: config.factionIds.length,
+          heroes: config.heroIds.length,
+        })}
+      >
+        <div className="collection">
+          {SETS.map((setId) => (
+            <button
+              key={setId}
+              type="button"
+              className={ownedSets.includes(setId) ? "chip on" : "chip"}
+              onClick={() => toggleSet(setId)}
+            >
+              {setLabel(setId)}
+            </button>
+          ))}
+        </div>
+        <div className="collection" style={{ marginTop: 8 }}>
+          {FACTIONS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              className={config.factionIds.includes(f.id) ? "chip on" : "chip"}
+              onClick={() => toggleFaction(f.id)}
+            >
+              <span className="chipDot" style={{ background: f.color }} />
+              {f.name}
+            </button>
+          ))}
+        </div>
+      </Row>
+
+      {check.ok ? (
+        <p className="note good">
+          {t("feas.ok", {
+            players: config.players,
+            left: check.factionsAfterBans,
+            need: config.players * config.factionPoolSize,
+          })}
+        </p>
+      ) : (
+        <div className="note bad">
+          {check.issues.map((issue, i) => (
+            <p key={i} style={{ margin: i ? "6px 0 0" : 0 }}>
+              {issueText(t, issue.code, issue.vars)}
+            </p>
+          ))}
+        </div>
+      )}
+
+      <div className="setupActions">
+        <span className="seedBox">
+          {t("lobby.seed")} <span className="seedValue">{seed}</span>
+          <button type="button" className="btn" onClick={onReroll}>
+            {t("lobby.reroll")}
+          </button>
+        </span>
+        <button type="button" className="btn" onClick={onReset}>
+          {t("lobby.reset")}
+        </button>
+        <button type="button" className="btn primary" disabled={!check.ok} onClick={onStart}>
+          {t("lobby.start")}
+        </button>
+      </div>
+    </div>
+  );
+}
