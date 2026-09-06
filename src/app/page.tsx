@@ -387,7 +387,19 @@ export default function Page() {
         <LanguagePicker />
       </header>
 
-      {!ready || !state ? null : !started ? (
+      {!ready ? null : !state ? (
+        /* A log that will not replay used to render nothing at all: no setup
+           screen, no way out, and a saved session that brought the same empty
+           page back on every reload. */
+        <div className="note bad">
+          <p style={{ margin: 0 }}>{t("draft.unreplayable")}</p>
+          <div className="shareBar" style={{ borderTop: "none", padding: "10px 0 0" }}>
+            <button type="button" className="btn primary" onClick={backToSetup}>
+              {t("draft.unreplayable.reset")}
+            </button>
+          </div>
+        </div>
+      ) : !started ? (
         <>
           <DraftSetup
             config={config}

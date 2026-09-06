@@ -41,11 +41,14 @@ function isEvent(raw: unknown, players: number): raw is DraftEvent {
     case "ban":
     case "pickF":
       return seatOk && typeof (event as { factionId?: unknown }).factionId === "string";
-    case "banH":
     case "pickP": {
       const n = (event as { position?: unknown }).position;
       return seatOk && typeof n === "number" && n >= 1 && n <= players;
     }
+    // A hero ban names a hero, exactly as a hero pick does. Reading it as a
+    // seat position instead threw every hero ban away on reload, and the log
+    // that came back replayed into a ban round that had already been played.
+    case "banH":
     case "pickH": {
       const id = (event as { heroId?: unknown }).heroId;
       return seatOk && typeof id === "string" && hero(id) !== undefined;

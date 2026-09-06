@@ -147,6 +147,9 @@ const en = {
   "draft.reveal": "Reveal the bans",
   "draft.notOffered": "Not dealt to anyone",
   "draft.stats": "{name}'s attack, defense, spell power and knowledge",
+  "draft.unreplayable":
+    "The saved draft will not replay here — it may have been written by a different version of this page. Starting again keeps your setup, and a link or code you were given still opens the draft itself.",
+  "draft.unreplayable.reset": "Start again",
 
   // ------------------------------------------------------------------- wiki
   "wiki.hero": "Read about {name} on the wiki",
