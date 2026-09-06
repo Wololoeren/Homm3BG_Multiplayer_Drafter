@@ -280,8 +280,13 @@ button {
   }
 }
 
-.setupRow > .label {
+.setupRow > .rowLabel {
   padding-top: 8px;
+}
+
+/* A hint under a checkbox lines up with its words rather than with the box. */
+.toggle .hint {
+  display: block;
 }
 
 .collection {

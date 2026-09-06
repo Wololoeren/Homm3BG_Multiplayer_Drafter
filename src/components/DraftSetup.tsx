@@ -93,16 +93,43 @@ function NumberRow({
   );
 }
 
-function Row({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+/**
+ * One setting: its name, its controls, and the sentences that explain them.
+ *
+ * `hint` describes a control and sits under the control; `note` describes the
+ * whole row and sits under its name. A row holding more than one control
+ * passes neither and puts a <Hint> beneath each control instead, because a
+ * sentence gathered at the foot of a stack reads as though it belonged to
+ * whichever option happened to be last.
+ */
+function Row({
+  label,
+  children,
+  hint,
+  note,
+}: {
+  label: string;
+  children: React.ReactNode;
+  hint?: string;
+  note?: string;
+}) {
   return (
     <div className="setupRow">
-      <span className="label">{label}</span>
+      <div className="rowLabel">
+        <span className="label">{label}</span>
+        {note && <p className="hint">{note}</p>}
+      </div>
       <div>
         {children}
         {hint && <p className="hint">{hint}</p>}
       </div>
     </div>
   );
+}
+
+/** An explanation of the control immediately above it. */
+function Hint({ children }: { children: React.ReactNode }) {
+  return <p className="hint">{children}</p>;
 }
 
 /** Turns a feasibility issue into the sentence that explains it. The numbers
@@ -240,7 +267,7 @@ export default function DraftSetup({
         </div>
       </Row>
 
-      <Row label={t("lobby.mode")} hint={t(`lobby.mode.${mode}.help` as MessageKey)}>
+      <Row label={t("lobby.mode")}>
         <div className="segmented">
           {MODES.map((option) => (
             <button
@@ -258,6 +285,7 @@ export default function DraftSetup({
             </button>
           ))}
         </div>
+        <Hint>{t(`lobby.mode.${mode}.help` as MessageKey)}</Hint>
         {mode !== "local" && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 10 }}>
             <span className="label">{t("lobby.youAre")}</span>
@@ -350,7 +378,7 @@ export default function DraftSetup({
         </div>
       </Row>
 
-      <Row label={t("lobby.turns")} hint={t("lobby.turns.help")}>
+      <Row label={t("lobby.turns")} note={t("lobby.turns.help")}>
         <label className="toggle">
           <input
             type="checkbox"
@@ -359,9 +387,7 @@ export default function DraftSetup({
           />
           <span>
             {t("lobby.combined")}
-            <span className="hint" style={{ display: "block" }}>
-              {t("lobby.combined.help")}
-            </span>
+            <span className="hint">{t("lobby.combined.help")}</span>
           </span>
         </label>
         <label className="toggle" style={{ marginTop: 8 }}>
@@ -372,9 +398,7 @@ export default function DraftSetup({
           />
           <span>
             {t("lobby.draftSeats")}
-            <span className="hint" style={{ display: "block" }}>
-              {t("lobby.draftSeats.help")}
-            </span>
+            <span className="hint">{t("lobby.draftSeats.help")}</span>
           </span>
         </label>
       </Row>
@@ -392,15 +416,8 @@ export default function DraftSetup({
         />
       </Row>
 
-      <Row
-        label={t("lobby.bans")}
-        hint={
-          config.bansPerPlayer > 0 || config.heroBansPerPlayer > 0
-            ? t(`lobby.banVisibility.${config.banVisibility}.help` as MessageKey)
-            : undefined
-        }
-      >
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+      <Row label={t("lobby.bans")}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" }}>
           <NumberRow
             value={config.bansPerPlayer}
             from={0}
@@ -410,27 +427,30 @@ export default function DraftSetup({
             onPick={(bansPerPlayer) => set({ bansPerPlayer })}
             labelFor={(n) => (n === 0 ? t("lobby.bans.none") : String(n))}
           />
+          {/* Open or blind is a property of both ban rounds, so it stands
+              beside the counts with its own sentence under it rather than one
+              shared line under the pair. */}
           {(config.bansPerPlayer > 0 || config.heroBansPerPlayer > 0) && (
-            <div className="segmented">
-              {(["open", "blind"] as const).map((banVisibility) => (
-                <button
-                  key={banVisibility}
-                  type="button"
-                  className={config.banVisibility === banVisibility ? "active" : ""}
-                  onClick={() => set({ banVisibility })}
-                >
-                  {t(`lobby.banVisibility.${banVisibility}` as MessageKey)}
-                </button>
-              ))}
+            <div style={{ flex: "1 1 260px", minWidth: 0 }}>
+              <div className="segmented">
+                {(["open", "blind"] as const).map((banVisibility) => (
+                  <button
+                    key={banVisibility}
+                    type="button"
+                    className={config.banVisibility === banVisibility ? "active" : ""}
+                    onClick={() => set({ banVisibility })}
+                  >
+                    {t(`lobby.banVisibility.${banVisibility}` as MessageKey)}
+                  </button>
+                ))}
+              </div>
+              <Hint>{t(`lobby.banVisibility.${config.banVisibility}.help` as MessageKey)}</Hint>
             </div>
           )}
         </div>
       </Row>
 
-      <Row
-        label={t("lobby.heroRule")}
-        hint={t(`lobby.heroRule.${config.heroFactionPolicy}.help` as MessageKey)}
-      >
+      <Row label={t("lobby.heroRule")}>
         <div className="segmented">
           {(["own", "unique-faction", "any"] as const).map((policy) => (
             <button
@@ -453,6 +473,7 @@ export default function DraftSetup({
             </button>
           ))}
         </div>
+        <Hint>{t(`lobby.heroRule.${config.heroFactionPolicy}.help` as MessageKey)}</Hint>
         <label className="toggle" style={{ marginTop: 10 }}>
           <input
             type="checkbox"
@@ -461,9 +482,7 @@ export default function DraftSetup({
           />
           <span>
             {t("lobby.uniqueIdentity")}
-            <span className="hint" style={{ display: "block" }}>
-              {t("lobby.uniqueIdentity.help")}
-            </span>
+            <span className="hint">{t("lobby.uniqueIdentity.help")}</span>
           </span>
         </label>
         {config.heroFactionPolicy === "unique-faction" && (
@@ -478,9 +497,7 @@ export default function DraftSetup({
               <span>
                 {t("lobby.otherTowns")}
                 {config.combinedPicks && (
-                  <span className="hint" style={{ display: "block" }}>
-                    {t("lobby.otherTowns.combined")}
-                  </span>
+                  <span className="hint">{t("lobby.otherTowns.combined")}</span>
                 )}
               </span>
             </label>
@@ -495,7 +512,7 @@ export default function DraftSetup({
           />
           <span>
             {t("lobby.sharedCards")}
-            <span className="hint" style={{ display: "block" }}>
+            <span className="hint">
               {HAVE_CARD_PAIRINGS ? t("lobby.sharedCards.help") : t("lobby.sharedCards.nodata")}
             </span>
           </span>
