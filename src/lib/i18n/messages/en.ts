@@ -7,7 +7,7 @@ const en = {
   "app.title": "Multiplayer Drafter",
   "app.subtitle": "Heroes of Might & Magic III: The Board Game",
   "lang.label": "Language",
-  "footer.more": "More for this table:",
+  "footer.more": "Like my work? Check out:",
   "footer.cardCreator": "Card Creator",
   "footer.editor": "Scenario Editor",
   "footer.generator": "Random Scenario Generator",
