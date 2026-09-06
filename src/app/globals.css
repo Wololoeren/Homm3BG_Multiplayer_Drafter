@@ -913,6 +913,63 @@ button {
 
   .sheet {
     padding: 10mm 6mm;
+    min-height: auto;
+  }
+
+  /* Five columns do not fit a phone, and a table that has to be dragged
+     sideways is not a sheet. Each player becomes a block instead: the seat and
+     the name as its heading, the rest as labelled lines. Printing is untouched
+     — an A4 page is about 794px wide, so this query never matches it. */
+  .sheetTable,
+  .sheetTable tbody,
+  .sheetTable tr,
+  .sheetTable td {
+    display: block;
+  }
+
+  .sheetTable thead {
+    display: none;
+  }
+
+  .sheetTable tr {
+    padding: 3mm 0;
+    border-bottom: 1px solid rgba(176, 158, 105, 0.45);
+  }
+
+  .sheetTable td {
+    padding: 0;
+    border: none;
+  }
+
+  /* Seat and name share the heading line; the first labelled row below them
+     starts the block proper. */
+  .sheetTable .seatNo,
+  .sheetTable .who {
+    display: inline;
+    font-size: 17px;
+  }
+
+  .sheetTable .seatNo {
+    margin-right: 0.5em;
+    color: var(--ink-soft);
+  }
+
+  .sheetTable .who + td {
+    margin-top: 2mm;
+  }
+
+  /* min-width, not width: the labels are translated, and one longer than the
+     column it is given pushes its own value along rather than running into it.
+     The padding is what keeps the two apart in either case. */
+  .sheetTable td[data-label]::before {
+    content: attr(data-label);
+    display: inline-block;
+    min-width: 5.2em;
+    padding-right: 0.6em;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
   }
 
   .qr svg {

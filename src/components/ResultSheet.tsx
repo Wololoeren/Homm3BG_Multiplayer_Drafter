@@ -105,9 +105,12 @@ export default function ResultSheet({
             <tbody>
               {rows.map(({ seat, position, town, card }) => (
                 <tr key={seat.index}>
-                  <td>{position}</td>
+                  {/* The labels are the column headings again, which a phone
+                      shows in front of each value once the table has stacked
+                      and the header row is gone. */}
+                  <td className="seatNo">{position}</td>
                   <td className="who">{seat.name || t("draft.seat", { n: seat.index + 1 })}</td>
-                  <td>
+                  <td data-label={t("result.faction")}>
                     {town && <Crest factionId={town.id} className="sheetCrest" />}
                     {town?.name ?? "—"}
                     {town && (
@@ -117,13 +120,13 @@ export default function ResultSheet({
                       />
                     )}
                   </td>
-                  <td>
+                  <td data-label={t("result.hero")}>
                     {card?.name ?? "—"}
                     {card && (
                       <WikiLink href={heroWikiUrl(card)} label={t("wiki.hero", { name: card.name })} />
                     )}
                   </td>
-                  <td>
+                  <td data-label={t("result.class")}>
                     {card ? `${card.className} · ${t(`result.${card.klass}` as MessageKey)}` : "—"}
                   </td>
                 </tr>
