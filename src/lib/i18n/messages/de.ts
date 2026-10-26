@@ -143,6 +143,7 @@ const de: Partial<Messages> = {
   "draft.taken": "Vergeben",
   "draft.undo": "Letzten Zug zurücknehmen",
   "draft.undo.shared": "Dein eigener letzter Zug, solange du den Link noch nicht weitergegeben hast.",
+  "draft.sending": "Wird in {n} gesendet…",
   "draft.abandon": "Draft abbrechen",
   "draft.abandon.confirm": "Wirklich abbrechen? Alles bisher Gedraftete ist weg.",
   "draft.abandon.yes": "Ja, abbrechen",

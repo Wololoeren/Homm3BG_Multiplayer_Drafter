@@ -142,6 +142,7 @@ const fi: Partial<Messages> = {
   "draft.taken": "Varattu",
   "draft.undo": "Kumoa viimeisin siirto",
   "draft.undo.shared": "Oma viimeisin siirtosi, kunnes ojennat linkin eteenpäin.",
+  "draft.sending": "Lähetetään {n}…",
   "draft.abandon": "Hylkää draft",
   "draft.abandon.confirm": "Hylätäänkö? Kaikki tähän asti draftattu menetetään.",
   "draft.abandon.yes": "Kyllä, hylätään",

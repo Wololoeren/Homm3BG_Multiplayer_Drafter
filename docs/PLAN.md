@@ -794,6 +794,36 @@ to move first — so "your move is in, send this link" appeared before you had
 moved at all, and kept insisting after a move was taken back. It now asks
 whether you can still move.
 
+### Five seconds before the others hear about it
+
+Live was left out of undo because peers merge whole logs as unions: anything
+they have heard comes straight back however firmly it is deleted here. The way
+round that is not a tombstone everybody has to agree on — it is to not have
+sent it yet.
+
+So a live move is applied locally the instant it is made, because the player
+has to see what they did, and held off the wire for five seconds with a
+countdown and the same undo button the other modes have. For those five
+seconds the move exists on exactly one computer, which is the same situation
+as a shared link nobody has passed on, and the same rule falls out of it.
+
+The hold goes on the transport rather than on the log, as one `hold` flag that
+makes the publish effect skip; `hold` is in the effect's dependency list, so
+letting go is itself what publishes. Nothing else has to know. A peer's own
+update arriving mid-hold still merges in locally, it just goes unanswered
+until the countdown ends, and a reload mid-hold publishes on reconnect — so a
+held move can be delayed but not lost.
+
+Verified between two browser contexts on live relays, by polling one peer
+every 100ms while the other picked a faction, took it back after 1.5 seconds,
+and picked a different one. The watching peer's whole record of its
+neighbour's town was `[0ms: "—", 13111ms: "Cove"]`. The faction that was taken
+back never crossed the wire at all.
+
+The cost is honest: in a sequential draft the next player waits five seconds
+longer to learn it is their turn. In the dealt format, where everyone picks at
+once, nobody is waiting on anybody.
+
 ### The roads not taken
 
 A toggle on the result sheet, off by default, because the sheet answers "what

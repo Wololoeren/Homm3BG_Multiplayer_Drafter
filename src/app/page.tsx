@@ -29,6 +29,17 @@ import { useLiveDraft } from "@/lib/useLiveDraft";
 const UNDOABLE: DraftEvent["t"][] = ["ban", "banH", "pickF", "pickH", "pickP"];
 
 /**
+ * How long a live move sits on this computer before the others hear about it.
+ *
+ * Live is the one mode where a move cannot be taken back afterwards: peers
+ * merge whole logs as unions, so anything they have heard comes straight back
+ * however firmly it is deleted here. Rather than build a tombstone everybody
+ * has to agree on, the move is simply not sent yet — for five seconds it
+ * exists on one computer, exactly like a shared link nobody has passed on.
+ */
+const LIVE_HOLD_SECONDS = 5;
+
+/**
  * One page, three ways to play it.
  *
  * The app never branches on *how* a move arrived — every move, whether it came
@@ -44,6 +55,9 @@ export default function Page() {
   const [names, setNames] = useState<string[]>([]);
   const [seed, setSeed] = useState("");
   const [events, setEvents] = useState<DraftEvent[]>([]);
+  /** A live move made but not yet broadcast, and the seconds left to take it
+   * back. Null at every other moment, including in the other two modes. */
+  const [held, setHeld] = useState<{ event: DraftEvent; left: number } | null>(null);
   const [mySeat, setMySeat] = useState<number | null>(null);
   const [mode, setMode] = useState<TransportKind>("local");
   const [ready, setReady] = useState(false);
@@ -191,8 +205,21 @@ export default function Page() {
     live: mode === "p2p" && started && Boolean(setupCode),
     room: setupCode,
     payload: dispatch,
+    hold: held !== null,
     onDispatch: (incoming) => receive(incoming.events),
   });
+
+  // The countdown itself. Reaching zero drops the hold, and dropping the hold
+  // is what publishes — see useLiveDraft.
+  useEffect(() => {
+    if (!held) return;
+    if (held.left <= 0) {
+      setHeld(null);
+      return;
+    }
+    const timer = setTimeout(() => setHeld((h) => (h ? { ...h, left: h.left - 1 } : null)), 1000);
+    return () => clearTimeout(timer);
+  }, [held]);
 
   function changeConfig(next: DraftConfig) {
     setConfig(next);
@@ -216,6 +243,8 @@ export default function Page() {
     setEvents(next);
     setRevealed(false);
     if (mode === "manual") handOver(next);
+    // Applied here either way; live just keeps it to itself for a moment.
+    if (mode === "p2p") setHeld({ event, left: LIVE_HOLD_SECONDS });
   }
 
   /**
@@ -254,6 +283,8 @@ export default function Page() {
     // Whatever link we told this player to pass on is no longer the one to
     // pass on, so the instruction goes with the move.
     setHandover(null);
+    // And a move nobody is going to make needs no countdown to announce it.
+    setHeld(null);
   }
 
   function again() {
@@ -295,13 +326,14 @@ export default function Page() {
    * anything to drop. Once it has gone out it is not yours to take back, and
    * the button goes quiet rather than pretending.
    *
-   * Live is left out entirely. Peers trade whole logs and merge them as sets,
-   * so an event dropped here is handed straight back by the next peer to
-   * speak. Taking a move back over a wire needs a tombstone everybody agrees
-   * on, which is a different feature with its own arguments.
+   * Live gets the same window by a different route: the move it is holding,
+   * for as long as it is holding it. Once that has gone out a peer will hand
+   * it straight back however firmly it is deleted here, so the button goes
+   * with the countdown.
    */
   const undoTarget = useMemo(() => {
-    if (!state || mode === "p2p") return null;
+    if (!state) return null;
+    if (mode === "p2p") return held?.event ?? null;
     const canonical = canonicalise(config, seed, events);
     for (let i = canonical.length - 1; i >= 0; i--) {
       const event = canonical[i];
@@ -312,7 +344,7 @@ export default function Page() {
       return "seat" in event && event.seat === mySeat ? event : null;
     }
     return null;
-  }, [state, mode, config, seed, events, mySeat]);
+  }, [state, mode, config, seed, events, mySeat, held]);
 
   function board() {
     if (!state) return null;
@@ -390,7 +422,7 @@ export default function Page() {
     }
     return (
       <div className="shareBar">
-        {mode !== "p2p" && (
+        {(mode !== "p2p" || held) && (
           <button type="button" className="btn" disabled={!undoTarget} onClick={undo}>
             {t("draft.undo")}
           </button>
@@ -399,6 +431,7 @@ export default function Page() {
           {t("draft.abandon")}
         </button>
         {mode === "manual" && <span className="hint">{t("draft.undo.shared")}</span>}
+        {held && <span className="hint">{t("draft.sending", { n: held.left })}</span>}
       </div>
     );
   }

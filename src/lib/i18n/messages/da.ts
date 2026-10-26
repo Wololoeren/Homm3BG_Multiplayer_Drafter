@@ -142,6 +142,7 @@ const da: Partial<Messages> = {
   "draft.taken": "Optaget",
   "draft.undo": "Fortryd sidste træk",
   "draft.undo.shared": "Dit eget seneste træk, indtil du giver linket videre.",
+  "draft.sending": "Sendes om {n}…",
   "draft.abandon": "Forlad draften",
   "draft.abandon.confirm": "Forlade den? Alt det draftede går tabt.",
   "draft.abandon.yes": "Ja, forlad",

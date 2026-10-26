@@ -142,6 +142,7 @@ const it: Partial<Messages> = {
   "draft.taken": "Presa",
   "draft.undo": "Annulla l'ultima mossa",
   "draft.undo.shared": "Solo la tua ultima mossa, finché non passi il link.",
+  "draft.sending": "Invio tra {n}…",
   "draft.abandon": "Abbandona il draft",
   "draft.abandon.confirm": "Abbandonare? Tutto quello che è stato draftato va perso.",
   "draft.abandon.yes": "Sì, abbandona",

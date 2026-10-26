@@ -30,11 +30,22 @@ export function useLiveDraft({
   live,
   room,
   payload,
+  hold = false,
   onDispatch,
 }: {
   live: boolean;
   room: string;
   payload: Dispatch;
+  /**
+   * Keep this client's state to itself for the moment.
+   *
+   * A move is applied locally the instant it is made — the player has to see
+   * what they did — and the only thing that makes it unrecallable is somebody
+   * else hearing about it. So the hold goes on the wire rather than on the
+   * log: nothing is published while it is up, and the moment it drops the
+   * current state goes out whole, held move and all.
+   */
+  hold?: boolean;
   onDispatch: (dispatch: Dispatch) => void;
 }): LiveDraft {
   const [status, setStatus] = useState<ConnectionStatus>("off");
@@ -46,8 +57,10 @@ export function useLiveDraft({
   // would never finish connecting.
   const payloadRef = useRef(payload);
   const onDispatchRef = useRef(onDispatch);
+  const holdRef = useRef(hold);
   payloadRef.current = payload;
   onDispatchRef.current = onDispatch;
+  holdRef.current = hold;
 
   const transportRef = useRef<Transport | null>(null);
 
@@ -81,7 +94,8 @@ export function useLiveDraft({
             return;
           }
           transportRef.current = transport;
-          transport.publish(payloadRef.current);
+          // Joining mid-hold would announce the very move being held.
+          if (!holdRef.current) transport.publish(payloadRef.current);
         },
         () => {
           if (!cancelled) setStatus("failed");
@@ -99,10 +113,12 @@ export function useLiveDraft({
 
   // One message per actual change of state. The hash covers every move and
   // the seat covers who is sitting where, which between them is everything a
-  // peer needs to hear about.
+  // peer needs to hear about — and `hold` is in the list so that letting go
+  // publishes, which is the whole point of holding.
   useEffect(() => {
+    if (hold) return;
     transportRef.current?.publish(payloadRef.current);
-  }, [payload.hash, payload.seat, payload.count]);
+  }, [payload.hash, payload.seat, payload.count, hold]);
 
   const dismiss = useCallback(() => setDivergence(null), []);
 

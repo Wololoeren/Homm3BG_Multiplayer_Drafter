@@ -142,6 +142,7 @@ const ru: Partial<Messages> = {
   "draft.taken": "Занято",
   "draft.undo": "Отменить ход",
   "draft.undo.shared": "Только ваш последний ход и только пока вы не передали ссылку.",
+  "draft.sending": "Отправка через {n}…",
   "draft.abandon": "Бросить драфт",
   "draft.abandon.confirm": "Бросить? Всё, что уже взято, пропадёт.",
   "draft.abandon.yes": "Да, бросить",

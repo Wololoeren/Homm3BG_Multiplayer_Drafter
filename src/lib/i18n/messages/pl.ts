@@ -141,6 +141,7 @@ const pl: Partial<Messages> = {
   "draft.taken": "Zajęte",
   "draft.undo": "Cofnij ruch",
   "draft.undo.shared": "Tylko Twój ostatni ruch i tylko zanim przekażesz link dalej.",
+  "draft.sending": "Wysyłanie za {n}…",
   "draft.abandon": "Porzuć draft",
   "draft.abandon.confirm": "Porzucić? Wszystko, co wydraftowano, przepadnie.",
   "draft.abandon.yes": "Tak, porzuć",

@@ -138,6 +138,7 @@ const zh: Partial<Messages> = {
   "draft.taken": "已被拿走",
   "draft.undo": "撤销上一步",
   "draft.undo.shared": "只能撤销你自己最后一步，且要在把链接传出去之前。",
+  "draft.sending": "{n} 秒后发送…",
   "draft.abandon": "放弃这次轮抽",
   "draft.abandon.confirm": "真要放弃？目前抽到的一切都会丢失。",
   "draft.abandon.yes": "是，放弃",

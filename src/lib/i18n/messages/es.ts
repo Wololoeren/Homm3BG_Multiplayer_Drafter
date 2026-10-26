@@ -142,6 +142,7 @@ const es: Partial<Messages> = {
   "draft.taken": "Ocupada",
   "draft.undo": "Deshacer la última jugada",
   "draft.undo.shared": "Solo tu última jugada, mientras no hayas pasado el enlace.",
+  "draft.sending": "Se envía en {n}…",
   "draft.abandon": "Abandonar el draft",
   "draft.abandon.confirm": "¿Abandonar? Se pierde todo lo drafteado hasta ahora.",
   "draft.abandon.yes": "Sí, abandonar",
