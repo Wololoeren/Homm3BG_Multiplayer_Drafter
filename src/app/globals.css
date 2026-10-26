@@ -533,7 +533,10 @@ button {
   opacity: 0.9;
 }
 
-.sheetCrest {
+/* A faction's crest and a hero's might-or-magic badge, at matching sizes so
+   the two name columns start on the same line. */
+.sheetCrest,
+.sheetMark {
   width: 1.05em;
   height: 1.05em;
   margin-right: 0.4em;

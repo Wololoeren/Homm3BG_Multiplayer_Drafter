@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ClassMark from "./ClassMark";
 import Crest from "./Crest";
 import WikiLink from "./WikiLink";
 import { faction, factionName, hero, heroName } from "@/lib/catalogue";
@@ -169,6 +170,9 @@ export default function ResultSheet({
                     )}
                   </td>
                   <td data-label={t("result.hero")}>
+                    {/* The badge off the end of the hero's own stat strip, so
+                        the column reads at a glance the way the card does. */}
+                    {card && <ClassMark klass={card.klass} className="sheetMark" />}
                     {card?.name ?? "—"}
                     {card && (
                       <WikiLink href={heroWikiUrl(card)} label={t("wiki.hero", { name: card.name })} />
