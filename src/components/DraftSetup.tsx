@@ -450,6 +450,20 @@ export default function DraftSetup({
         </div>
       </Row>
 
+      <Row label={t("lobby.during")}>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={config.concealPicks}
+            onChange={(e) => set({ concealPicks: e.target.checked })}
+          />
+          <span>
+            {t("lobby.conceal")}
+            <span className="hint">{t("lobby.conceal.help")}</span>
+          </span>
+        </label>
+      </Row>
+
       <Row label={t("lobby.heroRule")}>
         <div className="segmented">
           {(["own", "unique-faction", "any"] as const).map((policy) => (

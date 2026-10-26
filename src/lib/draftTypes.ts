@@ -128,6 +128,17 @@ export interface DraftConfig {
   /** Only meaningful under "unique-faction": may your hero hail from a faction
    * another player drafted as their town? */
   heroMayComeFromAnotherPlayersTown: boolean;
+  /**
+   * Nobody learns who drafted what until the sheet at the end: the seat strip
+   * stops naming other players' factions, heroes and bans, and stops wearing
+   * their colours.
+   *
+   * It hides the attribution, not the arithmetic. A faction struck off by an
+   * open ban stays struck off, and a town somebody took is simply absent from
+   * the next pool — those are the rules of the draft, and hiding them would be
+   * dealing a different game rather than a quieter one.
+   */
+  concealPicks: boolean;
   /** The factions actually in play. The lobby's "which boxes do you own"
    * toggles are a convenience that writes into this list — the engine and the
    * draft code only ever see the resolved set. */

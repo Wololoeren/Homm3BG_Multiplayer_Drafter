@@ -676,6 +676,31 @@ describe("a turn that takes both", () => {
   });
 });
 
+describe("keeping the choices hidden", () => {
+  it("is a thing the screen does, not a thing the draft does", () => {
+    // The setting only decides who is told what, so the same seed and the
+    // same moves have to deal the same game either way. If this ever fails,
+    // something has leaked out of the UI and into the rules.
+    const shown = repair({
+      ...defaultConfig(),
+      players: 4,
+      bansPerPlayer: 1,
+      heroBansPerPlayer: 1,
+    });
+    const hiddenConfig = { ...shown, concealPicks: true };
+
+    const played = playOut(shown, "quiet", mulberry32(404));
+    expect(played.state.phase).toBe("done");
+
+    const replayed = reduce(hiddenConfig, "quiet", played.log);
+    expect(replayed.hash).toBe(played.state.hash);
+    expect(replayed.pools).toEqual(played.state.pools);
+    expect(replayed.seats.map((s) => [s.factionId, s.heroId, s.bans, s.heroBans])).toEqual(
+      played.state.seats.map((s) => [s.factionId, s.heroId, s.bans, s.heroBans]),
+    );
+  });
+});
+
 describe("drafting where you sit", () => {
   it("hands out every place exactly once", () => {
     const rng = mulberry32(91);

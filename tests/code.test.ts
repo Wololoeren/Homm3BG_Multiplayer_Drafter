@@ -20,6 +20,7 @@ function randomConfig(rng: () => number): DraftConfig {
     heroFactionPolicy: pick(rng, ["own", "unique-faction", "any"] as const),
     uniqueHeroIdentity: rng() < 0.8,
     heroMayComeFromAnotherPlayersTown: rng() < 0.5,
+    concealPicks: rng() < 0.5,
     factionIds: FACTIONS.filter(() => rng() < 0.85).map((f) => f.id),
     heroIds: HEROES.filter(() => rng() < 0.9).map((h) => h.id),
   });
@@ -115,6 +116,18 @@ describe("draft codes", () => {
     expect(plain.factionIds).not.toContain("factory");
     expect(plain.heroIds.some((id) => id.endsWith("-factory"))).toBe(false);
     expect(decodeDraft(encodeDraft(plain, "plain")).config).toEqual(plain);
+  });
+
+  it("opens a code from before choices could be hidden, with them shown", () => {
+    // The flag rides in the last free bit of a byte that was already there,
+    // so a code minted without it has that bit clear — and clear has to keep
+    // meaning what the code was minted to mean.
+    const config = repair({ ...defaultConfig(), concealPicks: false });
+    const code = encodeDraft(config, "OLD12");
+    expect(decodeDraft(code).config.concealPicks).toBe(false);
+
+    const hidden = { ...config, concealPicks: true };
+    expect(decodeDraft(encodeDraft(hidden, "OLD12")).config.concealPicks).toBe(true);
   });
 
   it("refuses junk rather than half-decoding it", () => {

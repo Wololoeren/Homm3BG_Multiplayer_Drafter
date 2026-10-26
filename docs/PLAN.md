@@ -716,6 +716,35 @@ harmless assumption into a bug:
   the hero list from "faction in play and box on the shelf" rather than nudging
   it, which is also what puts the heroes back when a faction returns.
 
+### Keeping the choices hidden until the end
+
+A checkbox, and the one thing worth getting right about it is what it does
+*not* cover. It hides the attribution: the seat strip stops naming other
+players' factions, heroes and bans, and stops wearing their colours, which was
+the real leak — a border tint identifies a town on its own. It does not hide
+the arithmetic. A faction struck off by an open ban stays struck off on the ban
+board, and a town somebody took is simply absent from the next pool. Those are
+the rules of the draft; hiding them would be dealing a different game rather
+than a quieter one.
+
+Who is allowed to see a row is "whose eyes are on this screen", not "whose seat
+it is". On a shared link those are the same thing. Round one screen they are
+not: the browser belongs to whoever has just been handed it, and between turns
+it belongs to nobody — which is exactly the moment the strip must not still be
+showing the last player's draft. So the strip takes a `seeing` prop that the
+page fills in from `revealed ? activeSeat : null` in hotseat and from `mySeat`
+everywhere else.
+
+It is a display setting and nothing else, which a test pins down: the same seed
+and the same moves have to produce the same state hash either way. The flag
+rides in the last free bit of a flags byte that was already in the draft code,
+and that bit was zero in every code minted before the setting existed — so old
+codes still open, and still mean what they meant.
+
+The devtools caveat that applies to blind bans applies here too: the log is on
+the wire and in the URL, so this is a screen that keeps a secret from a player,
+not a protocol that keeps one from an opponent determined to look.
+
 ### Cost
 
 Trystero and the QR generator are both dynamically imported, so a page that is

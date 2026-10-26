@@ -28,6 +28,7 @@ export function defaultConfig(): DraftConfig {
     draftSeats: false,
     combinedPicks: false,
     heroMayComeFromAnotherPlayersTown: false,
+    concealPicks: false,
     factionIds: DEFAULT_FACTIONS.map((f) => f.id),
     heroIds: DEFAULT_HEROES.map((h) => h.id),
   };
@@ -106,6 +107,7 @@ export function sanitizeConfig(raw: unknown): DraftConfig | null {
     // it backwards, forbidding a town because somebody already took its hero.
     heroMayComeFromAnotherPlayersTown:
       combinedPicks || input.heroMayComeFromAnotherPlayersTown === true,
+    concealPicks: input.concealPicks === true,
     // An empty list would be a draft with nothing to draft; fall back rather
     // than shipping a config that can only deadlock.
     factionIds: factionIds.length ? factionIds : base.factionIds,

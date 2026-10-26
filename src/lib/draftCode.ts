@@ -127,7 +127,11 @@ export function encodeDraft(config: DraftConfig, seed: string, events: readonly 
       (config.heroMayComeFromAnotherPlayersTown ? 8 : 0) |
       (config.sharedHeroCards ? 16 : 0) |
       (config.draftSeats ? 32 : 0) |
-      (config.combinedPicks ? 64 : 0),
+      (config.combinedPicks ? 64 : 0) |
+      // The last free bit of the byte. It was zero in every code minted
+      // before the setting existed, and zero is the old behaviour, so those
+      // codes still open and still mean what they meant.
+      (config.concealPicks ? 128 : 0),
   );
   out.push((config.factionPoolSize & 0x0f) | ((config.heroPoolSize & 0x0f) << 4));
   out.push((config.bansPerPlayer & 0x0f) | (POLICIES.indexOf(config.heroFactionPolicy) << 4));
@@ -230,6 +234,7 @@ export function decodeDraft(input: string): Draft {
     sharedHeroCards: (flags & 16) !== 0,
     draftSeats: (flags & 32) !== 0,
     combinedPicks: (flags & 64) !== 0,
+    concealPicks: (flags & 128) !== 0,
     factionPoolSize: pools & 0x0f,
     heroPoolSize: (pools >> 4) & 0x0f,
     bansPerPlayer: bansAndPolicy & 0x0f,

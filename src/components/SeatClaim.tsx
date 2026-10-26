@@ -27,6 +27,13 @@ export default function SeatClaim({
   const t = useT();
   const taken = new Set(takenSeats.filter((seat): seat is number => seat !== null));
 
+  /** Which seats are still free is not a secret — somebody arriving on a link
+   * has to be able to pick one. What those seats drafted can be. */
+  const drafting = (factionId: string | null) => {
+    if (!factionId) return t("claim.free");
+    return state.config.concealPicks ? t("claim.hidden") : factionName(factionId);
+  };
+
   return (
     <div className="claim">
       <h2>{t("claim.heading")}</h2>
@@ -42,7 +49,7 @@ export default function SeatClaim({
             >
               <span className="cardName">{seat.name || t("draft.seat", { n: index + 1 })}</span>
               <span className="cardMeta">
-                {seat.factionId ? factionName(seat.factionId) : t("claim.free")}
+                {drafting(seat.factionId)}
               </span>
               {taken.has(index) && <span className="cardTag">{t("claim.taken")}</span>}
             </button>

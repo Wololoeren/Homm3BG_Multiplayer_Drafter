@@ -49,6 +49,10 @@ const en = {
   "lobby.banVisibility.open.help": "One at a time, everyone watching.",
   "lobby.banVisibility.blind.help":
     "Everyone bans at once and they are revealed together. Two players can spend a ban on the same hero or faction, and it is only removed once. Applies to both ban rounds.",
+  "lobby.during": "During the draft",
+  "lobby.conceal": "Keep choices hidden until the end",
+  "lobby.conceal.help":
+    "No player sees what anyone else drafted or banned until the sheet at the end — round one screen, that means nobody sees anything between turns. What is already gone still shows on the board, because you cannot draft it.",
   "lobby.heroRule": "Heroes come from",
   "lobby.heroRule.own": "Your own faction",
   "lobby.heroRule.unique-faction": "Any faction, one each",
@@ -196,6 +200,7 @@ const en = {
   // ------------------------------------------------------------------ seats
   "claim.heading": "Which seat are you?",
   "claim.free": "Nothing drafted yet",
+  "claim.hidden": "Hidden until the end",
   "claim.taken": "Someone is here",
   "claim.orHotseat": "Everyone round one screen instead?",
   "claim.hotseat": "Use this browser for the whole table",

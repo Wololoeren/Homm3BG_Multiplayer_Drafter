@@ -7,6 +7,10 @@ import { factionWikiUrl, heroWikiUrl } from "@/lib/wiki";
 import type { DraftState } from "@/lib/draftTypes";
 import { useT } from "@/lib/i18n";
 
+/** A line that has something on it but may not say what. A dash is "still
+ * thinking", a dot is "decided, and not telling you". */
+const mark = (filled: boolean) => (filled ? "•" : "—");
+
 /**
  * Who is at the table and how far each of them has got. Shown in seating
  * order, which the seed decided — not in seat-number order, so the strip
@@ -20,22 +24,36 @@ export default function SeatStrip({
   state,
   activeSeat,
   mySeat = null,
+  seeing = null,
   hideChoices = false,
 }: {
   state: DraftState;
   activeSeat: number | null;
   /** Which of these is the person holding this browser, if any. */
   mySeat?: number | null;
+  /**
+   * Whose eyes are on this screen — the one seat allowed to see its own
+   * choices while `concealPicks` is on, since that player already knows them.
+   * On a shared link it is the player; round one screen it is whoever has
+   * just been handed the browser, and between turns it is nobody.
+   */
+  seeing?: number | null;
   hideChoices?: boolean;
 }) {
   const t = useT();
+
+  const concealed = (index: number) =>
+    state.config.concealPicks && state.phase !== "done" && index !== seeing;
 
   return (
     <div className="seatStrip no-print">
       {state.order.map((index) => {
         const seat = state.seats[index];
-        const town = seat.factionId ? faction(seat.factionId) : null;
-        const drafted = seat.heroId ? hero(seat.heroId) : null;
+        const hidden = concealed(index);
+        // Read the cards through `hidden` rather than around it: the border
+        // tint and the text colour would name the faction on their own.
+        const town = !hidden && seat.factionId ? faction(seat.factionId) : null;
+        const drafted = !hidden && seat.heroId ? hero(seat.heroId) : null;
 
         return (
           <div
@@ -57,7 +75,7 @@ export default function SeatStrip({
                   <WikiLink href={factionWikiUrl(town)} label={t("wiki.faction", { name: town.name })} />
                 </>
               ) : (
-                "—"
+                mark(hidden && Boolean(seat.factionId))
               )}
             </div>
             <div className={`seatLine${drafted ? " filled" : ""}`}>
@@ -67,12 +85,12 @@ export default function SeatStrip({
                   <WikiLink href={heroWikiUrl(drafted)} label={t("wiki.hero", { name: drafted.name })} />
                 </>
               ) : (
-                "—"
+                mark(hidden && Boolean(seat.heroId))
               )}
             </div>
             {(state.config.bansPerPlayer > 0 || state.config.heroBansPerPlayer > 0) && (
               <div className="seatLine">
-                {hideChoices && (state.phase === "ban" || state.phase === "banHero")
+                {hidden || (hideChoices && (state.phase === "ban" || state.phase === "banHero"))
                   ? "•".repeat(seat.bans.length + seat.heroBans.length) || "—"
                   : [
                       ...seat.bans.map((id) => factionName(id)),

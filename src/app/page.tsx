@@ -434,6 +434,10 @@ export default function Page() {
             state={state}
             activeSeat={activeSeat}
             mySeat={mySeat}
+            // Round one screen the browser belongs to whoever has just been
+            // handed it, and between turns to nobody — which is exactly when
+            // the strip must not be naming the last player's draft.
+            seeing={hotseat ? (revealed ? activeSeat : null) : mySeat}
             hideChoices={state.config.banVisibility === "blind"}
           />
           {mode === "p2p" && (
