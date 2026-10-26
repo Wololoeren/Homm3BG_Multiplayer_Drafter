@@ -177,6 +177,7 @@ const ru: Partial<Messages> = {
   "result.again": "Драфтить снова",
   "result.newSetup": "Изменить настройки",
   "result.code": "Код драфта",
+  "result.seed": "Зерно",
   "result.bans": "Забанено: {factions}",
   "result.heroBans": "Забаненные герои: {heroes}",
   "result.nobans": "Без банов",

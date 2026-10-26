@@ -177,6 +177,7 @@ const fi: Partial<Messages> = {
   "result.again": "Draftaa uudelleen",
   "result.newSetup": "Muuta asetuksia",
   "result.code": "Draftin koodi",
+  "result.seed": "Siemen",
   "result.bans": "Bannattu: {factions}",
   "result.heroBans": "Bannatut sankarit: {heroes}",
   "result.nobans": "Ei banneja",

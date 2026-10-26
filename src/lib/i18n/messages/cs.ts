@@ -176,6 +176,7 @@ const cs: Partial<Messages> = {
   "result.again": "Draftovat znovu",
   "result.newSetup": "Změnit nastavení",
   "result.code": "Kód draftu",
+  "result.seed": "Seed",
   "result.bans": "Zabanováno: {factions}",
   "result.heroBans": "Zabanovaní hrdinové: {heroes}",
   "result.nobans": "Bez banů",

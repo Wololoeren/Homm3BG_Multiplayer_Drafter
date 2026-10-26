@@ -177,6 +177,7 @@ const es: Partial<Messages> = {
   "result.again": "Draftear otra vez",
   "result.newSetup": "Cambiar la configuración",
   "result.code": "Código del draft",
+  "result.seed": "Semilla",
   "result.bans": "Vetadas: {factions}",
   "result.heroBans": "Héroes vetados: {heroes}",
   "result.nobans": "Sin vetos",

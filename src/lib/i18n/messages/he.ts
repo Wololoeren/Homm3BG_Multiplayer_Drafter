@@ -179,6 +179,7 @@ const he: Partial<Messages> = {
   "result.again": "דראפט נוסף",
   "result.newSetup": "שינוי ההגדרות",
   "result.code": "קוד הדראפט",
+  "result.seed": "זרע",
   "result.bans": "נחסמו: {factions}",
   "result.heroBans": "גיבורים שנחסמו: {heroes}",
   "result.nobans": "ללא חסימות",

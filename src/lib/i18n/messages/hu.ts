@@ -177,6 +177,7 @@ const hu: Partial<Messages> = {
   "result.again": "Új draft",
   "result.newSetup": "Beállítások módosítása",
   "result.code": "Draftkód",
+  "result.seed": "Mag",
   "result.bans": "Kitiltva: {factions}",
   "result.heroBans": "Kitiltott hősök: {heroes}",
   "result.nobans": "Nincs tiltás",

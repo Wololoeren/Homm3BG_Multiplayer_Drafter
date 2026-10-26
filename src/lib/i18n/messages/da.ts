@@ -177,6 +177,7 @@ const da: Partial<Messages> = {
   "result.again": "Draft igen",
   "result.newSetup": "Ret opsætningen",
   "result.code": "Draftkode",
+  "result.seed": "Frø",
   "result.bans": "Bannet: {factions}",
   "result.heroBans": "Bannede helte: {heroes}",
   "result.nobans": "Ingen bans",

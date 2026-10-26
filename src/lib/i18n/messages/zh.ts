@@ -173,6 +173,7 @@ const zh: Partial<Messages> = {
   "result.again": "再抽一次",
   "result.newSetup": "更改设置",
   "result.code": "轮抽代码",
+  "result.seed": "种子",
   "result.bans": "已禁阵营：{factions}",
   "result.heroBans": "已禁英雄：{heroes}",
   "result.nobans": "没有禁用",

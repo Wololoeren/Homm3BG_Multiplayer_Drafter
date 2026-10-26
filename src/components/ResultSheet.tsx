@@ -88,6 +88,9 @@ export default function ResultSheet({
     if (state.bannedHeroes.length) {
       lines.push(t("result.heroBans", { heroes: state.bannedHeroes.map(heroName).join(", ") }));
     }
+    // The seed first: it is the short one, the one people say out loud,
+    // and with the setup it is what reproduces this deal.
+    lines.push(`${t("result.seed")}: ${state.seed}`);
     lines.push(`${t("result.code")}: ${formatCode(code)}`);
     void copyText(lines.join("\n")).then((ok) => {
       if (!ok) return;
@@ -201,6 +204,9 @@ export default function ResultSheet({
               </p>
             )}
             <p style={{ margin: "2mm 0 0" }}>
+              {t("result.seed")}: <code>{state.seed}</code>
+            </p>
+            <p style={{ margin: "1mm 0 0" }}>
               {t("result.code")}: <code>{formatCode(code)}</code>
             </p>
           </div>

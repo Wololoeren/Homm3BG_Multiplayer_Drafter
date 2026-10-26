@@ -175,6 +175,7 @@ const en = {
   "result.again": "Draft again",
   "result.newSetup": "Change the setup",
   "result.code": "Draft code",
+  "result.seed": "Seed",
   "result.bans": "Banned: {factions}",
   "result.heroBans": "Heroes banned: {heroes}",
   "result.nobans": "No bans",

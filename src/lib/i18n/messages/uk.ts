@@ -176,6 +176,7 @@ const uk: Partial<Messages> = {
   "result.again": "Драфтити знову",
   "result.newSetup": "Змінити налаштування",
   "result.code": "Код драфту",
+  "result.seed": "Зерно",
   "result.bans": "Забанено: {factions}",
   "result.heroBans": "Забанені герої: {heroes}",
   "result.nobans": "Без банів",
