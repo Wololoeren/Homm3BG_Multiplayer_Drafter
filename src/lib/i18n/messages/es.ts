@@ -180,6 +180,8 @@ const es: Partial<Messages> = {
   "result.bans": "Vetadas: {factions}",
   "result.heroBans": "Héroes vetados: {heroes}",
   "result.nobans": "Sin vetos",
+  "result.showPassed": "Mostrar las opciones no elegidas",
+  "result.alsoOffered": "también ofrecidas: {options}",
   "result.specialty": "Especialidad",
   "result.ability": "Habilidad",
 

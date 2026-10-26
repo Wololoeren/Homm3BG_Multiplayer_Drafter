@@ -181,6 +181,8 @@ const de: Partial<Messages> = {
   "result.bans": "Gebannt: {factions}",
   "result.heroBans": "Gebannte Helden: {heroes}",
   "result.nobans": "Keine Banns",
+  "result.showPassed": "Nicht genommene Optionen zeigen",
+  "result.alsoOffered": "auch angeboten: {options}",
   "result.specialty": "Spezialgebiet",
   "result.ability": "Fähigkeit",
 

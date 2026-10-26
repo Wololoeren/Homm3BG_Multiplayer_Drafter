@@ -179,6 +179,8 @@ const uk: Partial<Messages> = {
   "result.bans": "Забанено: {factions}",
   "result.heroBans": "Забанені герої: {heroes}",
   "result.nobans": "Без банів",
+  "result.showPassed": "Показати варіанти, які не взяли",
+  "result.alsoOffered": "також пропонувалося: {options}",
   "result.specialty": "Спеціалізація",
   "result.ability": "Здібність",
 

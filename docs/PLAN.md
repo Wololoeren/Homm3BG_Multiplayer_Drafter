@@ -765,6 +765,25 @@ while hero cards keep their row to themselves. Buttons and number rows get a
 44px minimum, chips 36, checkboxes 20 — the draft is meant to be played on a
 phone, which is what the QR code was always for.
 
+### The roads not taken
+
+A toggle on the result sheet, off by default, because the sheet answers "what
+are we playing" and the options nobody took are a second question. Answering it
+needed the engine to grow a method, though: the pools are derived from the
+state, and by the time a draft is done there is nothing left in them, so the
+finished state cannot say what anyone turned down. `optionsOffered` replays the
+log and reads each seat's pool at the moment it picked, which is also the only
+reading that survives an undo — a later pick by the same seat replaces the
+earlier record. A test plays out forty random drafts and checks that a dealt
+pool of N leaves exactly N-1 behind, which is precisely what fails if the
+helper ever starts reading the finished state instead.
+
+The lists go on the sheet rather than only on the screen, so a printed copy
+carries them, and into the copy-as-text, labelled by column — two bare lists
+under one name say nothing about which was the town and which the hero. They
+are the one thing in a row whose length nobody knew in advance, so they are
+also the one thing allowed to wrap inside a column that otherwise may not.
+
 ### Thirteen languages, and what they cost
 
 The catalogues were stubs with a per-key fallback to English, which made

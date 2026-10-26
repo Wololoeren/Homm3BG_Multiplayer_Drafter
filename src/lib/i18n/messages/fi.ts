@@ -180,6 +180,8 @@ const fi: Partial<Messages> = {
   "result.bans": "Bannattu: {factions}",
   "result.heroBans": "Bannatut sankarit: {heroes}",
   "result.nobans": "Ei banneja",
+  "result.showPassed": "Näytä vaihtoehdot, joita ei otettu",
+  "result.alsoOffered": "tarjolla myös: {options}",
   "result.specialty": "Erikoisuus",
   "result.ability": "Kyky",
 

@@ -7,6 +7,7 @@ import {
   heroBanOptions,
   legalHeroBans,
   legalHeroes,
+  optionsOffered,
   reduce,
   seatPosition,
 } from "@/lib/draftEngine";
@@ -698,6 +699,72 @@ describe("keeping the choices hidden", () => {
     expect(replayed.seats.map((s) => [s.factionId, s.heroId, s.bans, s.heroBans])).toEqual(
       played.state.seats.map((s) => [s.factionId, s.heroId, s.bans, s.heroBans]),
     );
+  });
+});
+
+describe("the options nobody took", () => {
+  it("is the pool a seat was offered at the time, minus what it took", () => {
+    const rng = mulberry32(2024);
+    for (let run = 0; run < 40; run++) {
+      const config = randomConfig(rng);
+      const seed = `offer${run}`;
+      const { state, log } = playOut(config, seed, rng);
+      expect(state.phase).toBe("done");
+
+      const offered = optionsOffered(config, seed, log);
+      for (const seat of state.seats) {
+        const mine = offered[seat.index] ?? { factions: [], heroes: [] };
+
+        // The whole point: what you turned down, not what you have.
+        expect(mine.factions, `seat ${seat.index}`).not.toContain(seat.factionId);
+        expect(mine.heroes, `seat ${seat.index}`).not.toContain(seat.heroId);
+        for (const id of mine.factions) expect(config.factionIds).toContain(id);
+        for (const id of mine.heroes) expect(config.heroIds).toContain(id);
+
+        // A pool of N leaves at most N-1 roads not taken — exactly N-1 when
+        // the pools were dealt, since a dealt pool is always full. Snake
+        // samples whatever is still free, which late in a tight draft can be
+        // less than it asked for.
+        expect(mine.factions.length, `seat ${seat.index} faction options`).toBeLessThanOrEqual(
+          config.factionPoolSize - 1,
+        );
+        if (config.format === "dealt") {
+          expect(mine.factions.length, `seat ${seat.index} was short-changed`).toBe(
+            config.factionPoolSize - 1,
+          );
+        }
+      }
+    }
+  }, SLOW);
+
+  it("leaves nothing behind when there was nothing to choose between", () => {
+    const config = repair({ ...defaultConfig(), players: 3, factionPoolSize: 1, heroPoolSize: 1 });
+    const { state, log } = playOut(config, "forced", mulberry32(5));
+    expect(state.phase).toBe("done");
+    const offered = optionsOffered(config, "forced", log);
+    for (const seat of state.seats) {
+      expect(offered[seat.index]).toEqual({ factions: [], heroes: [] });
+    }
+  });
+
+  it("reads the pool as it stood, not as it ends up", () => {
+    // Snake, where by the last pick almost everything is gone: a helper that
+    // looked at the finished state would hand back empty lists for everyone.
+    const config = repair({
+      ...defaultConfig(),
+      players: 4,
+      format: "snake",
+      factionPoolSize: 2,
+      heroPoolSize: 2,
+    });
+    const { state, log } = playOut(config, "snake", mulberry32(31));
+    expect(state.phase).toBe("done");
+    const offered = optionsOffered(config, "snake", log);
+    const total = state.seats.reduce(
+      (n, s) => n + offered[s.index].factions.length + offered[s.index].heroes.length,
+      0,
+    );
+    expect(total).toBe(config.players * 2);
   });
 });
 

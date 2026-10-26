@@ -180,6 +180,8 @@ const hu: Partial<Messages> = {
   "result.bans": "Kitiltva: {factions}",
   "result.heroBans": "Kitiltott hősök: {heroes}",
   "result.nobans": "Nincs tiltás",
+  "result.showPassed": "Mutasd a nem választott lehetőségeket",
+  "result.alsoOffered": "felajánlva még: {options}",
   "result.specialty": "Szakterület",
   "result.ability": "Képesség",
 

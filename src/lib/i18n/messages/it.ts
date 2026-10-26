@@ -180,6 +180,8 @@ const it: Partial<Messages> = {
   "result.bans": "Bandite: {factions}",
   "result.heroBans": "Eroi banditi: {heroes}",
   "result.nobans": "Nessun ban",
+  "result.showPassed": "Mostra le opzioni scartate",
+  "result.alsoOffered": "offerti anche: {options}",
   "result.specialty": "Specialità",
   "result.ability": "Abilità",
 

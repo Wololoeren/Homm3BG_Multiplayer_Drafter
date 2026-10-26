@@ -176,6 +176,8 @@ const zh: Partial<Messages> = {
   "result.bans": "已禁阵营：{factions}",
   "result.heroBans": "已禁英雄：{heroes}",
   "result.nobans": "没有禁用",
+  "result.showPassed": "显示没被选走的选项",
+  "result.alsoOffered": "另外还提供：{options}",
   "result.specialty": "专长",
   "result.ability": "技能",
 

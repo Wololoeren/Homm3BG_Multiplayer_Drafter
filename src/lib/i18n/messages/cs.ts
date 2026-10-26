@@ -179,6 +179,8 @@ const cs: Partial<Messages> = {
   "result.bans": "Zabanováno: {factions}",
   "result.heroBans": "Zabanovaní hrdinové: {heroes}",
   "result.nobans": "Bez banů",
+  "result.showPassed": "Zobrazit možnosti, které nikdo nevzal",
+  "result.alsoOffered": "nabízeno také: {options}",
   "result.specialty": "Specializace",
   "result.ability": "Schopnost",
 

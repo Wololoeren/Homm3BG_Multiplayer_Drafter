@@ -180,6 +180,8 @@ const ru: Partial<Messages> = {
   "result.bans": "Забанено: {factions}",
   "result.heroBans": "Забаненные герои: {heroes}",
   "result.nobans": "Без банов",
+  "result.showPassed": "Показать варианты, которые не взяли",
+  "result.alsoOffered": "также предлагалось: {options}",
   "result.specialty": "Специализация",
   "result.ability": "Способность",
 

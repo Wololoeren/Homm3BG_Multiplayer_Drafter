@@ -729,6 +729,39 @@ function normalise(events: readonly DraftEvent[]): DraftEvent[] {
 }
 
 /**
+ * What each seat was offered at the moment it chose, minus what it took.
+ *
+ * The pools are derived from the state, and by the time a draft is done there
+ * is nothing left in them — so "what did I turn down?" cannot be answered by
+ * looking at the finished state. It has to be answered by replaying up to each
+ * pick and reading the pool as it stood then, which is what this does.
+ *
+ * A pool of one offered no choice, so it leaves nothing behind. A later pick
+ * by the same seat replaces an earlier one, so an undone choice does not leave
+ * its pool lying around either.
+ */
+export function optionsOffered(
+  config: DraftConfig,
+  seed: string,
+  events: readonly DraftEvent[],
+): Record<number, { factions: string[]; heroes: string[] }> {
+  const offered: Record<number, { factions: string[]; heroes: string[] }> = {};
+  const log = normalise(events);
+  const prefix: DraftEvent[] = [];
+
+  for (const event of log) {
+    if (event.t === "pickF" || event.t === "pickH") {
+      const pool = reduce(config, seed, prefix).pools[event.seat] ?? [];
+      const seat = (offered[event.seat] ??= { factions: [], heroes: [] });
+      if (event.t === "pickF") seat.factions = pool.filter((id) => id !== event.factionId);
+      else seat.heroes = pool.filter((id) => id !== event.heroId);
+    }
+    prefix.push(event);
+  }
+  return offered;
+}
+
+/**
  * Replays a log from scratch. Always a full replay — the logs are at most a
  * few dozen events, and rebuilding is the cheapest way to be certain that a
  * client which joined late holds exactly what a client that was there from the

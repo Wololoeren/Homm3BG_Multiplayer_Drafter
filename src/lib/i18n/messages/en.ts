@@ -178,6 +178,8 @@ const en = {
   "result.bans": "Banned: {factions}",
   "result.heroBans": "Heroes banned: {heroes}",
   "result.nobans": "No bans",
+  "result.showPassed": "Show the options not taken",
+  "result.alsoOffered": "also offered: {options}",
   "result.specialty": "Specialty",
   "result.ability": "Ability",
 

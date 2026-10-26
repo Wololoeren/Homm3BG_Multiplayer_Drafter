@@ -180,6 +180,8 @@ const da: Partial<Messages> = {
   "result.bans": "Bannet: {factions}",
   "result.heroBans": "Bannede helte: {heroes}",
   "result.nobans": "Ingen bans",
+  "result.showPassed": "Vis de valg, ingen tog",
+  "result.alsoOffered": "også tilbudt: {options}",
   "result.specialty": "Speciale",
   "result.ability": "Evne",
 

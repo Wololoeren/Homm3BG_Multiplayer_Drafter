@@ -179,6 +179,8 @@ const pl: Partial<Messages> = {
   "result.bans": "Zbanowane: {factions}",
   "result.heroBans": "Zbanowani bohaterowie: {heroes}",
   "result.nobans": "Bez banów",
+  "result.showPassed": "Pokaż opcje, których nie wybrano",
+  "result.alsoOffered": "do wyboru było też: {options}",
   "result.specialty": "Specjalizacja",
   "result.ability": "Zdolność",
 

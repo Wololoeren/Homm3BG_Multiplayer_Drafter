@@ -854,6 +854,18 @@ button {
   overflow-wrap: anywhere;
 }
 
+/* The options a player turned down, when the sheet is asked to show them.
+   The one thing in a row whose length nobody knew in advance, so it is also
+   the one thing allowed to wrap inside a column that otherwise may not. */
+.sheetTable .passed {
+  display: block;
+  margin-top: 1mm;
+  font-size: 11px;
+  font-style: italic;
+  white-space: normal;
+  color: var(--ink-soft);
+}
+
 .sheetSwatch {
   display: inline-block;
   width: 10px;

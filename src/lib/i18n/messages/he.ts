@@ -182,6 +182,8 @@ const he: Partial<Messages> = {
   "result.bans": "נחסמו: {factions}",
   "result.heroBans": "גיבורים שנחסמו: {heroes}",
   "result.nobans": "ללא חסימות",
+  "result.showPassed": "הצגת האפשרויות שלא נלקחו",
+  "result.alsoOffered": "הוצעו גם: {options}",
   "result.specialty": "התמחות",
   "result.ability": "יכולת",
 
