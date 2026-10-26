@@ -140,6 +140,7 @@ const cs: Partial<Messages> = {
   "draft.banned": "Zabanováno",
   "draft.taken": "Obsazeno",
   "draft.undo": "Vrátit poslední tah",
+  "draft.undo.shared": "Jen tvůj poslední tah, a jen dokud jsi nepředal odkaz dál.",
   "draft.abandon": "Opustit draft",
   "draft.abandon.confirm": "Opustit? Všechno nadraftované přijde vniveč.",
   "draft.abandon.yes": "Ano, opustit",

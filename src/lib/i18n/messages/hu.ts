@@ -141,6 +141,7 @@ const hu: Partial<Messages> = {
   "draft.banned": "Kitiltva",
   "draft.taken": "Foglalt",
   "draft.undo": "Utolsó lépés visszavonása",
+  "draft.undo.shared": "Csak a saját utolsó lépésed, amíg nem adtad tovább a linket.",
   "draft.abandon": "Draft feladása",
   "draft.abandon.confirm": "Feladod? Minden eddigi draftolás elvész.",
   "draft.abandon.yes": "Igen, feladom",

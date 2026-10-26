@@ -15,7 +15,7 @@ import WaitingPanel from "@/components/WaitingPanel";
 import { decodeDraft, encodeDraft } from "@/lib/draftCode";
 import { defaultConfig } from "@/lib/draftConfig";
 import { canMove, reduce } from "@/lib/draftEngine";
-import { acceptEvents, canonicalise } from "@/lib/draftLog";
+import { acceptEvents, canonicalise, eventKey } from "@/lib/draftLog";
 import { copyText } from "@/lib/clipboard";
 import { draftUrl, parseHash, replaceHash } from "@/lib/draftUrl";
 import type { DraftConfig, DraftEvent, DraftState } from "@/lib/draftTypes";
@@ -24,6 +24,9 @@ import { makeSeed } from "@/lib/rng";
 import { clearSession, loadSession, loadSetup, saveSession, saveSetup } from "@/lib/session";
 import type { Dispatch, TransportKind } from "@/lib/transport";
 import { useLiveDraft } from "@/lib/useLiveDraft";
+
+/** What counts as a move someone could take back. Joining and starting do not. */
+const UNDOABLE: DraftEvent["t"][] = ["ban", "banH", "pickF", "pickH", "pickP"];
 
 /**
  * One page, three ways to play it.
@@ -239,23 +242,18 @@ export default function Page() {
   }
 
   /**
-   * Undo is a hotseat convenience and stays one: it drops the last move from
-   * the log, and a log is a set, so there is nothing to send anybody. Taking
-   * back somebody else's move over a wire is a different feature with its own
-   * arguments, and this is not it — the button is hidden in the other modes.
+   * Taking a move back drops it from the log rather than appending anything,
+   * because the log is a set: there is no event to send, and nothing for a
+   * later merge to argue with. What may be dropped is `undoTarget`'s problem.
    */
   function undo() {
-    setEvents((log) => {
-      const canonical = canonicalise(config, seed, log);
-      for (let i = canonical.length - 1; i >= 0; i--) {
-        const kind = canonical[i].t;
-        if (kind === "ban" || kind === "pickF" || kind === "pickH") {
-          return [...canonical.slice(0, i), ...canonical.slice(i + 1)];
-        }
-      }
-      return log;
-    });
+    if (!undoTarget) return;
+    const key = eventKey(undoTarget);
+    setEvents((log) => canonicalise(config, seed, log).filter((e) => eventKey(e) !== key));
     setRevealed(false);
+    // Whatever link we told this player to pass on is no longer the one to
+    // pass on, so the instruction goes with the move.
+    setHandover(null);
   }
 
   function again() {
@@ -287,7 +285,34 @@ export default function Page() {
       ? (state.turn ?? state.order.find((i) => canMove(state, i)) ?? null)
       : null;
   const iCanMove = state !== null && mySeat !== null && canMove(state, mySeat);
-  const undoable = events.some((e) => e.t === "ban" || e.t === "pickF" || e.t === "pickH");
+  /**
+   * The move this browser may take back, if any.
+   *
+   * Round one screen it is simply the last move, because whoever is holding
+   * the screen is the one who made it. On a shared link it has to be your own
+   * *and* still the last anybody made: the log travels with the link, so a
+   * move you have not passed on yet exists nowhere but here and costs nobody
+   * anything to drop. Once it has gone out it is not yours to take back, and
+   * the button goes quiet rather than pretending.
+   *
+   * Live is left out entirely. Peers trade whole logs and merge them as sets,
+   * so an event dropped here is handed straight back by the next peer to
+   * speak. Taking a move back over a wire needs a tombstone everybody agrees
+   * on, which is a different feature with its own arguments.
+   */
+  const undoTarget = useMemo(() => {
+    if (!state || mode === "p2p") return null;
+    const canonical = canonicalise(config, seed, events);
+    for (let i = canonical.length - 1; i >= 0; i--) {
+      const event = canonical[i];
+      if (!UNDOABLE.includes(event.t)) continue;
+      if (mode === "local") return event;
+      // A link you have not claimed a seat on is not yours to rewind.
+      if (mySeat === null) return null;
+      return "seat" in event && event.seat === mySeat ? event : null;
+    }
+    return null;
+  }, [state, mode, config, seed, events, mySeat]);
 
   function board() {
     if (!state) return null;
@@ -365,14 +390,15 @@ export default function Page() {
     }
     return (
       <div className="shareBar">
-        {hotseat && (
-          <button type="button" className="btn" disabled={!undoable} onClick={undo}>
+        {mode !== "p2p" && (
+          <button type="button" className="btn" disabled={!undoTarget} onClick={undo}>
             {t("draft.undo")}
           </button>
         )}
         <button type="button" className="btn" onClick={() => setConfirmAbandon(true)}>
           {t("draft.abandon")}
         </button>
+        {mode === "manual" && <span className="hint">{t("draft.undo.shared")}</span>}
       </div>
     );
   }
@@ -457,7 +483,12 @@ export default function Page() {
               code={fullCode}
               mode={mode}
               mySeat={mySeat}
-              nextSeat={activeSeat}
+              /* Nobody to hand to while the draft is still waiting on you.
+                 In a simultaneous phase `activeSeat` is whichever seat moves
+                 first, which is somebody else long before your own move is
+                 in — so it told you to send a link you had not earned yet,
+                 and went on saying so after a move was taken back. */
+              nextSeat={iCanMove ? null : activeSeat}
             />
           )}
           {mode === "p2p" && live.status === "failed" && <p className="note">{t("live.fallback")}</p>}

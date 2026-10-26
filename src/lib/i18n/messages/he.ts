@@ -143,6 +143,7 @@ const he: Partial<Messages> = {
   "draft.banned": "חסומה",
   "draft.taken": "תפוסה",
   "draft.undo": "בטלו את המהלך האחרון",
+  "draft.undo.shared": "רק המהלך האחרון שלכם, וכל עוד לא העברתם את הקישור הלאה.",
   "draft.abandon": "נטישת הדראפט",
   "draft.abandon.confirm": "לנטוש? כל מה שנבחר עד עכשיו יאבד.",
   "draft.abandon.yes": "כן, לנטוש",

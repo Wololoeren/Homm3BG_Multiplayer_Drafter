@@ -140,6 +140,7 @@ const uk: Partial<Messages> = {
   "draft.banned": "Забанено",
   "draft.taken": "Зайнято",
   "draft.undo": "Скасувати хід",
+  "draft.undo.shared": "Лише ваш останній хід і лише доки ви не передали посилання.",
   "draft.abandon": "Покинути драфт",
   "draft.abandon.confirm": "Покинути? Усе взяте досі зникне.",
   "draft.abandon.yes": "Так, покинути",

@@ -139,6 +139,7 @@ const en = {
   "draft.banned": "Banned",
   "draft.taken": "Taken",
   "draft.undo": "Undo last move",
+  "draft.undo.shared": "Your own last move, until you pass the link on.",
   "draft.abandon": "Abandon draft",
   "draft.abandon.confirm": "Abandon it? Everything drafted so far is lost.",
   "draft.abandon.yes": "Yes, abandon",

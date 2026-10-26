@@ -143,6 +143,7 @@ const fr: Partial<Messages> = {
   "draft.banned": "Bannie",
   "draft.taken": "Prise",
   "draft.undo": "Annuler le dernier coup",
+  "draft.undo.shared": "Votre dernier coup à vous, tant que vous n'avez pas passé le lien.",
   "draft.abandon": "Abandonner le draft",
   "draft.abandon.confirm": "Abandonner ? Tout ce qui a été drafté est perdu.",
   "draft.abandon.yes": "Oui, abandonner",

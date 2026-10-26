@@ -765,6 +765,35 @@ while hero cards keep their row to themselves. Buttons and number rows get a
 44px minimum, chips 36, checkboxes 20 — the draft is meant to be played on a
 phone, which is what the QR code was always for.
 
+### Taking a move back on a shared link
+
+Undo was a hotseat convenience, on the grounds that rewinding somebody else's
+move over a wire is a different feature. It still is — but there is a window on
+a shared link where it is nobody else's move at all. You pick, the link is on
+your clipboard, and until you hand it over that move exists on exactly one
+computer. Dropping it costs nobody anything.
+
+So the rule is: you may take back your own last move, while it is still the
+last move anybody made. Round one screen that reduces to the old behaviour,
+since whoever holds the screen is whoever moved. On a link it means the button
+is live between your move and your hand-off, and goes quiet the moment a log
+arrives with somebody else's move after yours — which is exactly the moment it
+stops being yours to take back. Nothing new travels: the log is a set, so undo
+drops an entry rather than appending a tombstone.
+
+Live is left out, and for a sturdier reason than politeness: peers trade whole
+logs and merge them as unions, so an event dropped here is handed straight back
+by the next peer to speak. That really would need a tombstone everybody agrees
+on.
+
+Two things fell out of it. Undo had only ever covered bans, factions and
+heroes, so a hero ban or a drafted seat could not be taken back even round one
+screen; it covers all five kinds of move now. And `ShareBar` was told to hand
+over to `activeSeat`, which in a simultaneous phase is whichever seat happens
+to move first — so "your move is in, send this link" appeared before you had
+moved at all, and kept insisting after a move was taken back. It now asks
+whether you can still move.
+
 ### The roads not taken
 
 A toggle on the result sheet, off by default, because the sheet answers "what
