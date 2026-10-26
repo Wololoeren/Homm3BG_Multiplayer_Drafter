@@ -745,11 +745,49 @@ The devtools caveat that applies to blind bans applies here too: the log is on
 the wire and in the URL, so this is a screen that keeps a secret from a player,
 not a protocol that keeps one from an opponent determined to look.
 
+### A sheet that stays one line per player, and a thumb-sized wiki link
+
+The wiki arrow was sized to defer to the card it sits next to. It deferred too
+well to hit on a phone, so it is twice the size now and does its deferring with
+opacity instead. On the result sheet that pushed a column over, and "Battle
+Mage - Magic" wrapping in a column sized for "Knight - Might" is what makes a
+row double height. The fix is not finer percentages: four of the five columns
+hold names we shipped and know the length of, so they are `nowrap` and take
+what they need, the width hints on the headers become hints, and the player's
+own name — the one column whose contents are theirs — is the one allowed to
+wrap. It holds in German and Chinese too, where the headers are different
+widths.
+
+Phones got the same treatment one level up. A faction card is one line of text
+in a box sized for a hero card, and ten of them one to a row is a long scroll,
+so under 560px the grid goes two-up and the cards shrink to their contents
+while hero cards keep their row to themselves. Buttons and number rows get a
+44px minimum, chips 36, checkboxes 20 — the draft is meant to be played on a
+phone, which is what the QR code was always for.
+
+### Thirteen languages, and what they cost
+
+The catalogues were stubs with a per-key fallback to English, which made
+bundling all fourteen free. Translated, they are not: the set runs to tens of
+kilobytes, and twelve of those languages are ones nobody in the room reads. So
+English stays bundled and the rest load on demand, the same way Trystero and
+the QR generator already do. Until a catalogue lands, every key falls back to
+English — which is exactly what a half-translated catalogue does, so it is not
+a new behaviour, just an earlier one.
+
+A test pins the thing that actually breaks: a translated string must carry the
+same `{placeholders}` as its English original, because a `{name}` nobody
+substitutes is printed to the screen as written. Completeness is checked too,
+but as a progress report rather than a rule — partial catalogues are supported
+on purpose.
+
 ### Cost
 
-Trystero and the QR generator are both dynamically imported, so a page that is
-usually one laptop on a kitchen table does not pay for either: first load is
-121 kB, and the 61 kB relay client is fetched only when somebody picks Live.
+Trystero, the QR generator and the twelve non-English catalogues are all
+dynamically imported, so a page that is usually one laptop on a kitchen table
+does not pay for any of them: first load is 129 kB, the 61 kB relay client is
+fetched only when somebody picks Live, and a language arrives only when it is
+chosen.
 
 ---
 

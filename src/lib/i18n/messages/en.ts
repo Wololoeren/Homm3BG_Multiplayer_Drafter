@@ -25,6 +25,7 @@ const en = {
   "lobby.factionPool": "Faction options each",
   "lobby.heroPool": "Hero options each",
   "lobby.pool.forced": "no choice — the faction is dealt",
+  "lobby.pool.forcedHero": "no choice — the hero is dealt",
   "lobby.pool.all": "All",
   "lobby.pool.all.help":
     "Every hero your faction still has. Where two players could be offered the same person — Tarnum has a card in six factions — the hero step goes round the table one at a time instead of everyone at once.",

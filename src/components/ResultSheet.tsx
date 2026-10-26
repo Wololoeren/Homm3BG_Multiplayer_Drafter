@@ -95,10 +95,14 @@ export default function ResultSheet({
           <table className="sheetTable">
             <thead>
               <tr>
-                <th style={{ width: "8%" }}>{t("result.seat")}</th>
+                {/* Hints, not law: the four name columns are nowrap, so each
+                    takes what it needs and the player column absorbs the
+                    slack. The class column is left to the remainder because
+                    it is the widest thing on the sheet. */}
+                <th style={{ width: "6%" }}>{t("result.seat")}</th>
                 <th style={{ width: "22%" }}>{t("result.player")}</th>
-                <th style={{ width: "24%" }}>{t("result.faction")}</th>
-                <th style={{ width: "26%" }}>{t("result.hero")}</th>
+                <th style={{ width: "21%" }}>{t("result.faction")}</th>
+                <th style={{ width: "21%" }}>{t("result.hero")}</th>
                 <th>{t("result.class")}</th>
               </tr>
             </thead>

@@ -348,7 +348,7 @@ export default function DraftSetup({
           config.heroPoolSize === HERO_POOL_ALL
             ? t("lobby.pool.all.help")
             : config.heroPoolSize === 1
-              ? t("lobby.pool.forced")
+              ? t("lobby.pool.forcedHero")
               : undefined
         }
       >

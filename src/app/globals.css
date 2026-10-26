@@ -733,14 +733,16 @@ button {
   color: var(--gold);
 }
 
-/* Small and quiet: next to a card whose whole point is to be clicked, "look
-   this up" must not compete with "take this". */
+/* Quiet, but no longer tiny: next to a card whose whole point is to be
+   clicked, "look this up" must not compete with "take this" — and a thumb
+   still has to be able to find it. Opacity does the deferring now, not size. */
 .wikiLink {
   display: inline-flex;
   align-items: center;
   color: inherit;
   text-decoration: none;
   opacity: 0.45;
+  vertical-align: middle;
 }
 
 .wikiLink:hover {
@@ -748,23 +750,22 @@ button {
 }
 
 .wikiIcon {
-  width: 0.85em;
-  height: 0.85em;
-  margin-left: 0.3em;
-  vertical-align: -0.05em;
+  width: 1.7em;
+  height: 1.7em;
+  margin-left: 0.25em;
 }
 
 .cardSlot .wikiLink {
   position: absolute;
-  right: 9px;
-  bottom: 8px;
-  padding: 4px;
+  right: 6px;
+  bottom: 5px;
+  padding: 5px;
   color: var(--gold);
 }
 
 .cardSlot .wikiIcon {
-  width: 14px;
-  height: 14px;
+  width: 28px;
+  height: 28px;
   margin: 0;
 }
 
@@ -834,8 +835,23 @@ button {
   vertical-align: top;
 }
 
+/* One line per player. Four of the five columns hold names we shipped and
+   know the length of, so they are kept on one line and the width hints on the
+   headers are only hints — a column that cannot shrink takes what it needs
+   and the player's name gives up the room. "Battle Mage - Magic" wrapping in
+   a column sized for "Knight - Might" was what made a row double height. */
+.sheetTable th,
+.sheetTable td {
+  white-space: nowrap;
+}
+
+/* The one column whose contents are the player's to decide, and the only one
+   allowed to wrap. A 24-character name with nothing to break on breaks
+   anyway rather than pushing the table off the page. */
 .sheetTable .who {
   font-weight: bold;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .sheetSwatch {
@@ -939,6 +955,8 @@ button {
   .sheetTable td {
     padding: 0;
     border: none;
+    /* Stacked, there are no columns left to keep on one line. */
+    white-space: normal;
   }
 
   /* Seat and name share the heading line; the first labelled row below them
@@ -975,6 +993,44 @@ button {
   .qr svg {
     width: 180px;
     height: 180px;
+  }
+
+  /* Thumbs, not mouse pointers. The controls that carry a draft — the number
+     rows, the buttons, the collection chips, the checkboxes — get a target
+     that can be hit without aiming at it. */
+  .segmented button,
+  .btn {
+    min-height: 44px;
+    padding: 8px 14px;
+  }
+
+  .chip {
+    min-height: 36px;
+    padding: 6px 12px;
+  }
+
+  .toggle input {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* A faction card is one line of text in a box sized for a hero card, and
+     ten of those one to a row is a long scroll on a phone. Two to a row, and
+     no taller than their contents. */
+  .cards {
+    grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
+    gap: 8px;
+  }
+
+  .cards:not(.wide) .card {
+    min-height: 0;
+    padding: 10px 12px;
+  }
+
+  /* Hero cards carry a stats strip and three lines of text, so they stay one
+     to a row and keep the height that holds them. */
+  .cards.wide {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
